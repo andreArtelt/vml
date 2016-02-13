@@ -19,10 +19,11 @@ The aim is to help students **getting a better understanding** about the behavio
 
 ## Webdemo
 [Master](https://andreartelt.github.io/vml)
+
 [Dev](https://andreartelt.github.io/vml/dev/)
 
 ## Documentation
-See wiki.
+See [wiki](https://github.com/andreArtelt/vml/wiki).
 
 ## License
 Licensed under MIT license (see LICENSE.md).
