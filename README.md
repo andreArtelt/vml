@@ -14,16 +14,21 @@ The aim is to help students **getting a better understanding** about the behavio
 ## Features (Algorithms)
  - Generating toy datasets
  - Perceptron
+ - Naive Bayes
  - K-Means clustering
  - Polynomial regression
 
 ## Webdemo
-[Master](https://andreartelt.github.io/vml)
-
-[Dev](https://andreartelt.github.io/vml/dev/)
+[Current release](https://andreartelt.github.io/vml)
 
 ## Documentation
 See [wiki](https://github.com/andreArtelt/vml/wiki).
+
+## Technical stuff
+This project is realized using HTML, JavaScript and CSS.
+
+## Contribution
+Collaboration/Contributions/Pull-requests are highly welcome. Feel free to contact me.
 
 ## License
 Licensed under MIT license (see LICENSE.md).
