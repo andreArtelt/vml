@@ -27,6 +27,9 @@ function vml_kmeansui() {
   // Algorithm
   this.m_oAlgo = new vml_kmeans();
 
+  this.m_oTrainTimer = undefined;
+  this.m_iAnimationTime = 1000;  // Time between each animation step in training animation
+
   this.Init = function() {
      // Init stuff from data generation
      this.m_oDataGen = new vml_DataGen();
@@ -34,30 +37,77 @@ function vml_kmeansui() {
 
      // Register eventhandler
      document.getElementById("trainBtn").addEventListener("click", this.Train.bind(this), false);
+     document.getElementById("stopBtn").addEventListener("click", this.Stop.bind(this), false);
      document.getElementById("resetModel").addEventListener("click", this.ResetModel.bind(this), false);
+
+     // Disable/Enable buttons
+     document.getElementById("stopBtn").disabled = true;
   };
 
   this.Plot = function() {
      var lData = this.m_oDataGen.m_lData;
      lData.push({label: "Cluster center", data: this.m_oAlgo.m_lCenters, color:this.m_oDataGen.m_strColorB, points: {show: true}});
+
      $.plot("#"+this.m_oDataGen.m_strPlotDiv, lData, this.m_oDataGen.m_lPlotSettings);
+
      lData.splice(lData.length - 1, 1); // Remove current centers
   };
 
+  this.Stop = function() {
+     // Stop/Kill timer for training
+     clearInterval(this.m_oTrainTimer);
+
+     // Disable/Enable buttons
+     document.getElementById("stopBtn").disabled = true;
+     document.getElementById("trainBtn").disabled = false;
+  };
+
   this.Train = function() {
-     // Run training iterations
-     for(var i=0; i != this.GetNumberOfIterations(); i++) {
-	// Update weights
-        this.m_oAlgo.FitStep();
+     if(this.IsAnimated()) {  // Animation of training
+       // Disbale/Enable buttons
+       document.getElementById("stopBtn").disabled = false;
+       document.getElementById("trainBtn").disabled = true;
 
-	// Update centers (animation)
-        if(this.IsAnimated()) {
+       // Reset counter for number of animations
+       this.TrainAnimateCounter = this.GetNumberOfIterations();
+       
+       // Run one animation
+       this.TrainingAnimate();
 
-        }
+       // Setup timer for animations
+       this.m_oTrainTimer = setInterval(this.TrainingAnimate.bind(this), this.m_iAnimationTime);
+     }
+     else {
+       // Run training iterations
+       for(var i=0; i != this.GetNumberOfIterations(); i++) {
+	  // Update weights
+          this.m_oAlgo.FitStep();
+       }
      }
 
      // Refresh plot
      this.Plot();
+  };
+
+  this.TrainingAnimate = function() {
+     if(this.TrainAnimateCounter == 0) {  // Finished?
+        // Stop/Kill timer
+        clearInterval(this.m_oTrainTimer);
+
+        // Disable/Enable buttons
+        document.getElementById("stopBtn").disabled = true;
+        document.getElementById("trainBtn").disabled = false;
+     }
+     else {
+       // Perform one step of training
+       this.m_oAlgo.FitStep();
+
+       // Refresh plot
+       this.Plot();
+
+       // Decrease counter of training steps to be performed
+       this.TrainAnimateCounter--;
+     }
   };
 
   this.ResetModel = function() {
