@@ -16,7 +16,6 @@ The aim is to help students **getting a better understanding** about the behavio
  - Perceptron
  - Naive Bayes
  - K-Means clustering
- - Polynomial regression
 
 ## Webdemo
 [Current release](https://andreartelt.github.io/vml)
