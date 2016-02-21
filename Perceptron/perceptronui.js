@@ -28,6 +28,9 @@ function vml_PerceptronUI() {
   this.m_lDecBound = [];
   this.m_iRoundOff = 500;  // Toleration of rounding errors when computing the decision boundary
 
+  this.m_oTrainTimer = undefined;
+  this.m_iAnimationTime = 1000;  // Time between each animation step in training animation
+
   // Init
   this.Init = function() {
     // Init stuff from data generation
@@ -39,7 +42,11 @@ function vml_PerceptronUI() {
 
     // Register eventhandler
     document.getElementById("trainBtn").addEventListener("click", this.Train.bind(this), false);
+    document.getElementById("stopBtn").addEventListener("click", this.Stop.bind(this), false);
     document.getElementById("resetPerceptron").addEventListener("click", this.ResetPerceptron.bind(this), false);
+
+    // Disable/Enable buttons
+    document.getElementById("stopBtn").disabled = true;
 
     // Init grid (needed for computing the decision boundary)
     this.m_lGrid = vml_utils.BuildGrid(-5, 5, -5, 5);
@@ -111,22 +118,66 @@ function vml_PerceptronUI() {
      this.Plot();
   };
 
+  this.Stop = function() {
+     // Stop/Kill timer for training
+     clearInterval(this.m_oTrainTimer);
+
+     // Disable/Enable buttons
+     document.getElementById("stopBtn").disabled = true;
+     document.getElementById("trainBtn").disabled = false;
+  };
+
   this.Train = function() {
-     // Run training iterations
-     for(var i=0; i != this.GetNumberOfIterations(); i++) {
-	// Update weights
-        this.m_oAlgo.UpdateWeights(this.GetLearningRate());
+     if(this.IsAnimated()) {  // Animation of training
+       // Disbale/Enable buttons
+       document.getElementById("stopBtn").disabled = false;
+       document.getElementById("trainBtn").disabled = true;
 
-	// Update decisionboundary (animation)
-        if(this.IsAnimated()) {
+       // Reset counter for number of animations
+       this.TrainAnimateCounter = this.GetNumberOfIterations();
+       
+       // Run one animation
+       this.TrainingAnimate();
 
-        }
+       // Setup timer for animations
+       this.m_oTrainTimer = setInterval(this.TrainingAnimate.bind(this), this.m_iAnimationTime);
      }
+     else {  // No animation of training
+       // Run training iterations
+       for(var i=0; i != this.GetNumberOfIterations(); i++) {
+	  // Update weights
+          this.m_oAlgo.UpdateWeights(this.GetLearningRate());
+       }
 
-     // Recompute decision boundary
-     this.ComputeDecisionBoundary();
+       // Recompute decision boundary
+       this.ComputeDecisionBoundary();
 
-     // Refresh plot
-     this.Plot();
+       // Refresh plot
+       this.Plot();
+     }
+  };
+
+  this.TrainingAnimate = function() {
+     if(this.TrainAnimateCounter == 0) {  // Finished?
+        // Stop/Kill timer
+        clearInterval(this.m_oTrainTimer);
+
+        // Disable/Enable buttons
+        document.getElementById("stopBtn").disabled = true;
+        document.getElementById("trainBtn").disabled = false;
+     }
+     else {
+       // Perform one step of training
+       this.m_oAlgo.UpdateWeights(this.GetLearningRate());
+
+       // Recompute decision boundary
+       this.ComputeDecisionBoundary();
+
+       // Refresh plot
+       this.Plot();
+
+       // Decrease counter of training steps to be performed
+       this.TrainAnimateCounter--;
+     }
   };
 }
