@@ -56,10 +56,11 @@ function vml_PerceptronUI() {
   this.Plot = function() {
      var lData = this.m_oDataGen.m_lData;  // Extend plotting data from dataGen
      lData.push({label: "Decision boundary", data: this.m_lDecBound, lines: {show: true}});
-     
+     lData.push({label: "Decision boundary", data: this.m_lDecBound2, lines: {show: true}});
+
      $.plot("#plotArea", lData, this.m_oDataGen.m_lPlotSettings);  // Draw plot
 
-     lData.splice(lData.length - 1, 1); // Remove current decision boundary!
+     lData.splice(lData.length - 2, 2); // Remove current decision boundary!
   };
 
   // Compute decision boundary
@@ -68,17 +69,14 @@ function vml_PerceptronUI() {
       this.m_lDecBound = [];
 
       // Recompute decision boundary
-      // => Find all values where w^t*x = 0
-      var myWeights = math.transpose(this.m_oAlgo.m_weights);
-      for(var i=0; i != this.m_lGrid.length; i++) {
-        var myPoint = this.m_lGrid[i];
-        
-        var result = math.multiply(myWeights, math.matrix(myPoint));
-        result = math.round(result*this.m_iRoundOff);  // Hack: Round precision away ;)
+      // Compute params of linear function
+      var w = this.m_oAlgo.m_weights.valueOf();
+      var m=-1*(w[0]/w[1]);
+      var b = w[2]/w[1];
 
-        if(result == 0) {
-          this.m_lDecBound.push([myPoint[0], myPoint[1]]);
-        }
+      // Collect points on this line (discriminant)
+      for(var i=-5; i <=5; i += 0.05) {
+        this.m_lDecBound.push([i, m*i - b]);
       }
   };
 
