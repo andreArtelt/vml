@@ -20,57 +20,74 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
+/**
+* Implementation of the k-means clustering algorithm.
+* @class vml_kmeans
+* @constructor 
+*/
 function vml_kmeans() {
   // Vars
-  this.m_iNumCenter = 1;
-  this.m_lCenters = [];
-  this.m_lData = [];
-  this.m_lLabels = [];
-  this.m_lTempMean = [];
-  this.m_lTempLabelCount = [];
+  this.iNumCenter = 1;
+  this.lCenters = [];
+  this.lData = [];
+  this.lLabels = [];
+  this.lTempMean = [];
+  this.lTempLabelCount = [];
 
-  // Init
-  this.Init = function(a_lData, a_iNumCluster) {
-     this.m_lCenters = [];
-     this.m_iNumCenter = a_iNumCluster;
-     this.m_lData = a_lData;
-     this.m_iDim = 2;
+  /**
+  * Initialization.
+  * @method Init
+  * @param {Matrix} lData List/Set of two dimensional data points.
+  * @param {Integer} iNumCluster Number of clusters the algorithm should compute.
+  */
+  this.Init = function( lData, iNumCluster ) {
+     this.lCenters = [];
+     this.iNumCenter = iNumCluster;
+     this.lData = lData;
+     this.iDim = 2;
 
-     for(var i=0; i != this.m_iNumCenter; i++) {
-        this.m_lTempMean.push(vml_utils.FillList(this.m_iDim, 0.0));
-        this.m_lTempLabelCount.push(0);
+     for( var i=0; i != this.iNumCenter; i++ ) {
+        this.lTempMean.push( vml_utils.FillList( this.iDim, 0.0 ) );
+        this.lTempLabelCount.push( 0 );
 
-        this.m_lCenters.push(math.random([this.m_iDim], -5, 5));
+        this.lCenters.push( math.random( [ this.iDim ], -5, 5 ) );
      }
   };
 
-  // Perform one step of the fitting/training function.
+  /**
+  * Perform one step of fitting/training.
+  * @method FitStep
+  */
   this.FitStep = function() {
      // Expectation step
-     for(var i=0; i != this.m_lData.length; i++) {
-         this.m_lLabels[i] = this.Predict(this.m_lData[i]);
+     for( var i=0; i != this.lData.length; i++ ) {
+         this.lLabels[i] = this.Predict( this.lData[i] );
          
-         this.m_lTempMean[this.m_lLabels[i]] = math.add(this.m_lTempMean[this.m_lLabels[i]], this.m_lData[i]);
-         this.m_lTempLabelCount[this.m_lLabels[i]] += 1;
+         this.lTempMean[ this.lLabels[i] ] = math.add( this.lTempMean[ this.lLabels[i] ], this.lData[i] );
+         this.lTempLabelCount[ this.lLabels[i] ] += 1;
      }
 
      // Maximization step
-     for(var i=0; i != this.m_iNumCenter; i++) {
-        this.m_lCenters[i] = vml_math.MultiplyScalar(this.m_lTempMean[i], (1.0 / this.m_lTempLabelCount[i]));
+     for( var i=0; i != this.iNumCenter; i++ ) {
+        this.lCenters[i] = vml_math.MultiplyScalar( this.lTempMean[i], ( 1.0 / this.lTempLabelCount[i] ) );
         
-        this.m_lTempMean[i] = vml_utils.FillList(this.m_iDim, 0.0);
-        this.m_lTempLabelCount[i] = 0;
+        this.lTempMean[i] = vml_utils.FillList( this.iDim, 0.0 );
+        this.lTempLabelCount[i] = 0;
      }
   };
 
-  // Predict the cluster of a given point.
-  this.Predict = function(a_Point) {
+  /**
+  * Predict the cluster of a given point.
+  * @method Predict
+  * @param {Vector} vecPoint Point to be assigned to a cluster.
+  */
+  this.Predict = function( vecPoint ) {
       var iCurBest = 0;
       var fCurDist = -1;
 
-      for(var i=0; i != this.m_iNumCenter; i++) {
-          fDist = math.distance(this.m_lCenters[i], a_Point);
-          if(fDist < fCurDist || fCurDist == -1) {
+      for( var i=0; i != iNumCenter; i++ ) {
+          fDist = math.distance( this.lCenters[i], vecPoint );
+          if( fDist < fCurDist || fCurDist == -1 ) {
              iCurBest = i;
              fCurDist = fDist;
           }

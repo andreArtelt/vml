@@ -20,55 +20,70 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
+/**
+* Implementation of gaussian naive bayes classification.
+* @class vml_NaiveBayes
+* @constructor
+*/
 function vml_NaiveBayes() {
   // Probability distributions for all features of both classes
-  this.m_lProbDistA = [];
-  this.m_lProbDistB = [];
+  this.ProbDistA = [];
+  this.ProbDistB = [];
   
   // Prior probabilities
-  this.m_fProbA = 0.5;
-  this.m_fProbB = 0.5;
+  this.fProbA = 0.5;
+  this.fProbB = 0.5;
 
-  // Init
-  this.Fit = function(a_lClassA, a_lClassB, a_iNumFeatures) {
-     if(a_iNumFeatures == undefined) {  // If no number of features has been specified, assume 2 (because of 2d)
-       a_iNumFeatures = 2;
+  /**
+  * Initialization of the classifier (including fitting/training).
+  * @method Fit
+  * @param {Matrix} lClassA All samples of class A.
+  * @param {Matrix} lClassB All samples of class B.
+  * @param {Integer} iNumFeatures Number of features/dimension of a data point (if not specified it's set to 2).
+  */
+  this.Fit = function( lClassA, lClassB, iNumFeatures ) {
+     if( iNumFeatures == undefined ) {  // If number of features has not been specified, assume 2 (because of 2d)
+       iNumFeatures = 2;
      }
 
      // Extract features
      var lFeatureX_A = []; var lFeatureX_B = [];
      var lFeatureY_A = []; var lFeatureY_B = [];
     
-     for(var i = 0; i != a_lClassA.length; i++) {
-       //for(var j=0; j != a_iNumFeature; j++) {
-       lFeatureX_A.push(a_lClassA[i][0]);
-       lFeatureY_A.push(a_lClassA[i][1]);
+     for( var i = 0; i != lClassA.length; i++ ) {
+       lFeatureX_A.push( lClassA[i][0] );
+       lFeatureY_A.push( lClassA[i][1] );
      }
-     for(var i = 0; i != a_lClassB.length; i++) {
-       lFeatureX_B.push(a_lClassB[i][0]);
-       lFeatureY_B.push(a_lClassB[i][1]);
+     for( var i = 0; i != lClassB.length; i++ ) {
+       lFeatureX_B.push( lClassB[i][0] );
+       lFeatureY_B.push( lClassB[i][1] );
      }
 
      // Fit probability distributions (gaussian) for each feature
-     this.m_lProbDistA = [];
+     this.lProbDistA = [];
      var distX_A = new vml_GaussDist(); var distY_A = new vml_GaussDist();
-     distX_A.Fit(lFeatureX_A); distY_A.Fit(lFeatureY_A);
-     this.m_lProbDistA.push(distX_A); this.m_lProbDistA.push(distY_A);
+     distX_A.Fit( lFeatureX_A ); distY_A.Fit( lFeatureY_A );
+     this.lProbDistA.push( distX_A ); this.lProbDistA.push( distY_A );
 
-     this.m_lProbDistB = [];
+     this.lProbDistB = [];
      var distX_B = new vml_GaussDist(); var distY_B = new vml_GaussDist();
-     distX_B.Fit(lFeatureX_B); distY_B.Fit(lFeatureY_B);
-     this.m_lProbDistB.push(distX_B); this.m_lProbDistB.push(distY_B);
+     distX_B.Fit( lFeatureX_B ); distY_B.Fit( lFeatureY_B );
+     this.lProbDistB.push( distX_B ); this.lProbDistB.push( distY_B );
   };
 
-  // Predict the class of a given input
-  this.Predict = function(a_point) {
-     var fA = this.m_fProbA;
-     var fB = this.m_fProbB;
+  /**
+  * Predict the class of a given sample.
+  * @method Predict
+  * @param {Vector} vecPoint Point to be classified.
+  * @return Score/Probability for each class label (a list with two values).
+  */
+  this.Predict = function( vecPoint ) {
+     var fA = this.fProbA;
+     var fB = this.fProbB;
 
-     for(var i=0; i != this.m_lProbDistA.length; i++) {
-        fA *= this.m_lProbDistA[i].Prob(a_point[i]);
-        fB *= this.m_lProbDistB[i].Prob(a_point[i]);
+     for( var i=0; i != this.lProbDistA.length; i++ ) {
+        fA *= this.lProbDistA[i].Prob( vecPoint[i] );
+        fB *= this.lProbDistB[i].Prob( vecPoint[i] );
      }
 
      var fScoreA = fA / (fA + fB);

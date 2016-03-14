@@ -22,51 +22,51 @@
 
 function vml_kmeansui() {
   // Stuff from datagen.js (sth. like a parent class)
-  this.m_oDataGen = null;
+  this.oDataGen = null;
 
   // Algorithm
-  this.m_oAlgo = new vml_kmeans();
+  this.oAlgo = new vml_kmeans();
 
-  this.m_oTrainTimer = undefined;
-  this.m_iAnimationTime = 1000;  // Time between each animation step in training animation
+  this.oTrainTimer = undefined;
+  this.iAnimationTime = 100;  // Time between each animation step in training animation
 
   this.Init = function() {
      // Init stuff from data generation
-     this.m_oDataGen = new vml_DataGen();
-     this.m_oDataGen.Init(undefined, true);
+     this.oDataGen = new vml_DataGen();
+     this.oDataGen.Init( undefined, true );
 
      // Register eventhandler
-     document.getElementById("trainBtn").addEventListener("click", this.Train.bind(this), false);
-     document.getElementById("stopBtn").addEventListener("click", this.Stop.bind(this), false);
-     document.getElementById("resetModel").addEventListener("click", this.ResetModel.bind(this), false);
+     document.getElementById( "trainBtn" ).addEventListener( "click", this.Train.bind( this ), false );
+     document.getElementById( "stopBtn" ).addEventListener( "click", this.Stop.bind( this ), false );
+     document.getElementById( "resetModel" ).addEventListener( "click", this.ResetModel.bind( this ), false );
 
      // Disable/Enable buttons
-     document.getElementById("stopBtn").disabled = true;
+     document.getElementById( "stopBtn" ).disabled = true;
   };
 
   this.Plot = function() {
-     var lData = this.m_oDataGen.m_lData;
-     lData.push({label: "Cluster center", data: this.m_oAlgo.m_lCenters, color:this.m_oDataGen.m_strColorB, points: {show: true}});
+     var lData = this.oDataGen.lData;
+     lData.push( {label: "Cluster center", data: this.oAlgo.lCenters, color:this.oDataGen.oClassB.Color, points: {show: true}} );
 
-     $.plot("#"+this.m_oDataGen.m_strPlotDiv, lData, this.m_oDataGen.m_lPlotSettings);
+     $.plot( "#"+this.oDataGen.strPlotDiv, lData, this.oDataGen.oPlotSettings );
 
-     lData.splice(lData.length - 1, 1); // Remove current centers
+     lData.splice( lData.length - 1, 1 ); // Remove current centers
   };
 
   this.Stop = function() {
      // Stop/Kill timer for training
-     clearInterval(this.m_oTrainTimer);
+     clearInterval(this.oTrainTimer);
 
      // Disable/Enable buttons
-     document.getElementById("stopBtn").disabled = true;
-     document.getElementById("trainBtn").disabled = false;
+     document.getElementById( "stopBtn" ).disabled = true;
+     document.getElementById( "trainBtn" ).disabled = false;
   };
 
   this.Train = function() {
      if(this.IsAnimated()) {  // Animation of training
        // Disbale/Enable buttons
-       document.getElementById("stopBtn").disabled = false;
-       document.getElementById("trainBtn").disabled = true;
+       document.getElementById( "stopBtn" ).disabled = false;
+       document.getElementById( "trainBtn" ).disabled = true;
 
        // Reset counter for number of animations
        this.TrainAnimateCounter = this.GetNumberOfIterations();
@@ -75,13 +75,13 @@ function vml_kmeansui() {
        this.TrainingAnimate();
 
        // Setup timer for animations
-       this.m_oTrainTimer = setInterval(this.TrainingAnimate.bind(this), this.m_iAnimationTime);
+       this.oTrainTimer = setInterval( this.TrainingAnimate.bind( this ), this.iAnimationTime );
      }
      else {
        // Run training iterations
-       for(var i=0; i != this.GetNumberOfIterations(); i++) {
+       for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
 	  // Update weights
-          this.m_oAlgo.FitStep();
+          this.oAlgo.FitStep();
        }
      }
 
@@ -92,15 +92,15 @@ function vml_kmeansui() {
   this.TrainingAnimate = function() {
      if(this.TrainAnimateCounter == 0) {  // Finished?
         // Stop/Kill timer
-        clearInterval(this.m_oTrainTimer);
+        clearInterval( this.oTrainTimer );
 
         // Disable/Enable buttons
-        document.getElementById("stopBtn").disabled = true;
-        document.getElementById("trainBtn").disabled = false;
+        document.getElementById( "stopBtn" ).disabled = true;
+        document.getElementById( "trainBtn" ).disabled = false;
      }
      else {
        // Perform one step of training
-       this.m_oAlgo.FitStep();
+       this.oAlgo.FitStep();
 
        // Refresh plot
        this.Plot();
@@ -111,31 +111,31 @@ function vml_kmeansui() {
   };
 
   this.ResetModel = function() {
-     this.m_oAlgo.Init(this.m_oDataGen.m_lClassA, this.GetNumClusters());
+     this.oAlgo.Init( this.oDataGen.oClassA.Data, this.GetNumClusters() );
      this.Plot();
   };
 
   this.IsAnimated = function() {
-     return document.getElementById("showAnimation").checked;
+     return document.getElementById( "showAnimation" ).checked;
   };
 
   this.GetNumberOfIterations = function() {
-     var iResult = document.getElementById("numTrainItr").value;
-     if(iResult == "") {
+     var iResult = document.getElementById( "numTrainItr" ).value;
+     if( iResult == "" ) {
         return 0;
      }
      else {
-        return parseInt(iResult);
+        return parseInt( iResult );
      }
   };
 
   this.GetNumClusters = function() {
-     var iResult = document.getElementById("numCluster").value;
-     if(iResult == "") {
+     var iResult = document.getElementById( "numCluster" ).value;
+     if( iResult == "" ) {
         return 1;
      }
      else {
-        return parseInt(iResult);
+        return parseInt( iResult );
      }
   };
 }

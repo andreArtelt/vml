@@ -21,68 +21,61 @@
 //  SOFTWARE.
 
 function vml_PerceptronUI() {
-  this.m_oDataGen = undefined;  // DataGen
-  this.m_oAlgo = undefined;   // Perceptron
+  this.oDataGen = undefined;  // DataGen
+  this.oAlgo = undefined;   // Perceptron
 
-  this.m_lGrid = [];
-  this.m_lDecBound = [];
-  this.m_iRoundOff = 500;  // Toleration of rounding errors when computing the decision boundary
-
-  this.m_oTrainTimer = undefined;
-  this.m_iAnimationTime = 1000;  // Time between each animation step in training animation
+  this.lDecBound = [];
+  this.oTrainTimer = undefined;
+  this.iAnimationTime = 100;  // Time between each animation step in training animation
 
   // Init
   this.Init = function() {
     // Init stuff from data generation
-    this.m_oDataGen = new vml_DataGen();
-    this.m_oDataGen.Init();
+    this.oDataGen = new vml_DataGen();
+    this.oDataGen.Init();
 
     // Init stuff from perceptron
-    this.m_oAlgo = new vml_Perceptron();
+    this.oAlgo = new vml_Perceptron();
 
     // Register eventhandler
-    document.getElementById("trainBtn").addEventListener("click", this.Train.bind(this), false);
-    document.getElementById("stopBtn").addEventListener("click", this.Stop.bind(this), false);
-    document.getElementById("resetPerceptron").addEventListener("click", this.ResetPerceptron.bind(this), false);
+    document.getElementById( "trainBtn" ).addEventListener( "click", this.Train.bind( this ), false);
+    document.getElementById( "stopBtn" ).addEventListener( "click", this.Stop.bind( this ), false);
+    document.getElementById( "resetPerceptron" ).addEventListener( "click", this.ResetPerceptron.bind( this ), false);
 
     // Disable/Enable buttons
-    document.getElementById("stopBtn").disabled = true;
-
-    // Init grid (needed for computing the decision boundary)
-    this.m_lGrid = vml_utils.BuildGrid(-5, 5, -5, 5);
+    document.getElementById( "stopBtn" ).disabled = true;
   };
 
   // Plot
   this.Plot = function() {
-     var lData = this.m_oDataGen.m_lData;  // Extend plotting data from dataGen
-     lData.push({label: "Decision boundary", data: this.m_lDecBound, lines: {show: true}});
-     lData.push({label: "Decision boundary", data: this.m_lDecBound2, lines: {show: true}});
+     var lData = this.oDataGen.lData;  // Extend plotting data from dataGen
+     lData.push( {label: "Decision boundary", data: this.lDecBound, lines: {show: true}} );
 
-     $.plot("#plotArea", lData, this.m_oDataGen.m_lPlotSettings);  // Draw plot
+     $.plot( "#plotArea", lData, this.oDataGen.oPlotSettings );  // Draw plot
 
-     lData.splice(lData.length - 2, 2); // Remove current decision boundary!
+     lData.splice( lData.length - 2, 2 ); // Remove current decision boundary!
   };
 
   // Compute decision boundary
   this.ComputeDecisionBoundary = function() {
       // Clear decision boundary
-      this.m_lDecBound = [];
+      this.lDecBound = [];
 
       // Recompute decision boundary
       // Compute params of linear function
-      var w = this.m_oAlgo.m_weights.valueOf();
+      var w = this.oAlgo.lWeights.valueOf();
       var m=-1*(w[0]/w[1]);
       var b = w[2]/w[1];
 
       // Collect points on this line (discriminant)
-      for(var i=-5; i <=5; i += 0.05) {
-        this.m_lDecBound.push([i, m*i - b]);
+      for( var i=-5; i <=5; i += 0.05 ) {
+        this.lDecBound.push( [i, m*i - b] );
       }
   };
 
   this.GetLearningRate = function() {
-     var fResult = document.getElementById("learningRate").value;
-     if(fResult == "") {
+     var fResult = document.getElementById( "learningRate" ).value;
+     if( fResult == "" ) {
         return 1.0;
      }
      else {
@@ -91,8 +84,8 @@ function vml_PerceptronUI() {
   };
 
   this.GetNumberOfIterations = function() {
-     var iResult = document.getElementById("numTrainItr").value;
-     if(iResult == "") {
+     var iResult = document.getElementById( "numTrainItr" ).value;
+     if( iResult == "" ) {
         return 0;
      }
      else {
@@ -101,13 +94,13 @@ function vml_PerceptronUI() {
   };
 
   this.IsAnimated = function() {
-     return document.getElementById("showAnimation").checked;
+     return document.getElementById( "showAnimation" ).checked;
   };
 
   // Reset model (and refresh plot)
   this.ResetPerceptron = function() {
      // Init/Reset perceptron
-     this.m_oAlgo.Init(this.m_oDataGen.m_lClassA, this.m_oDataGen.m_lClassB);
+     this.oAlgo.Init( this.oDataGen.oClassA.Data, this.oDataGen.oClassB.Data );
 
      // Recompute decision boundary
      this.ComputeDecisionBoundary();
@@ -118,18 +111,18 @@ function vml_PerceptronUI() {
 
   this.Stop = function() {
      // Stop/Kill timer for training
-     clearInterval(this.m_oTrainTimer);
+     clearInterval( this.oTrainTimer );
 
      // Disable/Enable buttons
-     document.getElementById("stopBtn").disabled = true;
-     document.getElementById("trainBtn").disabled = false;
+     document.getElementById( "stopBtn" ).disabled = true;
+     document.getElementById( "trainBtn" ).disabled = false;
   };
 
   this.Train = function() {
      if(this.IsAnimated()) {  // Animation of training
        // Disbale/Enable buttons
-       document.getElementById("stopBtn").disabled = false;
-       document.getElementById("trainBtn").disabled = true;
+       document.getElementById( "stopBtn" ).disabled = false;
+       document.getElementById( "trainBtn" ).disabled = true;
 
        // Reset counter for number of animations
        this.TrainAnimateCounter = this.GetNumberOfIterations();
@@ -138,13 +131,13 @@ function vml_PerceptronUI() {
        this.TrainingAnimate();
 
        // Setup timer for animations
-       this.m_oTrainTimer = setInterval(this.TrainingAnimate.bind(this), this.m_iAnimationTime);
+       this.oTrainTimer = setInterval( this.TrainingAnimate.bind( this ), this.iAnimationTime );
      }
      else {  // No animation of training
        // Run training iterations
-       for(var i=0; i != this.GetNumberOfIterations(); i++) {
+       for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
 	  // Update weights
-          this.m_oAlgo.UpdateWeights(this.GetLearningRate());
+          this.oAlgo.UpdateWeights( this.GetLearningRate() );
        }
 
        // Recompute decision boundary
@@ -156,17 +149,17 @@ function vml_PerceptronUI() {
   };
 
   this.TrainingAnimate = function() {
-     if(this.TrainAnimateCounter == 0) {  // Finished?
+     if( this.TrainAnimateCounter == 0 ) {  // Finished?
         // Stop/Kill timer
-        clearInterval(this.m_oTrainTimer);
+        clearInterval( this.oTrainTimer );
 
         // Disable/Enable buttons
-        document.getElementById("stopBtn").disabled = true;
-        document.getElementById("trainBtn").disabled = false;
+        document.getElementById( "stopBtn" ).disabled = true;
+        document.getElementById( "trainBtn" ).disabled = false;
      }
      else {
        // Perform one step of training
-       this.m_oAlgo.UpdateWeights(this.GetLearningRate());
+       this.oAlgo.UpdateWeights( this.GetLearningRate() );
 
        // Recompute decision boundary
        this.ComputeDecisionBoundary();

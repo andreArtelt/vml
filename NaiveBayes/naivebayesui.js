@@ -22,53 +22,53 @@
 
 
 function vml_NaiveBayesUI() {
-  this.m_oDataGen = undefined;  // DataGen
-  this.m_oAlgo = undefined;  // NaiveBayes classifier
+  this.oDataGen = undefined;  // DataGen
+  this.oAlgo = undefined;  // NaiveBayes classifier
 
-  this.m_lGrid = [];
-  this.m_lDecBound = [];
+  this.lGrid = [];
+  this.lDecBound = [];
 
   // Init
   this.Init = function() {
      // Register eventhandler
-     document.getElementById("fitBtn").addEventListener("click", this.Fit.bind(this), false);
+     document.getElementById( "fitBtn" ).addEventListener( "click", this.Fit.bind( this ), false );
 
     // Init stuff from data generation
-    this.m_oDataGen = new vml_DataGen();
-    this.m_oDataGen.Init();
+    this.oDataGen = new vml_DataGen();
+    this.oDataGen.Init();
 
      // Init stuff from naiveBayes classifier
-     this.m_oAlgo = new vml_NaiveBayes();
+     this.oAlgo = new vml_NaiveBayes();
 
      // Init grid (needed for computing the decision boundary)
-     this.m_lGrid = vml_utils.BuildGrid(-5, 5, -5, 5, 0.04);
+     this.lGrid = vml_utils.BuildGrid( -5, 5, -5, 5, 0.04 );
   };
 
   // Plot
   this.Plot = function() {
-     var lData = this.m_oDataGen.m_lData;  // Extend plotting data from dataGen
-     lData.push({label: "Decision boundary", data: this.m_lDecBound, lines: {show: true}});
+     var lData = this.oDataGen.lData;  // Extend plotting data from dataGen
+     lData.push( {label: "Decision boundary", data: this.lDecBound, lines: {show: true}} );
      
-     $.plot("#plotArea", lData, this.m_oDataGen.m_lPlotSettings);  // Draw plot
+     $.plot( "#plotArea", lData, this.oDataGen.oPlotSettings );  // Draw plot
 
-     lData.splice(lData.length - 1, 1); // Remove current decision boundary!
+     lData.splice( lData.length - 1, 1 ); // Remove current decision boundary!
   };
 
   // Compute the decision boundary of the classifier
   this.ComputeDecisionBoundary = function() {
       // Clear decision boundary
-      this.m_lDecBound = [];
+      this.lDecBound = [];
 
       // Recompute decision boundary
       // => Find all values where p(c1|x) = 0.5 (for two classes)
-      for(var i=0; i != this.m_lGrid.length; i++) {
-        var myPoint = this.m_lGrid[i];
+      for( var i=0; i != this.lGrid.length; i++ ) {
+        var myPoint = this.lGrid[i];
 
-        result = this.m_oAlgo.Predict(myPoint); 
-        result = math.round(result, 1);  // Round to one decimal point
+        result = this.oAlgo.Predict( myPoint ); 
+        result = math.round( result, 1 );  // Round to one decimal point
 
-        if(result[0] == 0.5) {  // Unsure prediction?
-          this.m_lDecBound.push([myPoint[0], myPoint[1]]);
+        if( result[0] == 0.5 ) {  // Unsure prediction?
+          this.lDecBound.push( [myPoint[0], myPoint[1]] );
         }
       }
   };
@@ -76,7 +76,7 @@ function vml_NaiveBayesUI() {
   // Fit/"Train" the classifier
   this.Fit = function() {
      // Fit classifier
-     this.m_oAlgo.Fit(this.m_oDataGen.m_lClassA, this.m_oDataGen.m_lClassB);
+     this.oAlgo.Fit( this.oDataGen.oClassA.Data, this.oDataGen.oClassB.Data );
 
      // Compute decision boundary
      this.ComputeDecisionBoundary();
