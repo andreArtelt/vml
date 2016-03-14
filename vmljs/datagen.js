@@ -20,125 +20,160 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
+/**
+* Implementation of simple data generation/administration model.
+* @class vml_DataGen
+* @constructor
+*/
 function vml_DataGen() {
-  this.m_lClassA = [];  // List of data points of class A
-  this.m_strSymbolA = "circle";
-  this.m_strLabelA = "Class A";
-  this.m_strColorA = "#FF0000";
-  this.m_lClassB = [];  // List of data points of class B
-  this.m_strSymbolB = "circle";
-  this.m_strLabelB = "Class B";
-  this.m_strColorB = "#000000";
-  this.m_bSingleDataType = false;
+  this.oClassA = {Data: [], Symbol: "circle", Label: "Class A", Color: "#FF0000"};
+  this.oClassB = {Data: [], Symbol: "circle", Label: "Class B", Color: "#000000"};
+  this.bSingleDataType = false;
 
-  this.m_rangeX = {min: -5, max: 5};  // Settings for grid/axis
-  this.m_rangeY = {min: -5, max: 5};
-  this.m_bShowAxis = false;
+  this.rangeX = {min: -5, max: 5};  // Settings for grid/axis
+  this.rangeY = {min: -5, max: 5};
+  this.bShowAxis = false;
 
-  this.m_strPlotDiv = "plotArea";   // Container for plot
+  this.strPlotDiv = "plotArea";   // Container for plot
 
   // Plot settings
-  this.m_lData = [{label: this.m_strLabelA, color: this.m_strColorA, data: this.m_lClassA, points: {show: true, symbol: this.m_strSymbolA}}, {label: this.m_strLabelB, color: this.m_strColorB, data: this.m_lClassB, points: {show: true, symbol: this.m_strSymbolB}}];
-  this.m_lPlotSettings = {xaxis: this.m_rangeX, yaxis: this.m_rangeY, grid: {show: false, clickable: true}};
+  this.lData = [{label: this.oClassA.Label, color: this.oClassA.Color, data: this.oClassA.Data, points: {show: true, symbol: this.oClassA.Symbol}},
+                {label: this.oClassB.Label, color: this.oClassB.Color, data: this.oClassB.Data, points: {show: true, symbol: this.oClassB.Symbol}}];
+  this.oPlotSettings = {xaxis: this.rangeX, yaxis: this.rangeY, grid: {show: false, clickable: true}};
 
-  // Init
-  this.Init = function(a_strPlotDiv, a_bSingleDataType) {
+  /**
+  * Initialization.
+  * @method Init
+  * @param {String} a_strPlotDiv Id of placeholder (div) for plot.
+  * @param {Boolean} a_bSingleDataType Specify whether to use two or one different classes of data points.
+  */
+  this.Init = function( strPlotDiv, bSingleDataType ) {
+     // Register dialog stuff
+     dialogPolyfill.registerDialog( document.getElementById( 'exportDlg' ) );
+     dialogPolyfill.registerDialog( document.getElementById( 'importDlg' ) );
+
      // Register eventhandler
-     document.getElementById("resetBtn").addEventListener("click", this.Reset.bind(this), false);
-     document.getElementById("btnExportToJSON").addEventListener("click", this.ExportJSON.bind(this), false);
-     document.getElementById("btnExportToCSV").addEventListener("click", this.ExportCSV.bind(this), false);
-     document.getElementById("btnImportFromJSON").addEventListener("click", this.ImportJSON.bind(this), false);
-     document.getElementById("btnImportFromCSV").addEventListener("click", this.ImportCSV.bind(this), false);
-     document.getElementById("importCloseBtn").addEventListener("click", this.ImportClose.bind(this), false);;
+     document.getElementById( "resetBtn").addEventListener( "click", this.Reset.bind( this ), false );
+     document.getElementById( "btnExportToJSON" ).addEventListener( "click", this.ExportJSON.bind( this ), false );
+     document.getElementById( "btnExportToCSV" ).addEventListener( "click", this.ExportCSV.bind( this ), false );
+     document.getElementById( "btnImportFromJSON" ).addEventListener( "click", this.ImportJSON.bind( this ), false );
+     document.getElementById( "btnImportFromCSV" ).addEventListener( "click", this.ImportCSV.bind( this ), false );
+     document.getElementById( "importCloseBtn" ).addEventListener( "click", this.ImportClose.bind( this ), false );;
 
      // Single datapoint type or multiple?
-     if(a_bSingleDataType == true) {
-        this.m_bSingleDataType = true;
+     if( bSingleDataType == true ) {
+        this.bSingleDataType = true;
      }
      else {
-        this.m_bSingleDataType = false;
+        this.bSingleDataType = false;
      }
 
      // Container for plot specified?
-     if(a_strPlotDiv != undefined) {
-        this.m_strPlotDiv = a_strPlotDiv;
+     if( strPlotDiv != undefined ) {
+        this.strPlotDiv = strPlotDiv;
      }
 
      // Init plot (register plot specific eventhandler)
      this.Plot();
-     $("#"+this.m_strPlotDiv).bind("plotclick", this.PlotClickEvent.bind(this));
+     $( "#"+this.strPlotDiv).bind( "plotclick", this.PlotClickEvent.bind( this ) );
   };
 
-  // Memberfunctions
-
+  /**
+  * Plot current set of samples.
+  * @method Plot
+  */
   this.Plot = function() {
-     this.m_lData = [{label: this.m_strLabelA, color: this.m_strColorA, data: this.m_lClassA, points: {show: true, symbol: this.m_strSymbolA}}];
-     if(this.m_bSingleDataType == false) {
-       this.m_lData.push({label: this.m_strLabelB, color: this.m_strColorB, data: this.m_lClassB, points: {show: true, symbol: this.m_strSymbolB}});
+     this.lData = [{label: this.oClassA.Label, color: this.oClassA.Color, data: this.oClassA.Data, points: {show: true, symbol: this.oClassA.Symbol}}];
+     if(this.bSingleDataType == false) {
+       this.lData.push( {label: this.oClassB.Label, color: this.oClassB.Color, data: this.oClassB.Data, points: {show: true, symbol: this.oClassB.Symbol}} );
      }
-     $.plot("#"+this.m_strPlotDiv, this.m_lData, this.m_lPlotSettings);
+
+     $.plot( "#"+this.strPlotDiv, this.lData, this.oPlotSettings);
   };
 
-  this.PlotClickEvent = function(a_event, a_pos, a_item) {
+  this.PlotClickEvent = function( oEvent, vecPos, oItem ) {
      // Insert/Create new data point
-     this.InsertNewDataPoint([a_pos.x, a_pos.y]);
+     this.InsertNewDataPoint( [ vecPos.x, vecPos.y ], document.getElementById( "genClassA" ).checked );
 
      // Refresh plot
      this.Plot();
   };
 
-  this.InsertNewDataPoint = function(a_point) {
-    // Get class of new data point
-    var bClassA = document.getElementById("genClassA").checked;
-
+  /**
+  * Insert/Add a new sample.
+  * @method InsertNewDataPoint
+  * @param {Vector} vecPoint New sample/point.
+  * @param {Boolean} bClassA Label (true or false) of new sample.
+  */
+  this.InsertNewDataPoint = function( vecPoint, bClassA ) {
     // Store new point
-    if(bClassA == true) {  // Class A
-       this.m_lClassA.push(a_point);
+    if( bClassA == true ) {  // Class A
+       this.oClassA.Data.push( vecPoint );
     }
     else {  // Class B
-       this.m_lClassB.push(a_point);
+       this.oClassB.Data.push( vecPoint );
     }
   };
 
+  /**
+  * Export data to a json string.
+  * @method ExportDataToJSON
+  * @return {String} Exported data in json format.
+  */
   this.ExportDataToJSON = function() {
-    return JSON.stringify([this.m_lClassA, this.m_lClassB]);
+    return JSON.stringify( [ this.oClassA.Data, this.oClassB.Data ] );
   };
 
-  this.ImportDataFromJSON = function(a_strImport) {
+  /**
+  * Import data from a given json string.
+  * @method ImportDataFromJSON
+  * @param {String} strImport Json data to be imported.
+  */
+  this.ImportDataFromJSON = function( strImport ) {
      // Parse import
-     var importData = JSON.parse(a_strImport);
+     var importData = JSON.parse( strImport );
 
      // Import data
-     this.m_lClassA = importData[0];
-     this.m_lClassB = importData[1];
+     this.oClassA.Data = importData[0];
+     this.oClassB.Data = importData[1];
   };
 
+  /**
+  * Export data to a csv string.
+  * @method ExportDataToCSV
+  * @return {String} Exported data in csv format.
+  */
   this.ExportDataToCSV = function() {
      // Build header
      var strHdr = "x, y, t\r\n";
      var strBody = "";
 
      // Process both classes
-     for(var i = 0; i != this.m_lClassA.length; i++) {
-        strBody += this.m_lClassA[i][0] + "," + this.m_lClassA[i][1] + ",0\r\n";
+     for( var i = 0; i != this.oClassA.Data.length; i++ ) {
+        strBody += this.oClassA.Data[i][0] + "," + this.oClassA.Data[i][1] + ",0\r\n";
      }
-     for(var i=0; i != this.m_lClassB.length; i++) {
-        strBody += this.m_lClassB[i][0] + "," + this.m_lClassB[i][1] + ",1\r\n";
+     for( var i=0; i != this.oClassB.Data.length; i++ ) {
+        strBody += this.oClassB.Data[i][0] + "," + this.oClassB.Data[i][1] + ",1\r\n";
      }
 
      return strHdr+strBody;
   };
 
-  this.ImportDataFromCSV = function(a_strImport) {
+  /**
+  * Import data from a given csv string.
+  * @method ImportDataFromCSV
+  * @param {String} strImport CSV data to be imported.
+  */
+  this.ImportDataFromCSV = function( strImport ) {
      // Clean
-     this.m_lClassA = [];
-     this.m_lClassB = [];
+     this.oClassA.Data = [];
+     this.oClassB.Data = [];
 
      // Break string into rows
-     var lRows = a_strImport.split("\n");
+     var lRows = strImport.split( "\n" );
 
-     for(var i=1; i != lRows.length; i++) {   // Ignore first row
-        if(lRows[i] == "") {  // Skip empty rows
+     for( var i=1; i != lRows.length; i++ ) {   // Ignore first row
+        if( lRows[i] == "" ) {  // Skip empty rows
            continue;
         }        
 
@@ -146,66 +181,66 @@ function vml_DataGen() {
         var lData = lRows[i].split(",");
 
         // Add data
-        if(lData[2] == "0") {  // Class A
-           this.m_lClassA.push([lData[0], lData[1]]);
+        if( lData[2] == "0" ) {  // Class A
+           this.oClassA.Data.push( [ lData[0], lData[1] ] );
         }
-        else if(lData[2] == "1") {  // Class B
-           this.m_lClassB.push([lData[0], lData[1]]);
+        else if( lData[2] == "1" ) {  // Class B
+           this.oClassB.Data.push( [ lData[0], lData[1] ] );
         }
      }
   };
 
   this.ExportJSON = function() {
      // Export data
-     document.getElementById("exportData").value = this.ExportDataToJSON();
+     document.getElementById( "exportData" ).value = this.ExportDataToJSON();
 
      // Open/Show dialog
-     document.getElementById("exportDlg").showModal();
+     document.getElementById( "exportDlg" ).showModal();
   };
 
   this.ExportCSV = function() {
      // Export data
-     document.getElementById("exportData").value = this.ExportDataToCSV();
+     document.getElementById( "exportData" ).value = this.ExportDataToCSV();
 
      // Open/Show dialog
-     document.getElementById("exportDlg").showModal();
+     document.getElementById( "exportDlg" ).showModal();
   };
 
   this.ImportClose = function() {
      // Remove all event listener
-     document.getElementById("importDataBtn").removeEventListener("click", this.funcImportEvent, false);
+     document.getElementById( "importDataBtn" ).removeEventListener( "click", this.funcImportEvent, false );
   };
 
   this.ImportJSON = function() {
      // Register eventhandler
      this.funcImportEvent = this.ImportDataJsonBtn.bind(this);
-     document.getElementById("importDataBtn").addEventListener("click", this.funcImportEvent, false);
+     document.getElementById( "importDataBtn" ).addEventListener( "click", this.funcImportEvent, false );
 
      // Clean up
-     document.getElementById("importData").value = "";
+     document.getElementById( "importData" ).value = "";
 
      // Open/Show dialog
-     document.getElementById("importDlg").showModal();
+     document.getElementById( "importDlg" ).showModal();
   };
 
   this.ImportCSV = function() {
      // Register eventhandler
      this.funcImportEvent = this.ImportDataCsvBtn.bind(this);
-     document.getElementById("importDataBtn").addEventListener("click", this.funcImportEvent, false);
+     document.getElementById( "importDataBtn" ).addEventListener( "click", this.funcImportEvent, false );
 
      // Clean up
-     document.getElementById("importData").value = "";
+     document.getElementById( "importData" ).value = "";
 
      // Open/Show dialog
-     document.getElementById("importDlg").showModal();
+     document.getElementById( "importDlg" ).showModal();
   };
 
   this.ImportDataJsonBtn = function() {
      // Get data for import
-     var strData = document.getElementById("importData").value;
+     var strData = document.getElementById( "importData" ).value;
 
      // Try to import data
-     this.ImportDataFromJSON(strData);
+     this.ImportDataFromJSON( strData );
 
      // Refresh plot
      this.Plot();
@@ -216,10 +251,10 @@ function vml_DataGen() {
 
   this.ImportDataCsvBtn = function() {
      // Get data for import
-     var strData = document.getElementById("importData").value;
+     var strData = document.getElementById( "importData" ).value;
 
      // Try to import data
-     this.ImportDataFromCSV(strData);
+     this.ImportDataFromCSV( strData );
 
      // Refresh plot
      this.Plot();
@@ -228,10 +263,14 @@ function vml_DataGen() {
      this.ImportClose();
   };
 
+  /**
+  * Reset (remove all samples).
+  * @method Reset
+  */
   this.Reset = function() {
     // Remove all points
-    this.m_lClassA = [];
-    this.m_lClassB = [];
+    this.oClassA.Data = [];
+    this.oClassB.Data = [];
 
     // Refresh plot
     this.Plot();

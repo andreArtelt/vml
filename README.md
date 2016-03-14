@@ -38,4 +38,5 @@ Licensed under MIT license (see LICENSE.md).
  - jquery
  - mathjs
  - flot
+ - [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill)
  - (JavaScript documentation is generated using [YUIDoc](https://github.com/yui/yuidoc))
