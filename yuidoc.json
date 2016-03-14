@@ -1,0 +1,12 @@
+{
+    "name": "VML",
+    "description": "VML - Visualization of Machine Learning",
+    "version": "032016",
+    "url": "https://github.com/andreArtelt/vml",
+    "options": {
+        "exclude": "Libs",
+        "outdir": "vmljs_docs",
+        "paths": "vmljs/*.js",
+        "linkNatives": "true"
+    }
+}
