@@ -53,7 +53,7 @@ function vml_PerceptronUI() {
 
      $.plot( "#plotArea", lData, this.oDataGen.oPlotSettings );  // Draw plot
 
-     lData.splice( lData.length - 2, 2 ); // Remove current decision boundary!
+     lData.splice( lData.length - 1, 2 ); // Remove current decision boundary!
   };
 
   // Compute decision boundary
@@ -137,7 +137,7 @@ function vml_PerceptronUI() {
        // Run training iterations
        for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
 	  // Update weights
-          this.oAlgo.UpdateWeights( this.GetLearningRate() );
+          this.oAlgo.FitStep( this.GetLearningRate() );
        }
 
        // Recompute decision boundary

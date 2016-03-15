@@ -86,9 +86,9 @@ function vml_Perceptron() {
   */
   this.FitStep = function( fLambda ) {
      // Select random sample
-     var iIndex = Math.floor( Math.random() * this.m_lData.length );
-     var input = this.m_lData[ iIndex ];
-     var label = this.m_lLabels[ iIndex ];
+     var iIndex = Math.floor( Math.random() * this.lData.length );
+     var input = this.lData[ iIndex ];
+     var label = this.lLabels[ iIndex ];
 
      // Already classified correctly? 
      var predLabel = math.sign( math.multiply( math.transpose( this.lWeights ), input ) );

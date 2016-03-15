@@ -85,7 +85,7 @@ function vml_kmeans() {
       var iCurBest = 0;
       var fCurDist = -1;
 
-      for( var i=0; i != iNumCenter; i++ ) {
+      for( var i=0; i != this.iNumCenter; i++ ) {
           fDist = math.distance( this.lCenters[i], vecPoint );
           if( fDist < fCurDist || fCurDist == -1 ) {
              iCurBest = i;
