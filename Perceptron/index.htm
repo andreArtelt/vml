@@ -69,21 +69,22 @@
     </div>
   </div>
 
-  <dialog id="exportDlg">
-    <p>Export</p>
+  <dialog id="exportDlg" class="dialog">
+    <center><h3>Export</h3></center>
       <form method="dialog">
-        <textarea id="exportData" cols=50></textarea><br>
-        <button id="exportCloseBtn">Close</button>
-        <button id="exportDownloadBtn" style="visibility: hidden;">Download</button>
+        <textarea id="exportData" cols=50 rows=30></textarea><br>
+        <button id="exportDownloadBtn" class="dialogBtn">Download</button>
+        <button id="exportCloseBtn" class="dialogBtn">Close</button>
       </form>
   </dialog>
 
-  <dialog id="importDlg">
-    <p>Import</p>
+  <dialog id="importDlg" class="dialog">
+    <center><h3>Import</h3></center>
       <form method="dialog">
-        <textarea id="importData" cols=50>Paste your import here!</textarea><br>
-        <button id="importDataBtn">Import</button>
-        <button id="importCloseBtn">Close</button>
+        <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
+        <button id="importUploadBtn" class="dialogBtn">Upload</button>
+        <button id="importDataBtn" class="dialogBtn">Import</button>
+        <button id="importCloseBtn" class="dialogBtn">Close</button>
       </form>
   </dialog>
 

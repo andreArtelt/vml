@@ -22,3 +22,28 @@
   float: left;
   margin: 5px 20px;
 }
+
+.dialog {
+  border-style: solid #000;
+  border-width: 1px;
+  border-radius: 6px;
+}
+
+.dialogBtn {
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    background-color: white; 
+    border: 1px solid #000000;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.dialogBtn:hover {
+    background-color: #000000;
+    color: white;
+}
