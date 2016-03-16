@@ -16,6 +16,7 @@ The aim is to help students **getting a better understanding** about the behavio
  - Perceptron
  - Naive Bayes
  - K-Means clustering
+ - KNN (K nearest neighbors)
 
 ## Webdemo
 [Current release](https://andreartelt.github.io/vml)
