@@ -56,9 +56,10 @@ function vml_DataGen() {
      document.getElementById( "resetBtn").addEventListener( "click", this.Reset.bind( this ), false );
      document.getElementById( "btnExportToJSON" ).addEventListener( "click", this.ExportJSON.bind( this ), false );
      document.getElementById( "btnExportToCSV" ).addEventListener( "click", this.ExportCSV.bind( this ), false );
+     //document.getElementById( "exportDownloadBtn" ).addEventListener( "click", this.ExportDownloadBtn.bind( this ), false );
      document.getElementById( "btnImportFromJSON" ).addEventListener( "click", this.ImportJSON.bind( this ), false );
      document.getElementById( "btnImportFromCSV" ).addEventListener( "click", this.ImportCSV.bind( this ), false );
-     document.getElementById( "importCloseBtn" ).addEventListener( "click", this.ImportClose.bind( this ), false );;
+     document.getElementById( "importCloseBtn" ).addEventListener( "click", this.ImportClose.bind( this ), false );
 
      // Single datapoint type or multiple?
      if( bSingleDataType == true ) {
@@ -192,7 +193,10 @@ function vml_DataGen() {
 
   this.ExportJSON = function() {
      // Export data
-     document.getElementById( "exportData" ).value = this.ExportDataToJSON();
+     var strExportData = this.ExportDataToJSON();
+     document.getElementById( "exportData" ).value = strExportData
+     document.getElementById( "exportDownloadBtn" ).setAttribute( 'href', 'data:text/plain;charset=utf-8,' + encodeURIComponent( strExportData ) );
+     document.getElementById( "exportDownloadBtn" ).setAttribute( 'download', 'data.json' );
 
      // Open/Show dialog
      document.getElementById( "exportDlg" ).showModal();
@@ -200,7 +204,10 @@ function vml_DataGen() {
 
   this.ExportCSV = function() {
      // Export data
-     document.getElementById( "exportData" ).value = this.ExportDataToCSV();
+     var strExportData = this.ExportDataToCSV();
+     document.getElementById( "exportData" ).value = strExportData;
+     document.getElementById( "exportDownloadBtn" ).setAttribute( 'href', 'data:text/plain;charset=utf-8,' + encodeURIComponent( strExportData ) );
+     document.getElementById( "exportDownloadBtn" ).setAttribute( 'download', 'data.csv' );
 
      // Open/Show dialog
      document.getElementById( "exportDlg" ).showModal();

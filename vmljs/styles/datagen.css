@@ -47,3 +47,15 @@
     background-color: #000000;
     color: white;
 }
+
+.downloadBtn {
+    color: #000000;
+    text-decoration: none;
+}
+
+.downloadBtn:hover 
+{
+     color:#FFFFFF; 
+     text-decoration:none; 
+     cursor:pointer;  
+}
