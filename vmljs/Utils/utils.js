@@ -57,18 +57,18 @@ vml_utils.PolynomFeatureTransform = function(lData, iDim, iDegree) {
 };
 
 /*
-* phi(x)=(1, x, x^2, x^3, ...)(1 is the "hidden" bias)
+* Transform a given value using a polynomial. phi(x)=(1, x, x^2, x^3, ...)(1 is the "hidden" bias)
 * @method ComputePolynomPhi
 * @static
-* @param {}
+* @param {Double} x Value to be transformed. 
 * @param {Integer} Degree of polynomial.
-* @return
+* @return {Vector} Transformed value.
 */
-vml_utils.ComputePolynomPhi = function(x, iDegree) {
+vml_utils.ComputePolynomPhi = function( x, iDegree ) {
    var phi = [];
 
-   for(var j=0; j != iDegree + 1; j++) {
-      phi.push(Math.pow(x, j));
+   for( var j=0; j != iDegree + 1; j++ ) {
+      phi.push( Math.pow( x, j ) );
    }
 
    return phi;

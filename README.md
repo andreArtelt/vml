@@ -14,6 +14,7 @@ The aim is to help students **getting a better understanding** about the behavio
 ## Features (Algorithms)
  - Generating toy datasets
  - Perceptron
+ - Polynomial regression
  - Naive Bayes
  - K-Means clustering
  - KNN (K nearest neighbors)
@@ -25,7 +26,7 @@ The aim is to help students **getting a better understanding** about the behavio
 See [wiki](https://github.com/andreArtelt/vml/wiki).
 
 ## Technical stuff
-This project is realized using HTML, JavaScript and CSS.
+This project is realized using HTML5, JavaScript and CSS.
 
 ## Contribution
 Collaboration/Contributions/Pull-requests are highly welcome. Feel free to contact me.
