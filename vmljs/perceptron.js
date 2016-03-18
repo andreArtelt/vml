@@ -82,7 +82,7 @@ function vml_Perceptron() {
   /**
   * Update weights using the perceptron learing rule (perform one step of fitting/training).
   * @method FitStep
-  * @param {Double} fLambda Learning rate (if not specified it's set to 1).
+  * @param {Double} fLambda Learning rate
   */
   this.FitStep = function( fLambda ) {
      // Select random sample
@@ -99,4 +99,30 @@ function vml_Perceptron() {
      // Apply sgd (stochastic gradient descent)
      this.lWeights = math.add( this.lWeights, vml_math.MultiplyScalar( input, label * fLambda ) );
   }
+
+  /**
+  * Predict the class/label of a given point.
+  * @method
+  * @param {Vector} vecPoint Point to classify.
+  * @return {Integer} Predicted label/class (-1 or +1).
+  */
+  this.Predict = function( vecPoint ) {
+     return math.sign( math.multiply( math.transpose( this.lWeights ), vecPoint ) );
+  };
+
+  /**
+  * Compute the cost/error of the model on the current data set (using current parameters).
+  * @method ComputeError
+  * @return {Double} Total error/cost on the current params + data.
+  */
+  this.ComputeError = function() {
+     var fError = 0.0;
+
+     var weights_t = math.transpose( this.lWeights );
+     for( var i=0; i != this.lData.length; i++ ) {
+       fError += math.multiply( weights_t, this.lData[ i ] ) * this.lLabels[ i ];
+     }
+
+     return -1.0 * fError;
+  };
 }
