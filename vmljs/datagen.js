@@ -56,10 +56,10 @@ function vml_DataGen() {
      document.getElementById( "resetBtn").addEventListener( "click", this.Reset.bind( this ), false );
      document.getElementById( "btnExportToJSON" ).addEventListener( "click", this.ExportJSON.bind( this ), false );
      document.getElementById( "btnExportToCSV" ).addEventListener( "click", this.ExportCSV.bind( this ), false );
-     //document.getElementById( "exportDownloadBtn" ).addEventListener( "click", this.ExportDownloadBtn.bind( this ), false );
      document.getElementById( "btnImportFromJSON" ).addEventListener( "click", this.ImportJSON.bind( this ), false );
      document.getElementById( "btnImportFromCSV" ).addEventListener( "click", this.ImportCSV.bind( this ), false );
      document.getElementById( "importCloseBtn" ).addEventListener( "click", this.ImportClose.bind( this ), false );
+     document.getElementById( "importUpload" ).addEventListener( "change", this.ImportUpload.bind( this ), false );
 
      // Single datapoint type or multiple?
      if( bSingleDataType == true ) {
@@ -220,7 +220,7 @@ function vml_DataGen() {
 
   this.ImportJSON = function() {
      // Register eventhandler
-     this.funcImportEvent = this.ImportDataJsonBtn.bind(this);
+     this.funcImportEvent = this.ImportDataJsonBtn.bind( this );
      document.getElementById( "importDataBtn" ).addEventListener( "click", this.funcImportEvent, false );
 
      // Clean up
@@ -232,7 +232,7 @@ function vml_DataGen() {
 
   this.ImportCSV = function() {
      // Register eventhandler
-     this.funcImportEvent = this.ImportDataCsvBtn.bind(this);
+     this.funcImportEvent = this.ImportDataCsvBtn.bind( this );
      document.getElementById( "importDataBtn" ).addEventListener( "click", this.funcImportEvent, false );
 
      // Clean up
@@ -240,6 +240,21 @@ function vml_DataGen() {
 
      // Open/Show dialog
      document.getElementById( "importDlg" ).showModal();
+  };
+
+  this.ImportUpload = function( evt ) {
+     // Read file
+     if( evt.target.files.length != 1 ) {
+        return;
+     }
+     vml_FileHelper.ReadFileAsStringAsync( evt.target.files[0], function( strContent ) {
+       // Import
+       document.getElementById( "importData" ).value = strContent;
+       this.funcImportEvent();
+
+       // Close dialog
+       document.getElementById( "importDlg" ).close();
+     }.bind( this ) );
   };
 
   this.ImportDataJsonBtn = function() {

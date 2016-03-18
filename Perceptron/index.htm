@@ -14,6 +14,7 @@
   <script src="../Libs/flot/jquery.flot.js"></script>
   <script src="../Libs/flot/jquery.flot.symbol.js"></script>
   <script src="../Libs/mathjs/math.js"></script>
+  <script src="../vmljs/Utils/fileHelper.js"></script>
   <script src="../vmljs/datagen.js"></script>
   <script src="../vmljs/Utils/math.js"></script>
   <script src="../vmljs/Utils/utils.js"></script>
@@ -82,7 +83,7 @@
     <center><h3>Import</h3></center>
       <form method="dialog">
         <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
-        <button id="importUploadBtn" class="dialogBtn">Upload</button>
+        <div class="dialogBtn fileUploadBtn boxAlign">Upload<input id="importUpload" type="file" name="file" class="upload" /></div>
         <button id="importDataBtn" class="dialogBtn">Import</button>
         <button id="importCloseBtn" class="dialogBtn">Close</button>
       </form>
