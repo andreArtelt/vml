@@ -26,7 +26,7 @@ The aim is to help students **getting a better understanding** about the behavio
 See [wiki](https://github.com/andreArtelt/vml/wiki).
 
 ## Technical stuff
-This project is realized using HTML5, JavaScript and CSS.
+This project is realized using HTML5, JavaScript and CSS3.
 
 ## Contribution
 Collaboration/Contributions/Pull-requests are highly welcome. Feel free to contact me.
@@ -38,7 +38,8 @@ Licensed under MIT license (see LICENSE.md).
 
 ## Third party components
  - jquery
- - mathjs
- - flot
+ - [mathjs](https://github.com/josdejong/mathjs)
+ - [flot](https://github.com/flot/flot)
+ - [d3js](https://github.com/mbostock/d3)
  - [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill)
  - (JavaScript documentation is generated using [YUIDoc](https://github.com/yui/yuidoc))
