@@ -26,7 +26,7 @@ function vml_NaiveBayesUI() {
   this.oAlgo = undefined;  // NaiveBayes classifier
 
   this.lGrid = [];
-  this.lDecBound = [];
+  this.lHeatData = [];
 
   // Init
   this.Init = function() {
@@ -41,36 +41,24 @@ function vml_NaiveBayesUI() {
      this.oAlgo = new vml_NaiveBayes();
 
      // Init grid (needed for computing the decision boundary)
-     this.lGrid = vml_utils.BuildGrid( -5, 5, -5, 5, 0.04 );
+     this.lGrid = vml_utils.BuildGridWithoutBias( -5, 5, -5, 5, 0.05 );
   };
 
   // Plot
   this.Plot = function() {
-     var lData = this.oDataGen.lData;  // Extend plotting data from dataGen
-     lData.push( {label: "Decision boundary", data: this.lDecBound, lines: {show: true}} );
-     
-     $.plot( "#plotArea", lData, this.oDataGen.oPlotSettings );  // Draw plot
-
-     lData.splice( lData.length - 1, 1 ); // Remove current decision boundary!
+    var oPlotHelper = new vml_PlotHelper();
+    oPlotHelper.CreateHeatmapScatterPlot( this.lHeatData, [ { lData: this.oDataGen.oClassA.Data, name: "Class A", color: "red", size: 3.5 }, { lData: this.oDataGen.oClassB.Data, name: "Class B", color: "black", size: 3.5 } ], "plotArea", 0.05 );
   };
 
   // Compute the decision boundary of the classifier
   this.ComputeDecisionBoundary = function() {
-      // Clear decision boundary
-      this.lDecBound = [];
-
-      // Recompute decision boundary
-      // => Find all values where p(c1|x) = 0.5 (for two classes)
+      this.lHeatData = [];
       for( var i=0; i != this.lGrid.length; i++ ) {
-        var myPoint = this.lGrid[i];
+        var vecPoint = this.lGrid[ i ];
+        var fLabel = this.oAlgo.Predict( vecPoint )[0];
 
-        result = this.oAlgo.Predict( myPoint ); 
-        result = math.round( result, 1 );  // Round to one decimal point
-
-        if( result[0] == 0.5 ) {  // Unsure prediction?
-          this.lDecBound.push( [myPoint[0], myPoint[1]] );
-        }
-      }
+        this.lHeatData.push( vecPoint.concat( [ fLabel ] ) );
+    }
   };
 
   // Fit/"Train" the classifier
