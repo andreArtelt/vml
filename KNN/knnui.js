@@ -47,7 +47,8 @@ function vml_KnnUi() {
   };
 
   this.PlotDecisionBoundary = function() {
-     // TODO
+    var oPlotHelper = new vml_PlotHelper();
+    oPlotHelper.CreateHeatmapScatterPlot( this.lDecBound, [ { lData: this.oDataGen.oClassA.Data, name: "Class A", color: "red", size: 3.5 }, { lData: this.oDataGen.oClassB.Data, name: "Class B", color: "black", size: 3.5 } ], "plotArea", 0.05 );
   };
 
   this.Fit = function() {
@@ -64,8 +65,8 @@ function vml_KnnUi() {
      // Multiple classes are used
      this.oDataGen.bSingleDataType = false;
 
-     // Init grid
-     this.lGrid = vml_utils.BuildGridWithoutBias( -5, 5, -5, 5 );
+     // Init grid (needed for computing the decision boundary)
+     this.lGrid = vml_utils.BuildGridWithoutBias( -5, 5, -5, 5, 0.05 );
 
      // Preprocess the data
      var lRawDataA = this.oDataGen.oClassA.Data;
@@ -120,16 +121,15 @@ function vml_KnnUi() {
   };
 
   this.ComputeDecisionBoundary = function() {
-     this.lDecBound = {x: [], y: [], z: []};  // Reset current boundary
+     this.lDecBound = [];  // Reset current boundary
      
      // Compute predicited output for each point
-     for( var i=0; i != this.lGrid.length; i++ ) {
-        var x = this.lGrid[ i ];
+      for( var i=0; i != this.lGrid.length; i++ ) {
+        var vecPoint = this.lGrid[ i ];
+        var fLabel = this.oAlgo.PredictClassification( vecPoint )[0];
 
-        this.lDecBound.x.push( x[0] );
-        this.lDecBound.y.push( x[1] );
-        this.lDecBound.z.push( this.oAlgo.PredictClassification( x ) );
-     };
+        this.lDecBound.push( vecPoint.concat( [ fLabel ] ) );
+    }
   };
 
   this.ComputeRegressionCurve = function() {

@@ -110,7 +110,7 @@ function vml_knn() {
   * Predict the label/class of a given point.
   * @method PredictClassification
   * @param {Vector} vecPoint Point to label (input of model).
-  * @return {Double} Predicted class label (-1 or 1)
+  * @return {[Double]} Predicted class labels (probabilities) for each class.
   */
   this.PredictClassification = function( vecPoint ) {
     // Find k nearest neighbors
@@ -122,10 +122,10 @@ function vml_knn() {
       pred += lKnn[ i ].t;
     }
     if( -1 + pred < 0 ) {
-      pred = -1;
+      pred = [ 1, 0 ];
     }
     else {
-      pred = 1;
+      pred = [ 0, 1 ];
     }
 
     return pred;
