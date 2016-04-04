@@ -1,7 +1,7 @@
 {
     "name": "VML",
     "description": "VML - Visualization of Machine Learning",
-    "version": "0302016",
+    "version": "0402016",
     "url": "https://github.com/andreArtelt/vml",
     "options": {
         "exclude": "Libs",
