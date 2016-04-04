@@ -121,8 +121,11 @@ function vml_knn() {
     for( var i=0; i != lKnn.length; i++ ) {
       pred += lKnn[ i ].t;
     }
-    if( -1 + pred < 0 ) {
+    if( pred < 0 ) {
       pred = [ 1, 0 ];
+    }
+    else if( pred == 0 ) {
+      pred = [ 0.5, 0.5 ];
     }
     else {
       pred = [ 0, 1 ];
