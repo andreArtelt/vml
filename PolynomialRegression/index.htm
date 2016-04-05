@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+  <link rel="stylesheet" type="text/css" href="../Libs/dialog-polyfill/dialog-polyfill.css">
+  <link rel="stylesheet" type="text/css" href="../vmljs/styles/datagen.css">
+  <link rel="stylesheet" type="text/css" href="../vmljs/styles/buttons.css">
+  <link rel="stylesheet" type="text/css" href="../vmljs/styles/footer.css">
+  <link rel="stylesheet" type="text/css" href="../vmljs/styles/tooltips.css">
+
+  <script src="../Libs/dialog-polyfill/dialog-polyfill.js"></script>
+  <script src="../Libs/flot/jquery.js"></script>
+  <script src="../Libs/flot/jquery.flot.js"></script>
+  <script src="../Libs/flot/jquery.flot.symbol.js"></script>
+  <script src="../vmljs/Utils/fileHelper.js"></script>
+  <script src="../vmljs/datagen.js"></script>
+  <script src="../Libs/mathjs/math.js"></script>
+  <script src="../vmljs/Utils/utils.js"></script>
+  <script src="../vmljs/Utils/math.js"></script>
+  <script src="polynomialRegUi.js"></script>
+  <script src="../vmljs/ploynomialRegression.js"></script>
+
+  <title>VML - Polynomial regression</title>
+</head>
+<body>
+  <center><h1>Polynomial regression</h1></center>
+
+  <div id="plotArea"></div>
+  
+  <div class="boxAlign">
+  <div class="groupBox">
+    <div id="actions">
+      <b>Actions:</b><br>
+      <button id="resetBtn" class="button">Reset</button><br>
+      <div id="exportBtn" class="dropdown dropDownBtn">Export</button>
+       <div class="dropdown-content">
+         <button id="btnExportToJSON" class="button">JSON</button>
+         <button id="btnExportToCSV" class="button">CSV</button>
+       </div>
+      </div>
+      <div id="importBtn" class="dropdown dropDownBtn">Import</button>
+       <div class="dropdown-content">
+         <button id="btnImportFromJSON" class="button">JSON</button>
+         <button id="btnImportFromCSV" class="button">CSV</button>
+       </div>
+      </div>
+    </div> 
+    <br><br>
+    <div id="dataGenType">
+      <div class="tooltip"><b>Click type:</b>
+      <span class="tooltiptext">Specify what type of point a click in the plot will generate</span>
+      </div><br>
+      <input type="radio" name="dataClass" id="genClassA" checked>Class A</input>
+    </div>
+    </div>
+    <br><br>
+    <div id="polynomRegParam" class="groupBox">
+      <b>Regression:</b><br>
+      <div class="tooltip">Degree of polynom: <input type="number" id="polynomDegree" value="1"></input>
+      <span class="tooltiptext">Complexity of the model</span></div><br>
+      <div class="tooltip">Regularization (L2): <input type="number" step="any" id="regulRate" value="0.0"></input>
+      <span class="tooltiptext">Strength of L2 regularization</span></div><br>
+      <div class="tooltip">Learning rate: <input type="number" step="any" id="learningRate" value="0.001"></input>
+      <span class="tooltiptext">Learing-rate/step-size in SGD</span></div><br>
+      <div class="tooltip">Training iterations: <input type="number" id="numTrainItr" value="10"></input>
+      <span class="tooltiptext">Number of SGD iterations</span></div><br>
+      <div class="tooltip">Animation: <input type="checkbox" id="showAnimation"></input><span class="tooltiptext">Animate training</span></div>
+      <br><br>
+      <button id="resetModel" class="button">Reset weights</button><br>
+      <div class="tooltip"><button id="fitBtn" class="button">Fit</button><span class="tooltiptext">Fit the model using Least Squares</span></div><br>
+      <button id="trainBtn" class="button">Train</button>
+      <button id="stopBtn" class="button">Stop</button>
+    </div>
+  </div>
+
+  <dialog id="exportDlg" class="dialog">
+    <center><h3>Export</h3></center>
+      <form method="dialog">
+        <textarea id="exportData" cols=50 rows=30></textarea><br>
+        <a id="exportDownloadBtn" class="dialogBtn downloadBtn" href="">Download</a>
+        <button id="exportCloseBtn" class="dialogBtn">Close</button>
+      </form>
+  </dialog>
+
+  <dialog id="importDlg" class="dialog">
+    <center><h3>Import</h3></center>
+      <form method="dialog">
+        <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
+        <div class="dialogBtn fileUploadBtn boxAlign">Upload<input id="importUpload" type="file" name="file" class="upload" /></div>
+        <button id="importDataBtn" class="dialogBtn">Import</button>
+        <button id="importCloseBtn" class="dialogBtn">Close</button>
+      </form>
+  </dialog>
+
+  <br><br>
+  <div class="footer">
+   <br><br><br><br>
+    VML - Visualization of Machine Learning<br>
+    <a href="https://github.com/andreArtelt/vml">Project on GitHub</a><br>
+    Copyright &copy; 2016-2016 André Artelt
+  </div>
+
+  <script type="text/javascript">
+    var oLogic = new vml_PolynomialRegressionUI();
+    oLogic.Init();
+  </script>
+<body>
+</html>

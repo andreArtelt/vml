@@ -1,0 +1,1 @@
+function vml_FileHelper(){}vml_FileHelper.ReadFileAsStringAsync=function(c,b){var a=new FileReader();a.onload=function(d){b(d.target.result)};a.readAsText(c)};vml_FileHelper.ReadFileAsArrayBufferAsync=function(c,b){var a=new FileReader();a.onloaded=function(d){b(d.target.result)};a.readAsArrayBuffer(c)};

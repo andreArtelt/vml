@@ -1,0 +1,1 @@
+function vml_GaussDist(){this.fMean=0;this.fSigma=0;this.Fit=function(a){this.fMean=math.sum(a)*(1/a.length);for(var b=0;b!=a.length;b++){this.fSigma+=Math.pow(a[b]-this.fMean,2)}this.fSigma*=1/(a.length-1)};this.Prob=function(a){return(1/math.sqrt(2*math.pi*this.fSigma)*math.exp(-1*(Math.pow(a-this.fMean,2)/this.fSigma)))}};
