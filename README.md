@@ -42,4 +42,4 @@ Licensed under MIT license (see LICENSE.md).
  - [flot](https://github.com/flot/flot)
  - [d3js](https://github.com/mbostock/d3)
  - [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill)
- - (JavaScript documentation is generated using [YUIDoc](https://github.com/yui/yuidoc))
+ - [jsdoc](https://github.com/jsdoc3/jsdoc

@@ -1,0 +1,21 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "source": {
+        "include": ["vmljs/"],
+        "includePattern": ".+\\.js(doc)?$"
+    },
+    "plugins": [],
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    },
+    "opts": {
+        "template": "templates/default",
+        "encoding": "utf8",
+        "destination": "vmljs_docs/",
+        "recurve": true
+    }
+}
