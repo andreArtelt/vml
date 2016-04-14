@@ -43,6 +43,11 @@ function vml_GaussMixture() {
      this.iDim = this.lData[0].length;
      this.lDim = vml_utils.FillList( this.iDim, this.iDim );
 
+     var bInit = false;
+     while( bInit == false ) {
+     bInit = true;
+
+     this.lDistParams = [];
      for( var i=0; i != iNumDist; i++ ) {
        this.lDistParams.push( { alpha: 1.0 / iNumDist, mean: vml_utils.PickRandom( this.lData ), cov: math.zeros( this.iDim, this.iDim ) } );
      }
@@ -71,6 +76,11 @@ function vml_GaussMixture() {
      for( var i=0; i != iNumDist; i++ ) {
         this.lDistParams[ i ].mean = vml_math.MultiplyScalar( this.lDistParams[ i ].mean, 1.0 / lNumData[ i ] );
         this.lDistParams[ i ].cov = vml_math.MultiplyScalar( this.lDistParams[ i ].cov, 1.0 / lNumData[ i ] );
+
+        if( math.det( this.lDistParams[ i ].cov ) == 0 ) {
+          bInit = false;
+        }
+     }
      }
   };
 
@@ -134,7 +144,7 @@ function vml_GaussMixture() {
   * @return {Double} Loglikelihood.
   */
   this.LogLikelihood = function() {
-     fResult = 0.0;
+     var fResult = 0.0;
 
      for( var i=0; i != this.lData.length; i++ ) {
        fResult += math.log( this.Predict( this.lData[ i ] ) );
@@ -144,9 +154,9 @@ function vml_GaussMixture() {
   };
 
   this.ComputeAlphaRes = function( iIndex ) {
-     lResult = [];
+     var lResult = [];
 
-     oDistParams = this.lDistParams[ iIndex ];
+     var oDistParams = this.lDistParams[ iIndex ];
 
      for( var i = 0; i != this.lData.length; i++ ) {
         var fVal = oDistParams.alpha * this.GaussDistMultiDim( this.lData[ i ], oDistParams.mean, oDistParams.cov );
@@ -157,7 +167,7 @@ function vml_GaussMixture() {
             continue;
           }
 
-          oDistParams2 = this.lDistParams[ j ];
+          var oDistParams2 = this.lDistParams[ j ];
           fNorm += oDistParams2.alpha * this.GaussDistMultiDim( this.lData[ i ], oDistParams2.mean, oDistParams2.cov );
         }
 
