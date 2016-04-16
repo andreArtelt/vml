@@ -31,6 +31,7 @@ function vml_PolynomialRegression() {
   this.lLabels = [];
   this.BigPhi = null;
   this.iDegree = 0;
+  this.bReady = false;
 
   /**
   * Initialize the model.
@@ -45,6 +46,17 @@ function vml_PolynomialRegression() {
 
      // Fill weight matrix (including bias) with random values
      this.lWeights = math.random( [ this.iDegree + 1 ], -5, 5 );
+
+     this.bReady = true;
+  };
+
+  /**
+  * Checks if the model has been initialized or not.
+  * @method IsReady
+  * @return {boolean} true if it has been initialized, false otherwise.
+  */
+  this.IsReady = function() {
+    return this.bReady;
   };
 
   /**
@@ -85,7 +97,7 @@ function vml_PolynomialRegression() {
   * @method ComputeRSS
   * @return {Double} RSS of current data and weights.
   */
-  this.ComputeRSS = function() {
+  this.ComputeError = function() {
      var fResult = 0.0;
 
      var weights_t = math.transpose( this.lWeights );  // Transpose weight matrix
@@ -95,6 +107,7 @@ function vml_PolynomialRegression() {
 
        fResult += Math.pow( label - math.multiply( weights_t, input ), 2 );
      }
+     fResult *= 0.5;
 
      return fResult;
   };
@@ -137,8 +150,8 @@ function vml_PolynomialRegression() {
        var input = this.lData[ i ];
        var label = this.lLabels[ i ];
 	     
-       var grad = vml_math.MultiplyScalar( input, label - math.multiply( weights_t, input ) );
-     
+       var grad = vml_math.MultiplyScalar( input, label - math.multiply( weights_t, input ) );    
+
        if( myGrad == undefined ) {
          myGrad = grad
        }
@@ -147,7 +160,7 @@ function vml_PolynomialRegression() {
        }
      }
      myGrad = vml_math.MultiplyScalar( myGrad, -1.0 / this.lData.length );
-     
+
      var gradCost = math.add( myGrad, reg );  // Cost: RSS + Reg
      this.lWeights = math.subtract( this.lWeights, vml_math.MultiplyScalar( gradCost, fLambda ) );
   };

@@ -28,6 +28,7 @@
 function vml_DecisionTree() {
   this.iNumClasses = 0;
   this.iNumFeature = 0;
+  this.bReady = false;
   this.oTreeRoot = undefined;  // Root node of decision tree.
 
   /**
@@ -64,6 +65,16 @@ function vml_DecisionTree() {
 
      // Build tree
      this.oTreeRoot = this.buildTree( lData, lLabels, iDepth );
+     this.bReady = true;
+  };
+
+  /**
+  * Checks if the model has been initialized or not.
+  * @method IsReady
+  * @return {boolean} true if it has been initialized, false otherwise.
+  */
+  this.IsReady = function() {
+    return this.bReady;
   };
 
   /**

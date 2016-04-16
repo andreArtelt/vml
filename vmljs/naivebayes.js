@@ -26,6 +26,8 @@
 * @constructor
 */
 function vml_NaiveBayes() {
+  this.bReady = false;
+
   // Probability distributions for all features of both classes
   this.ProbDistA = [];
   this.ProbDistB = [];
@@ -69,6 +71,17 @@ function vml_NaiveBayes() {
      var distX_B = new vml_GaussDist(); var distY_B = new vml_GaussDist();
      distX_B.Fit( lFeatureX_B ); distY_B.Fit( lFeatureY_B );
      this.lProbDistB.push( distX_B ); this.lProbDistB.push( distY_B );
+
+     this.bReady = true;
+  };
+
+  /**
+  * Checks if the model has been initialized or not.
+  * @method IsReady
+  * @return {boolean} true if it has been initialized, false otherwise.
+  */
+  this.IsReady = function() {
+    return this.bReady;
   };
 
   /**

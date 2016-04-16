@@ -32,6 +32,7 @@ function vml_SoftmaxRegression() {
   this.iNumClasses = 0;
   this.lParams = [];
   this.iDim = 0;
+  this.bReady = false;
 
   /**
   * Initialize model.
@@ -48,6 +49,17 @@ function vml_SoftmaxRegression() {
     this.iDim = iDim;
 
     this.ResetWeights();
+
+    this.bReady = true;
+  };
+
+  /**
+  * Checks if the model has been initialized or not.
+  * @method IsReady
+  * @return {boolean} true if it has been initialized, false otherwise.
+  */
+  this.IsReady = function() {
+    return this.bReady;
   };
 
   /**
@@ -123,8 +135,6 @@ function vml_SoftmaxRegression() {
       fCost += math.log( pred[ t ] );
     }
 
-    fCost *= -1.0 / this.lData.length;
-
     return fCost;
   };
 
@@ -157,5 +167,18 @@ function vml_SoftmaxRegression() {
     }
 
     return lResult;
+  };
+
+  this.Evaluate = function() {
+    var oResult = [];
+
+    for( var i=0; i != this.lData.length; i++ ) {
+       var pred = this.Predict( this.lData[ i ] );
+       var label = this.lLabels[ i ];
+
+       oResult.push( {predT: pred, t: label} );
+    }
+
+    return oResult;
   };
 }

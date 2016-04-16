@@ -30,6 +30,7 @@ function vml_SVM() {
   this.lSuppVecs = [];
   this.lSuppVecsLabels = [];
   this.lSuppVecsAlphas = [];
+  this.bReady = false;
 
   this.lData = [];
   this.lLabels = [];
@@ -41,6 +42,17 @@ function vml_SVM() {
      this.iC = iC;
 
      this.InitAlphas();
+
+     this.bReady = true;
+  };
+
+  /**
+  * Checks if the model has been initialized or not.
+  * @method IsReady
+  * @return {boolean} true if it has been initialized, false otherwise.
+  */
+  this.IsReady = function() {
+    return this.bReady;
   };
 
   this.InitAlphas = function() {
@@ -64,6 +76,27 @@ function vml_SVM() {
 
   /**
   *
+  *
+  */
+  this.ComputeError = function() {
+     var fError = 0.0;
+
+     var fAlphas = 0.0;
+     for( var i=0; i != this.lData.length; i++ ) {
+       fAlphas += this.lAlphas[ i ];
+
+       for( var j=0; j != this.lData.length; j++ ) {
+         fError += this.lAlphas[ i ] * this.lAlphas[ j ] * this.lLabels[ i ] * this.lLabels[ j ] * this.kernel( this.lData[ i ], this.lData[ j ] );
+       }
+     }
+     fError *= -0.5;
+     fError += fAlphas;
+
+     return fError;
+  };
+
+  /**
+  *
   */
   this.Predict = function(a_point) {
      // Make sure support vectors are available
@@ -76,7 +109,15 @@ function vml_SVM() {
         fSum += this.lSuppVecsLabels[ i ] * this.lSuppVecsAlphas[ i ] * this.kernel(this.lSuppVecs[ i ], a_point );
      }
 
-     return [math.sign(fSum), fSum];
+     if( fSum < 0 ) {
+       return [ 0.0, 1.0 ];
+     }
+     else if( fSum > 0 ) {
+       return [ 1.0, 0.0 ];
+     }
+     else {
+       return [ 0.5, 0.5 ];
+     }
   };
 
   /**

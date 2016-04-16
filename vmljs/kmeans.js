@@ -25,7 +25,7 @@
 * @class vml_kmeans
 * @constructor 
 */
-function vml_kmeans() {
+function vml_KMeans() {
   // Vars
   this.iNumCenter = 1;
   this.lCenters = [];
@@ -33,6 +33,7 @@ function vml_kmeans() {
   this.lLabels = [];
   this.lTempMean = [];
   this.lTempLabelCount = [];
+  this.bReady = false;
 
   /**
   * Initialization.
@@ -52,6 +53,17 @@ function vml_kmeans() {
 
         this.lCenters.push( math.random( [ this.iDim ], -5, 5 ) );
      }
+
+     this.bReady = true;
+  };
+
+  /**
+  * Checks if the model has been initialized or not.
+  * @method IsReady
+  * @return {boolean} true if it has been initialized, false otherwise.
+  */
+  this.IsReady = function() {
+    return this.bReady;
   };
 
   /**

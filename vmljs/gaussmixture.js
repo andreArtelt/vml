@@ -31,6 +31,7 @@ function vml_GaussMixture() {
   this.lData = [];  
   this.iDim = 1;
   this.lDim = [];
+  this.bReady = false;
 
   /**
   * Initialization.
@@ -45,43 +46,54 @@ function vml_GaussMixture() {
 
      var bInit = false;
      while( bInit == false ) {
-     bInit = true;
+       bInit = true;
 
-     this.lDistParams = [];
-     for( var i=0; i != iNumDist; i++ ) {
-       this.lDistParams.push( { alpha: 1.0 / iNumDist, mean: vml_utils.PickRandom( this.lData ), cov: math.zeros( this.iDim, this.iDim ) } );
-     }
-
-     // Iterate over all data points and estimate the convariance matrix of each distribution (assuming "nearest center gaussian distribution")
-     var lNumData = vml_utils.FillList( iNumDist, 0 );
-     for( var i=0; i != this.lData.length; i++ ) {
-       // Find nearest center
-       var j=0;
-       var fBestDist = math.distance( this.lData[ i ], this.lDistParams[ j ].mean );
-       for( var k=1; k != iNumDist; k++ ) {
-         var fDist = math.distance( this.lData[ i ], this.lDistParams[ k ].mean );
-
-         if( fBestDist > fDist ) {
-           j = k;
-           fBestDist = fDist;
-         }
+       this.lDistParams = [];
+       for( var i=0; i != iNumDist; i++ ) {
+         this.lDistParams.push( { alpha: 1.0 / iNumDist, mean: vml_utils.PickRandom( this.lData ), cov: math.zeros( this.iDim, this.iDim ) } );
        }
 
-       // Upate estimation of covariance matrix
-       var vecX = math.matrix( math.subtract( math.matrix( [ this.lData[ i ] ] ), math.matrix( [ this.lDistParams[ j ].mean ] ) ) );
-       var matCov = vml_math.OuterEx( vecX, vecX, this.iDim, this.iDim );
-       this.lDistParams[ j ].cov = math.add( this.lDistParams[ j ].cov, matCov );
-       lNumData[ j ]++;
-     }
-     for( var i=0; i != iNumDist; i++ ) {
-        this.lDistParams[ i ].mean = vml_math.MultiplyScalar( this.lDistParams[ i ].mean, 1.0 / lNumData[ i ] );
-        this.lDistParams[ i ].cov = vml_math.MultiplyScalar( this.lDistParams[ i ].cov, 1.0 / lNumData[ i ] );
+       // Iterate over all data points and estimate the convariance matrix of each distribution (assuming "nearest center gaussian distribution")
+       var lNumData = vml_utils.FillList( iNumDist, 0 );
+       for( var i=0; i != this.lData.length; i++ ) {
+         // Find nearest center
+         var j=0;
+         var fBestDist = math.distance( this.lData[ i ], this.lDistParams[ j ].mean );
+         for( var k=1; k != iNumDist; k++ ) {
+           var fDist = math.distance( this.lData[ i ], this.lDistParams[ k ].mean );
 
-        if( math.det( this.lDistParams[ i ].cov ) == 0 ) {
-          bInit = false;
-        }
+           if( fBestDist > fDist ) {
+             j = k;
+             fBestDist = fDist;
+           }
+         }
+
+         // Upate estimation of covariance matrix
+         var vecX = math.matrix( math.subtract( math.matrix( [ this.lData[ i ] ] ), math.matrix( [ this.lDistParams[ j ].mean ] ) ) );
+         var matCov = vml_math.OuterEx( vecX, vecX, this.iDim, this.iDim );
+         this.lDistParams[ j ].cov = math.add( this.lDistParams[ j ].cov, matCov );
+         lNumData[ j ]++;
+       }
+       for( var i=0; i != iNumDist; i++ ) {
+          this.lDistParams[ i ].mean = vml_math.MultiplyScalar( this.lDistParams[ i ].mean, 1.0 / lNumData[ i ] );
+          this.lDistParams[ i ].cov = vml_math.MultiplyScalar( this.lDistParams[ i ].cov, 1.0 / lNumData[ i ] );
+
+          if( math.det( this.lDistParams[ i ].cov ) == 0 ) {
+            bInit = false;
+          }
+       }
      }
-     }
+
+     this.bReady = true;
+  };
+
+  /**
+  * Checks if the model has been initialized or not.
+  * @method IsReady
+  * @return {boolean} true if it has been initialized, false otherwise.
+  */
+  this.IsReady = function() {
+    return this.bReady;
   };
 
   /**

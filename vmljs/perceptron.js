@@ -26,9 +26,10 @@
 * @constructor
 */
 function vml_Perceptron() {
-  this.lWeights = undefined;   // Perceptron params
+  this.lWeights = undefined;
   this.lData = [];
   this.lLabels = [];
+  this.bReady = false;
 
   /**
   * Inititalization.
@@ -41,7 +42,18 @@ function vml_Perceptron() {
     this.convertData( lClassA, lClassB );
 
     // Init params
-    this.InitWeightsRand();   
+    this.InitWeightsRand(); 
+
+    this.bReady = true;  
+  };
+
+  /**
+  * Checks if the model has been initialized or not.
+  * @method IsReady
+  * @return {boolean} true if it has been initialized, false otherwise.
+  */
+  this.IsReady = function() {
+    return this.bReady;
   };
 
   /**
@@ -107,7 +119,17 @@ function vml_Perceptron() {
   * @return {Integer} Predicted label/class (-1 or +1).
   */
   this.Predict = function( vecPoint ) {
-     return math.sign( math.multiply( math.transpose( this.lWeights ), vecPoint ) );
+     var fSum = math.multiply( math.transpose( this.lWeights ), vecPoint );
+
+     if( fSum < 0 ) {
+       return [ 0.0, 1.0 ];
+     }
+     else if( fSum > 0 ) {
+       return [ 1.0, 0.0 ];
+     }
+     else {
+       return [ 0.5, 0.5 ];
+     }
   };
 
   /**
