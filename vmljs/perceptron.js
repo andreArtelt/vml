@@ -97,6 +97,10 @@ function vml_Perceptron() {
   * @param {Double} fLambda Learning rate
   */
   this.FitStep = function( fLambda ) {
+     if( typeof( fLambda ) != "number" ) {
+       throw "fLambda has to be a number"
+     }
+
      // Select random sample
      var iIndex = Math.floor( Math.random() * this.lData.length );
      var input = this.lData[ iIndex ];
@@ -119,6 +123,10 @@ function vml_Perceptron() {
   * @return {Integer} Predicted label/class (-1 or +1).
   */
   this.Predict = function( vecPoint ) {
+     if( vecPoint instanceof Array == false ) {
+       throw "vecPoint has to be a vector (Array)"
+     }
+
      var fSum = math.multiply( math.transpose( this.lWeights ), vecPoint );
 
      if( fSum < 0 ) {

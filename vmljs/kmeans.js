@@ -42,6 +42,10 @@ function vml_KMeans() {
   * @param {Integer} iNumCluster Number of clusters the algorithm should compute.
   */
   this.Init = function( lData, iNumCluster ) {
+     if( typeof( iNumCluster ) != "number" ) {
+       throw "iNumCluster has to be a number"
+     }
+
      this.lCenters = [];
      this.iNumCenter = iNumCluster;
      this.lData = lData;
@@ -94,6 +98,10 @@ function vml_KMeans() {
   * @param {Vector} vecPoint Point to be assigned to a cluster.
   */
   this.Predict = function( vecPoint ) {
+      if( vecPoint instanceof Array == false ) {
+        throw "vecPoint has to be a vector (Array)"
+      }
+
       var iCurBest = 0;
       var fCurDist = -1;
 

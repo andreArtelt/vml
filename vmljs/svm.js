@@ -37,6 +37,13 @@ function vml_SVM() {
 
   // Init
   this.Init = function( lData, lLabels, iC ) {
+     if( lLabels instanceof Array == false ) {
+       throw "lLabels has to be a vector (Array)"
+     }
+     if( typeof( iC ) != "number" ) {
+       throw "iC has to be number"
+     }
+
      this.lData = lData;
      this.lLabels = lLabels;
      this.iC = iC;
@@ -98,7 +105,11 @@ function vml_SVM() {
   /**
   *
   */
-  this.Predict = function(a_point) {
+  this.Predict = function( vecPoint ) {
+     if( vecPoint instanceof Array == false ) {
+       throw "vecPoint has to be a vector (Array)"
+     }
+
      // Make sure support vectors are available
      this.GetSupportVectors();
 
@@ -106,7 +117,7 @@ function vml_SVM() {
 
      // Only the "support vectors" are needed (because the alphas of all other points are zero)
      for( var i=0; i != this.lSuppVecs.length; i++ ) {
-        fSum += this.lSuppVecsLabels[ i ] * this.lSuppVecsAlphas[ i ] * this.kernel(this.lSuppVecs[ i ], a_point );
+        fSum += this.lSuppVecsLabels[ i ] * this.lSuppVecsAlphas[ i ] * this.kernel( this.lSuppVecs[ i ], vecPoint );
      }
 
      if( fSum < 0 ) {

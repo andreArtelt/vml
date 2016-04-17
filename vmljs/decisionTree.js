@@ -60,6 +60,19 @@ function vml_DecisionTree() {
   * @param {Integer} Number of different labels/classes.
   */
   this.Fit = function( lData, lLabels, iDepth, iNumClasses, iNumFeature ) {
+     if( lLabels instanceof Array == false ) {
+       throw "lLabels has to be a vector (Array)"
+     }
+     if( typeof( iDepth ) != "number" ) {
+       throw "iDepth has to be a number"
+     }
+     if( typeof( iNumClasses ) != "number" ) {
+       throw "iNumClass has to be a number"
+     }
+     if( typeof( iNumFeature ) != "number" ) {
+       throw "iNumFeature has to be a number"
+     }
+
      this.iNumClasses = iNumClasses;
      this.iNumFeature = iNumFeature;
 
@@ -84,6 +97,10 @@ function vml_DecisionTree() {
   * @return {Array} Array of predictions (probabilities) for each class.
   */
   this.Predict = function( vecPoint ) {
+     if( vecPoint instanceof Array  == false ) {
+       throw "vecPoint has to be a vector (Array)"
+     }
+
      // Check if tree has been initialized
      if( this.oTreeRoot == undefined ) {
        throw "Tree has no been initialized";

@@ -91,6 +91,10 @@ function vml_NaiveBayes() {
   * @return Score/Probability for each class label (a list with two values).
   */
   this.Predict = function( vecPoint ) {
+     if( vecPoint instanceof Array == false ) {
+       throw "vecPoint has to be a vector (Array)"
+     }
+
      var fA = this.fProbA;
      var fB = this.fProbB;
 

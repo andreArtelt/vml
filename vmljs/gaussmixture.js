@@ -40,6 +40,10 @@ function vml_GaussMixture() {
   * @param {Integer} Number of gaussian distributions used in mixture.
   */
   this.Init = function( lData, iNumDist ) {
+     if( typeof( iNumDist ) != "number" ) {
+       throw "iNumDist has to be a number"
+     }
+
      this.lData = lData;
      this.iDim = this.lData[0].length;
      this.lDim = vml_utils.FillList( this.iDim, this.iDim );
@@ -141,6 +145,10 @@ function vml_GaussMixture() {
   * @return {Double} Probability of the given point under the gaussian mixture distribution.
   */
   this.Predict = function( vecPoint ) {
+     if( vecPoint instanceof Array == false ) {
+       throw "vecPoint has to be a vector (Array)"
+     }
+
      var fResult = 0.0;
      for( var i = 0; i != this.lDistParams.length; i++ ) {
        var oDistParams = this.lDistParams[ i ];

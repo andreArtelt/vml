@@ -43,6 +43,16 @@ function vml_SoftmaxRegression() {
   * @param {Integer} iNumClasses Number of classes/labels.
   */
   this.Init = function( lData, lLabels, iDim, iNumClasses ) {
+    if( lLabels instanceof Array == false ) {
+      throw "lLabels has to be a vector (Array)"
+    }
+    if( typeof( iDim ) != "number" ) {
+      throw "iDim has to be a number"
+    }
+    if( typeof( iNumClasses ) != "number" ) {
+      throw "iNumClasses has to be a number"
+    }
+
     this.lData = lData;
     this.lLabels = lLabels;
     this.iNumClasses = iNumClasses;
@@ -81,6 +91,13 @@ function vml_SoftmaxRegression() {
   * @return {Double} Current log likelihood.
   */
   this.TrainStep = function( fLambda, fL2 ) {
+     if( typeof( fLambda ) != "number" ) {
+       throw "fLambda has to be a number"
+     }
+     if( typeof( fL2 ) != "number" ) {
+       throw "fL2 has to be a number"
+     }
+
      var fLogLikelihood = 0.0;
 
      // Compute predictions
@@ -145,6 +162,10 @@ function vml_SoftmaxRegression() {
   * @return {Vector} Class probabilities.
   */
   this.Predict = function( vecPoint ) {
+    if( vecPoint instanceof Array == false ) {
+      throw "vecPoint has to be a vector (Array)"
+    }
+
     var lResult = []
 
     var fNorm = 0.0;

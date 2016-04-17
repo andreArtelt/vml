@@ -44,6 +44,13 @@ function vml_knn() {
   * @param {Integer} iK - Size of neighborhood used for predictions.
   */
   this.Init = function( lData, lLabel, iK ) {
+     if( lLabel instanceof Array == false ) {
+       throw "lLabel has to be a vector (Array)"
+     }
+     if( typeof( iK ) != "number" ) {
+       throw "iK has to be a number"
+     }
+
      this.iK = iK;
      this.lData = lData;
      this.lLabel = lLabel;
@@ -112,6 +119,10 @@ function vml_knn() {
   * @returns {Double} Predicted value.
   */
   this.PredictRegression = function( vecPoint ) {
+     if( vecPoint instanceof Array == false ) {
+       throw "vecPoint has to be a vector (Array)"
+     }
+
     this.Predict = this.PredictRegression;
 
     // Find k nearest neighbors
@@ -136,6 +147,10 @@ function vml_knn() {
   * @returns {Array} Predicted class labels (probabilities) for each class.
   */
   this.PredictClassification = function( vecPoint ) {
+     if( vecPoint instanceof Array == false ) {
+       throw "vecPoint has to be a vector (Array)"
+     }
+
     this.Predict = this.PredictClassification;
 
     // Find k nearest neighbors

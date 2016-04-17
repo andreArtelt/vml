@@ -40,6 +40,10 @@ function vml_PolynomialRegression() {
   * @param {Matrix} lData Complete data set used in this model.
   */
   this.Init = function( iDegree, lData ) {
+    if( typeof( iDegree ) != "number" ) {
+      throw "iDegree has to be number"
+    }
+
     this.iDegree = iDegree;
 
     this.ConvertData( lData );
@@ -118,6 +122,10 @@ function vml_PolynomialRegression() {
   * @param {Double} fReg Regularization rate.
   */
   this.Fit = function( fReg ) {
+    if( typeof( fReg ) != "number" ) {
+      throw "fReg has to be number"
+    }
+
     // Least Square:
     // w=(X^T * X + lambda*I)^-1 * X^T * y   where X is the design matrix big phi
     var bigPhi_t = math.transpose( this.BigPhi );
@@ -140,6 +148,13 @@ function vml_PolynomialRegression() {
   * @param {Double} fReg Regularization rate.
   */
   this.UpdateWeights = function( fLambda, fReg ) {
+     if( typeof( fLambda ) != "number" ) {
+       throw "fLambda has to be a number"
+     }
+     if( typeof( fReg ) != "number" ) {
+       throw "fReg has to be number"
+     }
+
      // Apply gradient descent
      var myGrad = undefined;
      var weights_t = math.transpose( this.lWeights );
@@ -150,7 +165,8 @@ function vml_PolynomialRegression() {
        var input = this.lData[ i ];
        var label = this.lLabels[ i ];
 	     
-       var grad = vml_math.MultiplyScalar( input, label - math.multiply( weights_t, input ) );    
+       var grad = vml_math.MultiplyScalar( input, label - math.multiply( weights_t, input ) );
+       //console.log( math.norm( grad, 2 ) );     
 
        if( myGrad == undefined ) {
          myGrad = grad
@@ -160,6 +176,9 @@ function vml_PolynomialRegression() {
        }
      }
      myGrad = vml_math.MultiplyScalar( myGrad, -1.0 / this.lData.length );
+     //console.log( math.norm( myGrad, 2 ) );     
+
+     myGrad = vml_utils.GradientClipping( myGrad, 10 );   // Apply gradient clipping to avoid exploding gradient
 
      var gradCost = math.add( myGrad, reg );  // Cost: RSS + Reg
      this.lWeights = math.subtract( this.lWeights, vml_math.MultiplyScalar( gradCost, fLambda ) );
@@ -168,10 +187,14 @@ function vml_PolynomialRegression() {
   /**
   * Predict the value of a given point.
   * @method Predict
-  * @param {Vector} vecPoint Data point used for prediction.
+  * @param {Float} vecPoint Data point used for prediction.
   * @return {Double} Predicted value.
   */
   this.Predict = function( vecPoint ) {
-   return math.multiply( math.transpose( this.lWeights ), math.matrix( this.ComputePhi( vecPoint ) ) );
+    if( typeof( vecPoint ) != "number" ) {
+      throw "vecPoint has to be a number"
+    }
+
+    return math.multiply( math.transpose( this.lWeights ), math.matrix( this.ComputePhi( vecPoint ) ) );
   };
 }
