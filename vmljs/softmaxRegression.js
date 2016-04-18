@@ -129,6 +129,8 @@ function vml_SoftmaxRegression() {
        vecGrad = vml_math.MultiplyScalar( vecGrad, -1.0 / this.lData.length );
        vecGrad = math.add( vecGrad, vml_math.MultiplyScalar( this.lParams[i], fL2 ) );  // L2 regularization
 
+       vecGrad = vml_utils.GradientClipping( vecGrad, 10 );   // Apply gradient clipping to avoid exploding gradient
+
        // Update param
        this.lParams[i] = math.subtract( this.lParams[i], vml_math.MultiplyScalar( vecGrad, fLambda ) );
      }

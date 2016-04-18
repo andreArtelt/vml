@@ -30,6 +30,24 @@ function vml_utils() {
 }
 
 /**
+* Implementation of gradient clipping.
+* @method GradientClipping
+* @static
+* @param grad Gradient.
+* @param {Float} fThreshold Threshold of gradient norm/size.
+* @return (Clipped/Scaled) gradient
+*/
+vml_utils.GradientClipping = function( grad, fThreshold ) {
+  var fNorm = math.norm( grad, 2 );
+
+  if( fNorm > fThreshold ) {
+    return vml_math.MultiplyScalar( grad, fThreshold / fNorm );
+  }
+
+  return grad;
+}
+
+/**
 * .
 * @method
 * @static
