@@ -1,0 +1,21 @@
+<link rel="stylesheet" type="text/css" href="footer.css">
+
+<div id="footer" class="footer">
+ <br><br><br><br>
+  VML - Visualization of Machine Learning<br>
+  <a href="https://github.com/andreArtelt/vml">Project on GitHub</a><br>
+  Copyright &copy; 2016-2016 André Artelt
+</div>
+
+<script>
+  function importFooter() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    var oPlaceholder = document.getElementById( 'footerPlaceholder' );
+    var oElement = oImport.querySelector( '#footer' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+  };
+</script>

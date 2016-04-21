@@ -1,0 +1,111 @@
+<link rel="stylesheet" type="text/css" href="../../Libs/dialog-polyfill/dialog-polyfill.css">
+<link rel="stylesheet" type="text/css" href="../../styles/dialog.css">
+<link rel="stylesheet" type="text/css" href="evaluation.css">
+
+<script src="../../Libs/dialog-polyfill/dialog-polyfill.js"></script>
+<script src="evaluation.js"></script>
+
+<div id="evaluationDlgs">
+  <dialog id="evaluationClassifierDlg" class="dialog evalDlg">
+    <center><h3>Evaluation</h3></center>
+    <form method="dialog">
+      <div class="textAlign">
+        <section>
+          <b>Accuracy: </b>
+          <span id="EVAL_ACC"></span>
+        </section>
+        <section>
+          <b>AvgAccPerClass: </b>
+          <span id="EVAL_AVGACCPERCLASS"></span>
+        </section>
+        <section>
+          <b>PerClassAcc: </b>
+          <span id="EVAL_PERCLASSACC"></span>
+        </section>
+        <section>
+          <b>Confusion matrix: </b>
+          <table>
+	    <tr>
+              <td>Label\Pred</td>
+	      <td>Pos</td>
+	      <td>Neg</td>
+	    </tr>
+	    <tr>
+	      <td>Pos</td>
+	      <td id="EVAL_CONFMAT_TP"></td>
+	      <td id="EVAL_CONFMAT_FN"></td>
+            </tr> 
+            <tr>
+	      <td>Neg</td>
+	      <td id="EVAL_CONFMAT_FP"></td>
+	      <td id="EVAL_CONFMAT_TN"></td>
+	    </tr>
+	  </table>
+        </section>
+        <section>
+          <b>Precision: </b>
+          <span id="EVAL_PRECISION"></span>
+        </section>
+        <section>
+          <b>Recall: </b>
+          <span id="EVAL_RECALL"></span>
+        </section>
+        <section>
+          <b>F1: </b>
+          <span id="EVAL_F1SCORE"></span>
+        </section>
+        <section>
+          <b>FallOut: </b>
+          <span id="EVAL_FALLOUT"></span>
+        </section>
+        <section>
+          <b>LogLoss: </b>
+          <span id="EVAL_LOGLOSS"></span>
+        </section>
+      </div>
+      <br>
+
+      <button class="dialogBtn">Close</button>
+    </form>
+  </dialog>
+
+  <dialog id="evaluationRegressionDlg" class="dialog">
+    <center><h3>Evaluation</h3></center>
+    <form method="dialog">
+      <div class="textAlign">
+        <section>
+          <b>RMSE: </b>
+          <span id="EVAL_RMSE"></span>
+        </section>
+        <section>
+          <b>MAPE: </b>
+          <span id="EVAL_MAPE"></span>
+        </section>
+        <section>
+          <b>ACP: </b>
+          <span id="EVAL_ACP"></span>
+        </section>
+      </div>
+      <br>
+
+      <button class="dialogBtn">Close</button>
+    </form>
+  </dialog>
+</div>
+
+<script>
+  function importEvaluation() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    var oPlaceholder = document.getElementById( 'evaluationDlgsPlaceholder' );
+    var oElement = oImport.querySelector( '#evaluationDlgs' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+
+    // Register dialogs
+    dialogPolyfill.registerDialog( document.getElementById( 'evaluationClassifierDlg' ) );
+    dialogPolyfill.registerDialog( document.getElementById( 'evaluationRegressionDlg' ) );
+  };
+</script>

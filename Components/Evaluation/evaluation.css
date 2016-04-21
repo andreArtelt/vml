@@ -1,0 +1,22 @@
+.textAlign {
+    line-height: 2.0;
+    margin-top: 7px;
+}
+
+section {
+    margin-top: 5px;
+}
+
+.evalTd, .evalTr {
+    border: 1px solid black;
+}
+
+.evalTable {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+}
+
+.evalDlg {
+    width: 500px;
+}
