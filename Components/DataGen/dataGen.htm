@@ -1,0 +1,98 @@
+<link rel="stylesheet" type="text/css" href="../../Libs/dialog-polyfill/dialog-polyfill.css">
+<link rel="stylesheet" type="text/css" href="../../styles/buttons.css">
+<link rel="stylesheet" type="text/css" href="../../styles/tooltips.css">
+<link rel="stylesheet" type="text/css" href="dataGen.css">
+
+<script src="../../Libs/dialog-polyfill/dialog-polyfill.js"></script>
+<script src="../../Libs/flot/jquery.js"></script>
+<script src="../../Libs/flot/jquery.flot.js"></script>
+<script src="../../Libs/flot/jquery.flot.symbol.js"></script>
+<script src="../../vmljs/Utils/utils.js"></script>
+<script src="../../vmljs/Utils/fileHelper.js"></script>
+<script src="../../vmljs/Utils/matFileHelper.js"></script>
+<script src="../../vmljs/Utils/jsonHelper.js"></script>
+<script src="../../vmljs/Utils/csvHelper.js"></script>
+<script src="dataGen.js"></script>
+<script src="../../Libs/base64-arraybuffer-0.1.5/lib/base64-arraybuffer.js"></script>
+
+<div id="dataGen">
+  <div id="plotArea" class="boxAlign"></div>
+  
+  <div class="boxAlign">
+    <div class="groupBox">
+      <div id="actions">
+        <b>Actions:</b><br>
+        <button id="resetBtn" class="button">Reset</button><br>
+        <div id="exportBtn" class="dropdown dropDownBtn">Export</button>
+         <div class="dropdown-content">
+           <button id="btnExportToJSON" class="button">JSON</button>
+           <button id="btnExportToCSV" class="button">CSV</button>
+           <button id="btnExportToMAT" class="button">MAT</button>
+         </div>
+        </div>
+        <div id="importBtn" class="dropdown dropDownBtn">Import</button>
+         <div class="dropdown-content">
+           <button id="btnImportFromJSON" class="button">JSON</button>
+           <button id="btnImportFromCSV" class="button">CSV</button><br>
+           <!--<button id="btnImportFromMAT" class="button">MAT</button>-->
+           <div class="dialogBtn fileUploadBtn boxAlign">MAT<input id="btnImportFromMAT" type="file" name="file" class="upload" /></div>
+         </div>
+        </div>
+      </div> 
+      <br>
+      <div id="dataGenType">
+        <div class="tooltip"><b>Click type:</b>
+        <span class="tooltiptext">Specify what type of point a click in the plot will generate</span>
+        </div><br>
+        <input type="radio" name="dataClass" id="genClassA" checked>Class A</input><br>
+        <div id="genClassBGroup"><input type="radio" name="dataClass" id="genClassB">Class B</input></div><br>
+      </div>
+    </div>
+    <br>
+    <div id="modelPlaceholder"></div>
+  </div>
+
+  <dialog id="exportDlg" class="dialog">
+    <center><h3>Export</h3></center>
+      <form method="dialog">
+        <textarea id="exportData" cols=50 rows=30></textarea><br>
+        <a id="exportDownloadBtn" class="dialogBtn downloadBtn" href="">Download</a>
+        <button id="exportCloseBtn" class="dialogBtn">Close</button>
+      </form>
+  </dialog>
+
+  <dialog id="importDlg" class="dialog">
+    <center><h3>Import</h3></center>
+      <form method="dialog">
+        <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
+        <div class="dialogBtn fileUploadBtn boxAlign">Upload<input id="importUpload" type="file" name="file" class="upload" /></div>
+        <button id="importDataBtn" class="dialogBtn">Import</button>
+        <button id="importCloseBtn" class="dialogBtn">Close</button> 
+      </form>
+  </dialog>
+</div>
+
+<script>
+  function importDataGen() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    // Fill model placeholder
+    var oModelElem = document.getElementById( 'model' );
+    var oElement = oImport.querySelector( '#modelPlaceholder' );
+    oElement.appendChild( oModelElem.cloneNode( true ) );    
+
+    oModelElem.parentNode.removeChild( oModelElem );
+
+    // Add import to document
+    var oPlaceholder = document.getElementById( 'dataGenPlaceholder' );
+    oElement = oImport.querySelector( '#dataGen' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+
+    // Init logic
+    oDataGen = new vml_DataGen();
+    oDataGen.Init();
+  };
+</script>
