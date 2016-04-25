@@ -41,5 +41,6 @@ Licensed under MIT license (see LICENSE.md).
  - [mathjs](https://github.com/josdejong/mathjs)
  - [flot](https://github.com/flot/flot)
  - [d3js](https://github.com/mbostock/d3)
+ - [base64-array](https://github.com/niklasvh/base64-arraybuffer)
  - [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill)
  - [jsdoc](https://github.com/jsdoc3/jsdoc
