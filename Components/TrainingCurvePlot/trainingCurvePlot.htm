@@ -1,0 +1,38 @@
+<link rel="stylesheet" type="text/css" href="../../Libs/dialog-polyfill/dialog-polyfill.css">
+<link rel="stylesheet" type="text/css" href="../../styles/dialog.css">
+<link rel="stylesheet" type="text/css" href="trainCurvePlot.css">
+
+<script src="../../Libs/dialog-polyfill/dialog-polyfill.js"></script>
+<script src="../../Libs/flot/jquery.js"></script>
+<script src="../../Libs/flot/jquery.flot.js"></script>
+<script src="../../Libs/flot/jquery.flot.symbol.js"></script>
+<script src="trainingCurvePlot.js"></script>
+
+<dialog id="trainCurveDlg" class="dialog">
+  <center><h3 id="trainCurveDlgTitle"></h3></center>
+
+  <div class="trainCurveArea">
+    <div id="trainCurveDlgPlotArea" class="trainCurvePlot"></div>
+  </div><br>
+
+  <form method="dialog">
+    <button id="trainCurveDlgCloseBtn" class="dialogBtn">Close</button>
+  </form>
+</dialog>
+
+<script>
+  function importTrainCurve() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    // Add import to document
+    var oPlaceholder = document.getElementById( 'trainCurvePlaceholder' );
+    var oElement = oImport.querySelector( '#trainCurveDlg' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+
+    // Register dialog
+    dialogPolyfill.registerDialog( document.getElementById( 'trainCurveDlg' ) );
+  };
+</script>
