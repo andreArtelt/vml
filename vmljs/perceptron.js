@@ -123,8 +123,8 @@ function vml_Perceptron() {
   * @return {Integer} Predicted label/class (-1 or +1).
   */
   this.Predict = function( vecPoint ) {
-     if( vecPoint instanceof Array == false ) {
-       throw "vecPoint has to be a vector (Array)"
+     if( vecPoint instanceof Array == false && vecPoint._data == undefined ) {
+       throw "vecPoint has to be a vector (Array or math.matrix)"
      }
 
      var fSum = math.multiply( math.transpose( this.lWeights ), vecPoint );

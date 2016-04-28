@@ -30,6 +30,33 @@ function vml_utils() {
 }
 
 /**
+*
+* @method
+* @static
+* @param
+* @param
+* @param
+* @param
+* @param
+* @param
+* @param
+* @return
+*/
+vml_utils.ScaleData = function( minX, maxX, minY, maxY, data, xRange, yRange ) {
+  xRange = xRange == undefined ? [ -5, 5 ] : xRange;
+  yRange = yRange == undefined ? [ -5, 5 ] : yRange;
+
+  var scaleX = d3.scale.linear( )
+     .domain( [ minVal, maxVal ] )
+     .rangeRound( [ -5, 5 ] );
+  var scaleY = d3.scale.linear( )
+     .domain( [ minY, maxY ] )
+     .rangeRound( [ -5, 5 ] );
+
+  return data.map( function( item ) { return [ scaleX( item[0] ), scaleY( item[1] ) ]; } );
+}
+
+/**
 * Implementation of gradient clipping.
 * @method GradientClipping
 * @static
@@ -175,6 +202,30 @@ vml_utils.BuildGrid1d = function( x1, x2, stepsize ) {
       }.bind( this ) );
 
       return lResult;
+};
+
+vml_utils.ArgMax = function( lData ) {
+  if( lData.length == 0 ) {
+    throw "Empty list";
+  }
+
+  var iResult = 0;
+  var oItem = lData[ 0 ];
+
+  for( var i=1; i < lData.length; i++ ) {
+    if( oItem < lData[ i ] ) {
+      iResult = i;
+      oItem = lData[ i ];
+    }
+  }
+
+  return iResult;
+};
+
+vml_utils.PickRandom = function( lData ) {
+  var iIndex = Math.floor( Math.random() * lData.length );
+
+  return lData[ iIndex ];
 };
 
 /**

@@ -9,14 +9,17 @@ VML is a web-based **interactive learning tool** for **machine learning**. Sever
 The aim is to help students **getting a better understanding** about the behavior of machine learning algorithms.
 - What are they doing?
 - How do they behave on different datasets?
-- What effects have certain (hyper-)parameters?
+- What effects do certain (hyper-)parameters have?
 
 ## Features (Algorithms)
  - Generating toy datasets
  - Perceptron
  - Polynomial regression
  - Naive Bayes
+ - Logistic regression
+ - Decision tree
  - K-Means clustering
+ - Gaussian mixture
  - KNN (K nearest neighbors)
 
 ## Webdemo
@@ -43,4 +46,5 @@ Licensed under MIT license (see LICENSE.md).
  - [d3js](https://github.com/mbostock/d3)
  - [base64-array](https://github.com/niklasvh/base64-arraybuffer)
  - [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill)
- - [jsdoc](https://github.com/jsdoc3/jsdoc
+ - [jsdoc](https://github.com/jsdoc3/jsdoc)
+ - Website is built using [vulcanize](https://github.com/Polymer/vulcanize) and [nodejs](https://github.com/nodejs)

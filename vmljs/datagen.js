@@ -20,6 +20,9 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
+// Will be filled by base64-arraybuffer.js
+var exports = {};
+
 /**
 * Implementation of simple data generation/administration model.
 * @class vml_DataGen
@@ -29,6 +32,8 @@ function vml_DataGen() {
   this.oClassA = {Data: [], Symbol: "circle", Label: "Class A", Color: "#FF0000"};
   this.oClassB = {Data: [], Symbol: "circle", Label: "Class B", Color: "#000000"};
   this.bSingleDataType = false;
+
+  this.Base64ArrayBuffer = undefined;
 
   this.rangeX = {min: -5, max: 5};  // Settings for grid/axis
   this.rangeY = {min: -5, max: 5};
@@ -56,8 +61,10 @@ function vml_DataGen() {
      document.getElementById( "resetBtn").addEventListener( "click", this.Reset.bind( this ), false );
      document.getElementById( "btnExportToJSON" ).addEventListener( "click", this.ExportJSON.bind( this ), false );
      document.getElementById( "btnExportToCSV" ).addEventListener( "click", this.ExportCSV.bind( this ), false );
+     document.getElementById( "btnExportToMAT" ).addEventListener( "click", this.ExportMAT.bind( this ), false );
      document.getElementById( "btnImportFromJSON" ).addEventListener( "click", this.ImportJSON.bind( this ), false );
      document.getElementById( "btnImportFromCSV" ).addEventListener( "click", this.ImportCSV.bind( this ), false );
+     document.getElementById( "btnImportFromMAT" ).addEventListener( "change", this.ImportMAT.bind( this ), false );
      document.getElementById( "importCloseBtn" ).addEventListener( "click", this.ImportClose.bind( this ), false );
      document.getElementById( "importUpload" ).addEventListener( "change", this.ImportUpload.bind( this ), false );
 
@@ -77,6 +84,9 @@ function vml_DataGen() {
      // Init plot (register plot specific eventhandler)
      this.Plot();
      $( "#"+this.strPlotDiv).bind( "plotclick", this.PlotClickEvent.bind( this ) );
+
+     // Import exports from base64-arraybuffer.js
+     this.Base64ArrayBuffer = exports;
   };
 
   /**
@@ -122,7 +132,10 @@ function vml_DataGen() {
   * @return {String} Exported data in json format.
   */
   this.ExportDataToJSON = function() {
-    return JSON.stringify( [ this.oClassA.Data, this.oClassB.Data ] );
+    var lData = this.oClassA.Data.concat( this.oClassB.Data );
+    var lLabels = vml_utils.FillList( this.oClassA.Data.length, 0 ).concat( vml_utils.FillList( this.oClassB.Data.length, 1 ) );
+
+    return vml_JsonHelper.Export( lData, lLabels );
   };
 
   /**
@@ -131,12 +144,20 @@ function vml_DataGen() {
   * @param {String} strImport Json data to be imported.
   */
   this.ImportDataFromJSON = function( strImport ) {
-     // Parse import
-     var importData = JSON.parse( strImport );
+     // Clean
+     this.oClassA.Data = [];
+     this.oClassB.Data = [];
 
-     // Import data
-     this.oClassA.Data = importData[0];
-     this.oClassB.Data = importData[1];
+     // Import
+     var [ lData, lLabels ] = vml_JsonHelper.Import( strImport );
+     for( var i=0; i != lData.length; i++ ) {
+       if( lLabels[ i ] == 0 ) {
+         this.oClassA.Data.push( lData[ i ] );
+       }
+       else {
+         this.oClassB.Data.push( lData[ i ] );
+       }
+     }  
   };
 
   /**
@@ -145,19 +166,10 @@ function vml_DataGen() {
   * @return {String} Exported data in csv format.
   */
   this.ExportDataToCSV = function() {
-     // Build header
-     var strHdr = "x, y, t\r\n";
-     var strBody = "";
+     var lData = this.oClassA.Data.concat( this.oClassB.Data );
+     var lLabels = vml_utils.FillList( this.oClassA.Data.length, 0 ).concat( vml_utils.FillList( this.oClassB.Data.length, 1 ) );
 
-     // Process both classes
-     for( var i = 0; i != this.oClassA.Data.length; i++ ) {
-        strBody += this.oClassA.Data[i][0] + "," + this.oClassA.Data[i][1] + ",0\r\n";
-     }
-     for( var i=0; i != this.oClassB.Data.length; i++ ) {
-        strBody += this.oClassB.Data[i][0] + "," + this.oClassB.Data[i][1] + ",1\r\n";
-     }
-
-     return strHdr+strBody;
+     return vml_CsvHelper.Export( lData, lLabels );
   };
 
   /**
@@ -170,25 +182,61 @@ function vml_DataGen() {
      this.oClassA.Data = [];
      this.oClassB.Data = [];
 
-     // Break string into rows
-     var lRows = strImport.split( "\n" );
-
-     for( var i=1; i != lRows.length; i++ ) {   // Ignore first row
-        if( lRows[i] == "" ) {  // Skip empty rows
-           continue;
-        }        
-
-        // Split line into data
-        var lData = lRows[i].split(",");
-
-        // Add data
-        if( lData[2] == "0" ) {  // Class A
-           this.oClassA.Data.push( [ lData[0], lData[1] ] );
-        }
-        else if( lData[2] == "1" ) {  // Class B
-           this.oClassB.Data.push( [ lData[0], lData[1] ] );
-        }
+     // Import
+     var [ lData, lLabels ] = vml_CsvHelper.Import( strImport );
+     for( var i=0; i != lData.length; i++ ) {
+       if( lLabels[ i ] == 0 ) {
+         this.oClassA.Data.push( lData[ i ] );
+       }
+       else {
+         this.oClassB.Data.push( lData[ i ] );
+       }
      }
+  };
+
+  this.ExportMAT = function() {
+     // Collect data
+     var lLabels = vml_utils.FillList( this.oClassA.Data.length, 0 );
+     lLabels = lLabels.concat( vml_utils.FillList( this.oClassB.Data.length, 1 ) );
+     var lData = this.oClassA.Data.concat( this.oClassB.Data );
+
+     // Export
+     var oMatBuffer = new vml_MatFileHelper().Export( lData, lLabels );
+     
+     // Write to file
+     vml_FileHelper.WriteFile( "data.mat", this.Base64ArrayBuffer.encode( oMatBuffer ) );
+
+     /*var oParsedMatBuffer = new vml_MatFileHelper().Import( oMatBuffer );
+     console.log( oParsedMatBuffer );
+     console.log( {lData: lData, lLabels: lLabels} );*/
+  };
+
+  this.ImportMAT = function( evt ) {
+     if( evt.target.files.length != 1 ) {
+        return;
+     }
+
+    // Read buffer from file
+    vml_FileHelper.ReadFileAsArrayBufferAsync( evt.target.files[0], function( oBuffer ) {    
+      // Clean
+      this.oClassA.Data = [];
+      this.oClassB.Data = [];
+
+      // Parse
+      var oParsedMatBuffer = new vml_MatFileHelper().Import( oBuffer );
+
+      for( var i=0; i != oParsedMatBuffer.Data.length; i++ ) {
+        if( oParsedMatBuffer.Labels[ i ] == 0 ) {
+          this.oClassA.Data.push( oParsedMatBuffer.Data[ i ] );
+        }
+        else {
+          this.oClassB.Data.push( oParsedMatBuffer.Data[ i ] );
+        }
+      }
+
+      // Refresh plot
+      this.Plot();
+    }.bind( this ) );
   };
 
   this.ExportJSON = function() {

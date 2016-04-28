@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+  <link rel="stylesheet" type="text/css" href="../Libs/dialog-polyfill/dialog-polyfill.css">
+  <link rel="stylesheet" type="text/css" href="../vmljs/styles/datagen.css">
+  <link rel="stylesheet" type="text/css" href="../vmljs/styles/buttons.css">
+  <link rel="stylesheet" type="text/css" href="../vmljs/styles/footer.css">
+  <link rel="stylesheet" type="text/css" href="../vmljs/styles/tooltips.css">
+
+  <script src="../Libs/mathjs/math.js"></script>
+  <script src="../vmljs/Utils/math.js"></script>
+  <script src="../vmljs/Utils/utils.js"></script>
+  <script src="../vmljs/Utils/modelEvaluation.js"></script>
+  <script src="../vmljs/gaussMixture.js"></script>
+  <script src="../Libs/d3js/d3-3.5.16/d3.js"></script>
+  <script src="../vmljs/Utils/plotHelper.js"></script>
+  <script src="gaussMixtureUI.js"></script>
+
+  <link rel="import" href="../Components/Footer/footer.htm">
+  <link rel="import" href="../Components/TrainingCurvePlot/trainingCurvePlot.htm">
+  <link rel="import" href="../Components/DataGen/dataGen.htm">
+
+  <title>VML - Gaussian mixture</title>
+</head>
+<body>
+  <center><h1>Gaussian mixture</h1></center>
+
+  <div id="dataGenPlaceholder"></div>
+
+  <div id="model" class="groupBox">
+    <b>Model:</b><br>
+    <div class="tooltip">Number of distributions:<span class="tooltiptext">Number of gauss distributions</span></div><br>
+    <input type="number" id="numCluster" value="2"></input><br>
+    <div class="tooltip">Training iterations:<span class="tooltiptext">Number of EM iterations</span></div><br>
+    <input type="number" id="numTrainItr" value="10"></input>
+    <br><br>
+    <button id="resetModel" class="button">Reset</button><br>
+    <button id="trainBtn" class="button">Train</button>
+    <button id="trainCurveBtn" class="button">TrainCurve</button>
+   </div>
+  </div>
+
+  <div id="trainCurvePlaceholder"></div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script type="text/javascript">
+    // Import
+    importDataGen();
+    importTrainCurve();
+    importFooter();
+ 
+    // Init
+    var oLogic = new vml_GaussMixtureUI();
+    oLogic.Init();
+  </script>
+<body>
+</html>

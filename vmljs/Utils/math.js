@@ -43,6 +43,31 @@ vml_math.MultiplyScalar = function( matA, dScalar ) { // TODO: Replace with math
   } );
 }
 
+vml_math.Outer = function( matA, matB, iDim ) {
+  var _matA = matA;
+  for( var i=0; i != iDim - 1; i++ ) {
+    _matA = math.concat( _matA, matA, 0 );
+  }
+  var _matB = math.transpose( _matA );
+
+  return math.dotMultiply( _matA, _matB );
+};
+
+vml_math.OuterEx = function( matA, matB, iDimA, iDimB ) {
+  var _matA = matA;
+  var _matB = matB;
+
+  for( var i=0; i != iDimB - 1; i++ ) {
+    _matA = math.concat( _matA, matA, 0 );
+  }
+  for( var i=0; i != iDimA - 1; i++ ) {
+    _matB = math.concat( _matB, matB, 0 );
+  }
+  _matB = math.transpose( _matB );
+
+  return math.transpose( math.dotMultiply( _matA, _matB ) );
+};
+
 /**
 * Gaussian kernel.
 * @method Kernel_Gaussian
@@ -80,7 +105,7 @@ vml_math.Kernel_Linear = function( x1, x2, b ) {
 * @return {Double} k(x1, x2) where k is the polynomial kernel.
 */
 vml_math.Kernel_Polynomial = function( x1, x2, d, b ) {
-  return Math.pow( ( math.multiply(math.transpose( x1 ), x2 ) + b ), d );
+  return math.dotPow( ( math.multiply(math.transpose( x1 ), x2 ) + b ), d );
 };
 
 /**

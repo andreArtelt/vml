@@ -69,17 +69,81 @@ function vml_PlotHelper() {
      // Draw scatter plot
      for( var i=0; i != lScatter.length; i++ ) {
        ctx.fillStyle = lScatter[ i ].color;
- 
+       ctx.strokeStyle = lScatter[ i ].color; 
+
        var r = lScatter[ i ].size;
        for( var j=0; j != lScatter[ i ].lData.length; j++ ) {
          var vecX = x( lScatter[ i ].lData[ j ][ 0 ] );
          var vecY = y( -1.0 * lScatter[ i ].lData[ j ][ 1 ] );
 
-         ctx.beginPath();
-         ctx.arc( vecX, vecY, r, 0, Math.PI * 2, false );
-         ctx.closePath();
-         ctx.fill();
+         if( lScatter[ i ].symbol == "circle" ) {
+           ctx.beginPath();
+           ctx.arc( vecX, vecY, r, 0, Math.PI * 2, false );
+           ctx.closePath();
+           ctx.fill();
+         }
+         else if( lScatter[ i ].symbol == "cross" ) {
+           ctx.beginPath();
+           ctx.moveTo( vecX, vecY );
+           ctx.lineTo( vecX + 10, vecY );
+           ctx.stroke();
+           ctx.moveTo( vecX, vecY );
+           ctx.lineTo( vecX - 10, vecY );
+           ctx.stroke();
+           ctx.moveTo( vecX, vecY );
+           ctx.lineTo( vecX, vecY + 10 );
+           ctx.stroke();
+           ctx.moveTo( vecX, vecY );
+           ctx.lineTo( vecX, vecY - 10 );
+           ctx.stroke();
+         }
+         else {
+           throw "Invalid symbol";
+         }
        }
      }
+  };
+
+  // lScatter: {lData, name, color, size, symbol}
+  this.CreateHeatmap2 = function( lData, lHeat, lScatter, strDiv ) {
+    var lPlotData = [];
+
+    // Build headmap
+    var oHeatmap = { type: 'heatmap', x: [], y: [], z: [], showscale: false, connectgaps: true, hoverinfo: 'none' };
+
+    for( var i=0; i != lData.length; i++ ) {
+      oHeatmap.x.push( lData[ i ][ 0 ] );
+      oHeatmap.y.push( lData[ i ][ 1 ] );
+      oHeatmap.z.push( lHeat[ i ] );
+    }
+
+    lPlotData.push( oHeatmap );
+
+    // Optional: Build scatter plot
+    for( var i=0; i != lScatter.length; i++ ) {
+      var oScatter = { x: [], y: [], mode: 'markers', type: 'scatter'/*, name: lScatter[ i ].name*/, hoverinfo: 'none', showlegend: false,
+                       marker: {size: lScatter[ i ].size, color: lScatter[ i ].color }, symbol: lScatter[ i ].symbol };
+
+      for( var j=0; j != lScatter[ i ].lData.length; j++ ) {
+        oScatter.x.push( lScatter[ i ].lData[ j ][ 0 ] );
+        oScatter.y.push( lScatter[ i ].lData[ j ][ 1 ] );
+      }
+
+      lPlotData.push( oScatter );
+    }
+
+    // Build some settings
+    var oLayout = { showgrid: false, xaxis: {showgrid: false, showline: false, zeroline: false, showticklabels: false, ticks: '', width: 800, height: 600, autosize: false},
+                    yaxis: {showgrid: false, showline: false, zeroline: false, showticklabels: false, ticks: '', height: 600, width: 800, autosize: false}, width: 800, height: 600,
+                    hovermode: false, margin: { b: 0, l: 0, r: 0, t: 0, autoexpand: false } };
+
+    // Plot
+    document.getElementById( strDiv ).innerHTML = "";
+    Plotly.newPlot( strDiv, lPlotData, oLayout );
+  };
+
+
+  this.CreateScatterPlot = function() {
+
   };
 }

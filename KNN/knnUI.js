@@ -1,4 +1,4 @@
-// knnui.js
+// knnUI.js
 // VML - Visualization Machine Learning
 // Copyright <c> André Artelt
 // The MIT License (MIT)
@@ -20,25 +20,33 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-function vml_KnnUi() {
-  this.oDataGen = null;  // Stuff from datagen.js (sth. like a parent class)
-  this.oAlgo = null;     // Algorithm
+function vml_KnnUI() {
+  this.oDataGen = null;
+  this.oModel = null;
+
+  this.lData = [];
+  this.lLabels = [];
   this.lGrid = [];
   this.lCurve = [];
   this.lDecBound = [];
 
   this.Init = function() {
-     // Init
-     this.oDataGen = new vml_DataGen();
-     this.oDataGen.Init( undefined, false );
-     this.oAlgo = new vml_knn();
+     try {
+       // Init
+       this.oDataGen = oDataGen;
+       this.oModel = new vml_knn();
 
-     // Register eventhandler
-     document.getElementById( "fitBtn" ).addEventListener( "click", this.Fit.bind( this ), false );
+       // Register eventhandler
+       document.getElementById( "fitBtn" ).addEventListener( "click", this.Fit.bind( this ), false );
+       document.getElementById( "evalBtn" ).addEventListener( "click", this.Evaluate.bind( this ), false );
+     }
+     catch( ex ) {
+       alert( "Fatal error: Can not initialize!\n" + ex );
+     }
   };
 
   this.PlotRegressionCurve = function() {
-     var lData = [ this.oDataGen.lData[ 0 ] ];
+     var lData = this.oDataGen.oClassA.Data.length != 0 ? [ this.oDataGen.lData[ 0 ] ] : [ this.oDataGen.lData[1] ];
      lData.push( {label: "Regression curve", data: this.lCurve, lines: {show: true}} );
 
      $.plot( "#"+this.oDataGen.strPlotDiv, lData, this.oDataGen.oPlotSettings );
@@ -48,16 +56,56 @@ function vml_KnnUi() {
 
   this.PlotDecisionBoundary = function() {
     var oPlotHelper = new vml_PlotHelper();
-    oPlotHelper.CreateHeatmapScatterPlot( this.lDecBound, [ { lData: this.oDataGen.oClassA.Data, name: "Class A", color: "red", size: 3.5 }, { lData: this.oDataGen.oClassB.Data, name: "Class B", color: "black", size: 3.5 } ], "plotArea", 0.05 );
+    oPlotHelper.CreateHeatmapScatterPlot( this.lDecBound, [ { lData: this.oDataGen.oClassA.Data, name: "Class A", color: "red", size: 3.5, symbol: "circle" }, { lData: this.oDataGen.oClassB.Data, name: "Class B", color: "black", size: 3.5, symbol: "circle" } ], "plotArea", 0.05 );
+  };
+
+  this.Evaluate = function() {
+    try {
+      if( this.oDataGen.oClassA.Data.length > 0 && this.oDataGen.oClassB.Data.length == 0 ) {
+        this.EvaluateRegression();
+      }
+      else {
+        this.EvaluateClassifier();
+      }
+    }
+    catch( ex ) {
+      alert( "Error: " + ex );
+    }
+  };
+
+  this.EvaluateRegression = function() {
+    // Evaluate model
+    var oEvaluation = new vml_RegressionEvaluation( this.lData, this.lLabels, this.oModel ).AllMetrics();
+
+    // Show evaluation
+    var oEvalDlg = new vml_EvaluationDlg();
+    oEvalDlg.Init( true, oEvaluation );
+    oEvalDlg.Show();
+  };
+
+  this.EvaluateClassifier = function() {
+    // Evaluate model
+    var lLabels = this.lLabels.map(function(x){ return x==-1 ? 0 : x })
+    var oEvaluation = new vml_ClassifierEvaluation( this.lData, lLabels, this.oModel, 2 ).AllMetrics();
+
+    // Show evaluation
+    var oEvalDlg = new vml_EvaluationDlg();
+    oEvalDlg.Init( false, oEvaluation );
+    oEvalDlg.Show();
   };
 
   this.Fit = function() {
-    // Only points of one class used => Regression
-    if( this.oDataGen.oClassA.Data.length > 0 && this.oDataGen.oClassB.Data.length == 0 ) {
-      this.FitRegression();
+    try {
+      // Only points of one class used => Regression
+      if( ( this.oDataGen.oClassA.Data.length > 0 && this.oDataGen.oClassB.Data.length == 0 ) || ( this.oDataGen.oClassA.Data.length == 0 && this.oDataGen.oClassB.Data.length != 0 ) ) {
+        this.FitRegression();
+      }
+      else {  // Classification otherwise
+        this.FitClassification();
+      }
     }
-    else {  // Classification otherwise
-      this.FitClassification();
+    catch( ex ) {
+      alert( "Error: " + ex );
     }
   };
 
@@ -71,20 +119,20 @@ function vml_KnnUi() {
      // Preprocess the data
      var lRawDataA = this.oDataGen.oClassA.Data;
      var lRawDataB = this.oDataGen.oClassB.Data;
-     var lData = [];
-     var lLabels = [];
+     this.lData = [];
+     this.lLabels = [];
 
      for( var i=0; i != lRawDataA.length; i++ ) {
-       lData.push( lRawDataA[i] );
-       lLabels.push( -1 );
+       this.lData.push( lRawDataA[i] );
+       this.lLabels.push( -1 );
      }
      for( var i=0; i != lRawDataB.length; i++ ) {
-       lData.push( lRawDataB[i] );
-       lLabels.push( 1 );
+       this.lData.push( lRawDataB[i] );
+       this.lLabels.push( 1 );
      }
 
      // Init model
-     this.oAlgo.Init(lData, lLabels, this.GetNumberOfNeighbours());
+     this.oModel.Init( this.lData, this.lLabels, this.GetNumberOfNeighbours() );
 
      // Compute regression curve (no real training/fitting needed due to "lazy learning") and refresh plot
      this.ComputeDecisionBoundary();
@@ -101,17 +149,17 @@ function vml_KnnUi() {
      this.lGrid = vml_utils.BuildGrid1d( -5, 5 );
 
      // Preprocess the data
-     var lRawData = this.oDataGen.oClassA.Data;
-     var lData = [];
-     var lLabels = [];
+     var lRawData = this.oDataGen.oClassA.Data.length != 0 ? this.oDataGen.oClassA.Data : this.oDataGen.oClassB.Data;
+     this.lData = [];
+     this.lLabels = [];
 
      for( var i=0; i != lRawData.length; i++ ) {
-       lData.push( [ lRawData[i][0] ] );
-       lLabels.push( lRawData[i][1] );
+       this.lData.push( [ lRawData[i][0] ] );
+       this.lLabels.push( lRawData[i][1] );
      }
 
      // Init model
-     this.oAlgo.Init( lData, lLabels, this.GetNumberOfNeighbours() );
+     this.oModel.Init( this.lData, this.lLabels, this.GetNumberOfNeighbours() );
 
      // Compute regression curve (no real training/fitting needed due to "lazy learning") and refresh plot
      this.ComputeRegressionCurve();
@@ -126,7 +174,7 @@ function vml_KnnUi() {
      // Compute predicited output for each point
       for( var i=0; i != this.lGrid.length; i++ ) {
         var vecPoint = this.lGrid[ i ];
-        var fLabel = this.oAlgo.PredictClassification( vecPoint )[0];
+        var fLabel = this.oModel.PredictClassification( vecPoint )[0];
 
         this.lDecBound.push( vecPoint.concat( [ fLabel ] ) );
     }
@@ -138,7 +186,7 @@ function vml_KnnUi() {
      // Compute predicited output for each point
      for( var i=0; i != this.lGrid.length; i++ ) {
         var x = this.lGrid[ i ];
-        this.lCurve.push( [ x, this.oAlgo.PredictRegression( [x] ) ] );
+        this.lCurve.push( [ x, this.oModel.PredictRegression( [x] ) ] );
      };
   };
 

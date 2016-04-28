@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+  <script src="../Libs/mathjs/math.js"></script>
+  <script src="../vmljs/Utils/math.js"></script>
+  <script src="../vmljs/Utils/utils.js"></script>
+  <script src="../vmljs/Utils/modelEvaluation.js"></script>
+  <script src="../vmljs/softmaxRegression.js"></script>
+  <script src="../Libs/d3js/d3-3.5.16/d3.js"></script>
+  <script src="../vmljs/Utils/plotHelper.js"></script>
+  <script src="logisticRegressionUI.js"></script>
+
+  <link rel="import" href="../Components/Footer/footer.htm">
+  <link rel="import" href="../Components/Evaluation/evaluation.htm">
+  <link rel="import" href="../Components/TrainingCurvePlot/trainingCurvePlot.htm">
+  <link rel="import" href="../Components/DataGen/dataGen.htm">
+
+  <title>VML - Logistic regression</title>
+</head>
+<body>
+  <center><h1>Logistic regression</h1></center>
+
+  <div id="dataGenPlaceholder"></div>
+
+  <div id="model" class="groupBox">
+    <b>Model:</b><br>
+    <div class="tooltip">Degree of polynomial:<span class="tooltiptext">Polynomial feature transformation</span></div><br>
+    <input type="number" id="polynomDegree" value="1"></input><br>
+    <div class="tooltip">Learning rate:<span class="tooltiptext">Learing-rate/step-size in GD</span></div><br>
+    <input type="number" id="learningRate" value="0.01"></input><br>
+    <div class="tooltip">Regularization (L2):<span class="tooltiptext">Strength of L2 regularization</span></div><br>
+    <input type="number" id="regulRate" value="0.0"></input><br>
+    <div class="tooltip">Training iterations:<span class="tooltiptext">Number of GD iterations</span></div><br>
+    <input type="number" id="numTrainItr" value="10"></input>
+    <br><br>
+    <button id="resetModelBtn" class="button">Reset weights</button>
+    <button id="evalBtn" class="button">Evaluate</button><br>
+    <button id="trainBtn" class="button">Train</button>
+    <button id="trainCurveBtn" class="button">Training curve</button>
+  </div>
+
+  <div id="evaluationDlgsPlaceholder"></div>
+
+  <div id="trainCurvePlaceholder"></div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script type="text/javascript">
+    // Import
+    importDataGen();
+    importEvaluation();
+    importTrainCurve();
+    importFooter();
+ 
+    // Init
+    var oLogic = new vml_LogisticRegressionUI();
+    oLogic.Init();
+  </script>
+<body>
+</html>

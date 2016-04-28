@@ -165,7 +165,7 @@ function vml_PolynomialRegression() {
        var input = this.lData[ i ];
        var label = this.lLabels[ i ];
 	     
-       var grad = vml_math.MultiplyScalar( input, label - math.multiply( weights_t, input ) ); 
+       var grad = vml_math.MultiplyScalar( input, label - math.multiply( weights_t, input ) );    
 
        if( myGrad == undefined ) {
          myGrad = grad
@@ -174,7 +174,7 @@ function vml_PolynomialRegression() {
          myGrad = math.add( myGrad, grad );
        }
      }
-     myGrad = vml_math.MultiplyScalar( myGrad, -1.0 / this.lData.length );
+     myGrad = vml_math.MultiplyScalar( myGrad, -1.0 / this.lData.length );    
 
      var gradCost = math.add( myGrad, reg );  // Cost: RSS + Reg
      gradCost = vml_utils.GradientClipping( gradCost, 10 );   // Apply gradient clipping to avoid exploding gradient

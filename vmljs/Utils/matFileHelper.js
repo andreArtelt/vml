@@ -201,7 +201,7 @@ function vml_MatFileHelper() {
   * @return Object containing data and labels.
   */
   this.Import = function( oBuffer ) {
-     var oResult = { lData: [], lLabels: [] };
+     var oResult = { Data: [], Labels: [] };
      var iPos = 0;
      var oData = new DataView( oBuffer );
 
@@ -217,7 +217,7 @@ function vml_MatFileHelper() {
      for( var i=0; i != matHdr.iRows * matHdr.iCols; i++ ) {  // Note: Matrix is stored column wise!
         lData.push( oData.getFloat64( iPos ) ); iPos += 8;
      }
-     oResult.lData = this.reshapeToMatrix( lData, matHdr.iRows, matHdr.iCols);
+     oResult.Data = this.reshapeToMatrix( lData, matHdr.iRows, matHdr.iCols);
 
      // Read labels
      var matHdr2 = new SMatrixHdr();
@@ -228,7 +228,7 @@ function vml_MatFileHelper() {
 
      iPos += matHdr2.iNameLen;  // Skip name
      for( var i=0; i != matHdr2.iRows * matHdr2.iCols; i++ ) {
-        oResult.lLabels.push( oData.getInt32( iPos ) ); iPos += 4;
+        oResult.Labels.push( oData.getInt32( iPos ) ); iPos += 4;
      }
 
      return oResult;

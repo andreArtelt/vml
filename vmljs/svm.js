@@ -105,13 +105,15 @@ function vml_SVM() {
   /**
   *
   */
-  this.Predict = function( vecPoint ) {
-     if( vecPoint instanceof Array == false ) {
-       throw "vecPoint has to be a vector (Array)"
+  this.Predict = function( vecPoint, bRecomputeSuppVecs ) {
+     if( vecPoint instanceof Array == false && vecPoint._data == undefined ) {
+       throw "vecPoint has to be a vector (Array or math.matrix)"
      }
 
      // Make sure support vectors are available
-     this.GetSupportVectors();
+     if( bRecomputeSuppVecs == undefined || bRecomputeSuppVecs == true ) {
+       this.GetSupportVectors();
+     }
 
      var fSum = 0.0;
 

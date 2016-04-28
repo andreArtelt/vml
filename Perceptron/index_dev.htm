@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+  <script src="../Libs/mathjs/math.js"></script>
+  <script src="../vmljs/Utils/math.js"></script>
+  <script src="../vmljs/Utils/utils.js"></script>
+  <script src="../vmljs/Utils/modelEvaluation.js"></script>
+  <script src="../vmljs/perceptron.js"></script>
+  <script src="perceptronUI.js"></script>
+
+  <link rel="import" href="../Components/Footer/footer.htm">
+  <link rel="import" href="../Components/Evaluation/evaluation.htm">
+  <link rel="import" href="../Components/TrainingCurvePlot/trainingCurvePlot.htm">
+  <link rel="import" href="../Components/DataGen/dataGen.htm">
+
+  <title>VML - Perceptron</title>
+</head>
+<body>
+  <center><h1>Perceptron</h1></center>
+
+  <div id="dataGenPlaceholder"></div>
+
+  <div id="model" class="groupBox">
+    <b>Model:</b><br>
+    <div class="tooltip">Learning rate:<span class="tooltiptext">Learing-rate/step-size in SGD</span></div><br>
+    <input type="number" id="learningRate" value="0.01"></input><br>
+    <div class="tooltip">Training iterations:<span class="tooltiptext">Number of SGD iterations</span></div><br>
+    <input type="number" id="numTrainItr" value="10"></input>
+    <br><br>
+    <button id="resetModelBtn" class="button">Reset weights</button>
+    <button id="evalBtn" class="button">Evaluate</button><br>
+    <button id="trainBtn" class="button">Train</button>
+    <button id="trainCurveBtn" class="button">TrainCurve</button>
+  </div>
+
+  <div id="evaluationDlgsPlaceholder"></div>
+
+  <div id="trainCurvePlaceholder"></div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script type="text/javascript">
+    // Import
+    importDataGen();
+    importEvaluation();
+    importTrainCurve();
+    importFooter();
+ 
+    // Init
+    var oLogic = new vml_PerceptronUI();
+    oLogic.Init();
+  </script>
+<body>
+</html>

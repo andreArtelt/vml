@@ -30,6 +30,27 @@ function vml_FileHelper() {
 }
 
 /**
+* Write a given string to a specific file (will trigger download dialog).
+* @method WriteFile
+* @param {String} strFilename Filename.
+* @param {String} strData Base64 encoded file content.
+*/
+vml_FileHelper.WriteFile = function( strFilename, strData ) {
+  // Create invisible link
+  var oLink = document.createElement( 'a' );
+  oLink.setAttribute( 'href', 'data:application/octet-stream;charset=utf-16le;base64,' + strData );
+  oLink.setAttribute( 'download', strFilename );
+  oLink.style.display = 'none';
+
+  // Trigger link
+  document.body.appendChild( oLink );
+  oLink.click();
+
+  // Remove link
+  document.body.removeChild( oLink );
+}
+
+/**
 * Read the content (as a string) of a given file.
 * @method ReadFileAsStringAsync
 * @static
@@ -54,7 +75,7 @@ vml_FileHelper.ReadFileAsStringAsync = function( oFile, funcCallback ) {
 vml_FileHelper.ReadFileAsArrayBufferAsync = function( oFile, funcCallback ) {
   var oFileReader = new FileReader();
 
-  oFileReader.onloaded = function( evt ) { funcCallback( evt.target.result ) };
+  oFileReader.onload = function( evt ) { funcCallback( evt.target.result ) };
 
   oFileReader.readAsArrayBuffer( oFile );
 }

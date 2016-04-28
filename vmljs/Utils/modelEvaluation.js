@@ -1,4 +1,4 @@
-// modelEvaluation.js
+// ModelEvaluation.js
 // VML - Visualization Machine Learning
 // Copyright <c> André Artelt
 // The MIT License (MIT)
@@ -194,7 +194,7 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
      }
      lResult = math.dotDivide( lResult, lNorm );
 
-     return lResult;
+     return lResult.reverse();
   };
 
   /**
@@ -249,7 +249,6 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
 
        fResult += math.log( fPred );
      };
-     fResult *= -1.0 / this.lData.length;
 
      return fResult;
   };
