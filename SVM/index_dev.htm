@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+  <script src="../Libs/mathjs/math.js"></script>
+  <script src="../vmljs/Utils/math.js"></script>
+  <script src="../vmljs/Utils/utils.js"></script>
+  <script src="../vmljs/Utils/modelEvaluation.js"></script> 
+  <script src="../Libs/d3js/d3-3.5.16/d3.js"></script>
+  <script src="../vmljs/Utils/plotHelper.js"></script>
+  <script src="../vmljs/svm.js"></script>
+  <script src="svmUI.js"></script>
+
+  <link rel="import" href="../Components/Footer/footer.htm">
+  <link rel="import" href="../Components/Evaluation/evaluation.htm">
+  <link rel="import" href="../Components/TrainingCurvePlot/trainingCurvePlot.htm">
+  <link rel="import" href="../Components/DataGen/dataGen.htm">
+
+  <title>VML - SVM</title>
+</head>
+<body>
+  <center><h1>SVM - Support Vector Machine</h1></center>
+
+  <div id="dataGenPlaceholder"></div>
+
+  <div id="model" class="groupBox">
+    <b>Model:</b><br>
+    <div class="tooltip">Kernel:<span class="tooltiptext">Select a kernel</span></div><br>
+    <select id="kernelSelect"><option value="linear">Linear</option><option value="polynomial">Polynomial</option><option value="gauss">Gauss</option></select><br>
+
+    <div class="tooltip">SlackPenalty:<span class="tooltiptext">Control the slack variables</span></div><br>
+    <input type="number" id="slackPenalty" value="50"></input><br>
+    <div class="tooltip">Bias:<span class="tooltiptext">Bias of linear function</span></div><br>
+    <input type="number" id="bias" value="0"></input><br>
+    <div id="degreeCtrl"><div class="tooltip">Degree:<span class="tooltiptext">Degree of polynomial</span></div><br>
+    <input type="number" id="degree" value="1"></input></div><br>
+    <div id="sigmaCtrl"><div class="tooltip">Sigma:<span class="tooltiptext">Sigma of gaussian dristribution</span></div><br>
+    <input type="number" id="sigma" value="1"></input></div><br>
+
+    <div class="tooltip">Learning rate: <input type="number" id="learningRate" value="0.01"></input>
+    <span class="tooltiptext">Learing-rate</span></div><br>
+    <div class="tooltip">Training iterations: <input type="number" id="numTrainItr" value="10"></input>
+    <span class="tooltiptext">Number of training iterations</span></div><br>
+    <div class="tooltip">Support vectors: <input type="checkbox" id="showSuppVecs" value="false"></input>
+    <span class="tooltiptext">Show support vectors</span></div><br>
+    <br>
+    <button id="resetModelBtn" class="button">Reset</button>
+    <button id="evalBtn" class="button">Evaluation</button><br>
+    <button id="trainBtn" class="button">Train</button>
+    <button id="trainCurveBtn" class="button">TrainCurve</button>
+  </div>
+
+  <div id="evaluationDlgsPlaceholder"></div>
+
+  <div id="trainCurvePlaceholder"></div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script type="text/javascript">
+    // Import
+    importDataGen();
+    importEvaluation();
+    importTrainCurve();
+    importFooter();
+ 
+    // Init
+    //vulcanize --exclude "../Libs/" --exclude "../vmljs/" --exclude "../Components/DataGen/dataGen.js" --exclude "../Components/Evaluation/evaluation.js" --exclude "svmui.js" index.htm > build.htm
+    var oLogic = new vml_SvmUI();
+    oLogic.Init();
+  </script>
+<body>
+</html>

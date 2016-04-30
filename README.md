@@ -14,6 +14,7 @@ The aim is to help students **getting a better understanding** about the behavio
 ## Features (Algorithms)
  - Generating toy datasets
  - Perceptron
+ - SVM
  - Polynomial regression
  - Naive Bayes
  - Logistic regression
