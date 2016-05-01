@@ -98,7 +98,7 @@ function vml_LogisticRegressionUI() {
     try {
       // Training/Fitting
       for(var i=0; i != this.GetNumTrainItr(); i++) {
-        this.oModel.TrainStep( this.GetLearningRate(), this.GetL2Regularization() );
+        this.oModel.TrainStep( this.GetLearningRate(), this.GetL2Regularization(), this.UseGradientClipping() );
 
         var fLogLikelihood = this.oModel.LogLikelihood();
         if( fLogLikelihood == -Infinity ) {
@@ -196,5 +196,9 @@ function vml_LogisticRegressionUI() {
      else {
         return parseInt( iResult );
      }
+  };
+
+  this.UseGradientClipping = function() {
+     return document.getElementById( "gradientClipping" ).checked;
   };
 }

@@ -96,9 +96,10 @@ function vml_SoftmaxRegression() {
   * @instance
   * @param {Double} fLambda - Learning rate (stepsize).
   * @param {Double} fL2 - "Strength" of L2 regularization.
+  * @param {Boolean} bUseGradientClipping - True if gradient clipping shoud be used, false otherwise.
   * @return {Double} Current log likelihood.
   */
-  this.TrainStep = function( fLambda, fL2 ) {
+  this.TrainStep = function( fLambda, fL2, bUseGradientClipping ) {
      if( typeof( fLambda ) != "number" ) {
        throw "fLambda has to be a number"
      }
@@ -137,7 +138,9 @@ function vml_SoftmaxRegression() {
        vecGrad = vml_math.MultiplyScalar( vecGrad, -1.0 / this.lData.length );
        vecGrad = math.add( vecGrad, vml_math.MultiplyScalar( this.lParams[i], fL2 ) );  // L2 regularization
 
-       vecGrad = vml_utils.GradientClipping( vecGrad, 10 );   // Apply gradient clipping to avoid exploding gradient
+       if( bUseGradientClipping == true ) {
+         vecGrad = vml_utils.GradientClipping( vecGrad, 10 );   // Apply gradient clipping to avoid exploding gradient
+       }
 
        // Update param
        this.lParams[i] = math.subtract( this.lParams[i], vml_math.MultiplyScalar( vecGrad, fLambda ) );

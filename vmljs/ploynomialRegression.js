@@ -160,8 +160,9 @@ function vml_PolynomialRegression() {
   * @instance
   * @param {Double} fLambda - Learning rate.
   * @param {Double} fReg - Regularization rate.
+  * @param {Boolean} bUseGradientClipping - True if gradient clipping shoud be used, false otherwise.
   */
-  this.UpdateWeights = function( fLambda, fReg ) {
+  this.UpdateWeights = function( fLambda, fReg, bUseGradientClipping ) {
      if( typeof( fLambda ) != "number" ) {
        throw "fLambda has to be a number"
      }
@@ -191,7 +192,10 @@ function vml_PolynomialRegression() {
      myGrad = vml_math.MultiplyScalar( myGrad, -1.0 / this.lData.length );    
 
      var gradCost = math.add( myGrad, reg );  // Cost: RSS + Reg
-     gradCost = vml_utils.GradientClipping( gradCost, 10 );   // Apply gradient clipping to avoid exploding gradient
+
+     if( bUseGradientClipping == true ) {
+       gradCost = vml_utils.GradientClipping( gradCost, 10 );   // Apply gradient clipping to avoid exploding gradient
+     }
 
      this.lWeights = math.subtract( this.lWeights, vml_math.MultiplyScalar( gradCost, fLambda ) );
   };

@@ -96,7 +96,7 @@ function vml_PolynomialRegressionUI() {
     try {
       // Run training iterations
       for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
-         this.oModel.UpdateWeights( this.GetLearningRate(), this.GetRegularizationRate() );
+         this.oModel.UpdateWeights( this.GetLearningRate(), this.GetRegularizationRate(), this.UseGradientClipping() );
         
          var fError = this.oModel.ComputeError();
          this.lErrorOverTime.push( [this.iTime, fError] );
@@ -218,5 +218,9 @@ function vml_PolynomialRegressionUI() {
      else {
         return parseFloat( fResult );
      }
+  };
+
+  this.UseGradientClipping = function() {
+     return document.getElementById( "gradientClipping" ).checked;
   };
 }
