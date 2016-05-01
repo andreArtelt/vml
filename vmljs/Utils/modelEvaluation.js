@@ -21,12 +21,12 @@
 //  SOFTWARE.
 
 /**
-* Implementation of evaluation metrics for regression models.
+* @classdesc Implementation of evaluation metrics for regression models.
 * @class vml_RegressionEvaluation
 * @constructor
-* @param {Matrix} lData Data set.
-* @param {Vector} lLabels Labels of data set.
-* @param {Object} oModel Model to evaluate (needs to provide a Predict(x) function).
+* @param {Matrix} lData - Data set.
+* @param {Vector} lLabels - Labels of data set.
+* @param {Object} oModel - Model to evaluate (needs to provide a Predict(x) function).
 */
 function vml_RegressionEvaluation( lData, lLabels, oModel ) {
   this.lData = lData;
@@ -36,6 +36,8 @@ function vml_RegressionEvaluation( lData, lLabels, oModel ) {
   /**
   * Compute all metrics.
   * @method AllMetrics
+  * @memberof vml_RegressionEvaluation
+  * @instance
   * @return {Object} Object containing the scores of all metrics.
   */
   this.AllMetrics = function() {
@@ -45,6 +47,8 @@ function vml_RegressionEvaluation( lData, lLabels, oModel ) {
   /**
   * Compute the Root Mean Square Error (RMSE)
   * @method RMSE
+  * @memberof vml_RegressionEvaluation
+  * @instance
   * @return {Double} Score.
   */
   this.RMSE = function() {
@@ -62,6 +66,8 @@ function vml_RegressionEvaluation( lData, lLabels, oModel ) {
   /**
   * Compute the Mean Absolute Percentage Error (MAPE).
   * @method MAPE
+  * @memberof vml_RegressionEvaluation
+  * @instance
   * @return {Double} Score.
   */
   this.MAPE = function() {
@@ -86,7 +92,9 @@ function vml_RegressionEvaluation( lData, lLabels, oModel ) {
   /**
   * Compute the "almost correct" predictions using a given percentage threshold.
   * @method ACP
-  * @param {Double} fPercThreshold threshold for estimations.
+  * @memberof vml_RegressionEvaluation
+  * @instance
+  * @param {Double} fPercThreshold - Threshold for estimations.
   * @return {Double} Score.
   */
   this.ACP = function( fPercThreshold ) {
@@ -108,13 +116,13 @@ function vml_RegressionEvaluation( lData, lLabels, oModel ) {
 
 
 /**
-*
+* @classdesc Implementation of evaluation metrics for classification models.
 * @class vml_ClassifierEvaluation
 * @constructor
-* @param {Matrix} lData Data set.
-* @param {Vector} lLabels Labels of data set.
-* @param {Integer} iNumClass Number of different classes/labels.
-* @param {Object} oModel Model to evaluate (needs to provide a "probabilistic" Predict(x) function).
+* @param {Matrix} lData - Data set.
+* @param {Vector} lLabels - Labels of data set.
+* @param {Integer} iNumClass - Number of different classes/labels.
+* @param {Object} oModel - Model to evaluate (needs to provide a "probabilistic" Predict(x) function).
 */
 function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   this.lData = lData;
@@ -125,6 +133,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute all metrics.
   * @method AllMetrics
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Object} Object containing the scores of all metrics.
   */
   this.AllMetrics = function() {
@@ -136,6 +146,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the total accuracy.
   * @method Accuracy
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Double} Accuracy.
   */
   this.Accuracy = function() {
@@ -158,6 +170,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the average per class accuracy.
   * @method AvgPerClassAccuracy
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Double} Average per class accuracy.
   */
   this.AvgPerClassAccuracy = function() {
@@ -175,7 +189,9 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the accuracy of each class.
   * @method PerClassAccuracy
-  * @return {[Double]} Accuracy of each class.
+  * @memberof vml_ClassifierEvaluation
+  * @instance
+  * @return {Array} Accuracy of each class (double).
   */
   this.PerClassAccuracy = function() {
      var lResult = vml_utils.FillList( this.iNumClass, 0.0 );
@@ -200,6 +216,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the confusion matrix (only works for binary labels).
   * @method ConfusionMatrix
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Object} Confusion matrix as an object.
   */
   this.ConfusionMatrix = function() {
@@ -237,6 +255,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the logarithmitic loss.
   * @method LogLoss
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Double} Logarithmitic loss.
   */
   this.LogLoss = function() {
@@ -256,6 +276,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the precision.
   * @method Precision
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Double} Precision.
   */
   this.Precision = function() {
@@ -267,6 +289,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the recall.
   * @method Recall
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Double} Recall.
   */
   this.Recall = function() {
@@ -278,6 +302,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the fall-out.
   * @method FallOut
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Double} Fall-out.
   */
   this.FallOut = function() {
@@ -289,6 +315,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the F1 score.
   * @method F1Score
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Double} F1 score.
   */
   this.F1Score = function() {
@@ -301,6 +329,8 @@ function vml_ClassifierEvaluation( lData, lLabels, oModel, iNumClass ) {
   /**
   * Compute the approx. area under curve (AUC) using ROC.
   * @method AUROC
+  * @memberof vml_ClassifierEvaluation
+  * @instance
   * @return {Double} AUC.
   */
   this.AUROC = function() {

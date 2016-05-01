@@ -21,15 +21,16 @@
 //  SOFTWARE.
 
 /**
-* Implementation of methods for reading/writing 1.0 MAT-File format (see https://www.mathworks.com/help/pdf_doc/matlab/matfile_format.pdf).
+* @classdesc Implementation of methods for reading/writing 1.0 MAT-File format (see https://www.mathworks.com/help/pdf_doc/matlab/matfile_format.pdf).
 * @class vml_MatFileHelper
 * @constructor
 */
 function vml_MatFileHelper() {
   /**
-  * Header of a matrix in .mat file format (v.1.0).
+  * @classdesc Header of a matrix in .mat file format (v.1.0).
+  * @memberof vml_MatFileHelper
   * @class SMatrixHdr
-  * constructor
+  * @constructor
   */
   function SMatrixHdr() {
     // Vars
@@ -41,9 +42,11 @@ function vml_MatFileHelper() {
 
     /**
     * Read header from a given buffer.
-    * @method
-    * @param {DataView} oData Access to buffer through DataView object.
-    * @param {Integer} iStart Position/Offset in buffer.
+    * @method Read
+    * @memberof vml_MatFileHelper.SMatrixHdr
+    * @instance
+    * @param {DataView} oData - Access to buffer through DataView object.
+    * @param {Integer} iStart - Position/Offset in buffer.
     * @return {Integer} Updated position after reading data.
     */
     this.Read = function( oData, iStart ) {
@@ -58,9 +61,11 @@ function vml_MatFileHelper() {
 
     /**
     * Write the header into a given buffer.
-    * @method
-    * @param {DataView} oData Access to buffer through DataView object.
-    * @param {Integer} iStart Position/Offset in buffer.
+    * @method Write
+    * @memberof vml_MatFileHelper.SMatrixHdr
+    * @instance
+    * @param {DataView} oData - Access to buffer through DataView object.
+    * @param {Integer} iStart - Position/Offset in buffer.
     * @return {Integer} Updated position after writing data.
     */
     this.Write = function( oData, iStart ) {
@@ -76,8 +81,10 @@ function vml_MatFileHelper() {
 
   /**
   * Flatten a given matrix into a 1d array.
-  * @method
-  * @param {Matrix} lData Matrix to be flattened.
+  * @method flattenMatrix
+  * @memberof vml_MatFileHelper
+  * @instance
+  * @param {Matrix} lData - Matrix to be flattened.
   * @return {Array} Array containing rows +  columns of the matrix.
   */
   this.flattenMatrix = function( lData ) {
@@ -104,10 +111,12 @@ function vml_MatFileHelper() {
 
   /**
   * Reshape a given array into a matrix.
-  * @method
-  * @param {Array} lData 1d data set.
-  * @param {Integer} iRows Numbe rof rows in result.
-  * @param {Integer} iCols Number of columns in result.
+  * @method reshapeToMatrix
+  * @memberof vml_MatFileHelper
+  * instance
+  * @param {Array} lData - 1d data set.
+  * @param {Integer} iRows - Number of rows in result.
+  * @param {Integer} iCols - Number of columns in result.
   * @return Reshaped array.
   */
   this.reshapeToMatrix = function( lData, iRows, iCols ) {
@@ -128,9 +137,11 @@ function vml_MatFileHelper() {
 
   /**
   * Export a given set of data points + labels into .mat file format buffer. 
-  * @method
-  * @param {Matrix} lData Set of data points.
-  * @param {List} lLabels Labels of all data points.
+  * @method Export
+  * @memberof vml_MatFileHelper
+  * @instance
+  * @param {Matrix} lData - Set of data points.
+  * @param {List} lLabels - Labels of all data points.
   * @return {ArrayBuffer} Buffer of .mat file.
   */
   this.Export = function( lData, lLabels ) {
@@ -197,7 +208,9 @@ function vml_MatFileHelper() {
   /**
   * Import data points + labels from a .mat file format buffer.
   * @method Import
-  * @param {ArrayBuffer} oBuffer Binary content of .mat file.
+  * @memberof vml_MatFileHelper
+  * @instance
+  * @param {ArrayBuffer} oBuffer - Binary content of .mat file.
   * @return Object containing data and labels.
   */
   this.Import = function( oBuffer ) {

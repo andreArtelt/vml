@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of ploting.
+* @classdesc Implementation of plotting methods.
 * @class vml_PlotHelper
 * @constructor
 */
@@ -29,10 +29,12 @@ function vml_PlotHelper() {
   /**
   * Create a combination of heatmap and scatter (optional) plot.
   * @method CreateHeatmapScatterPlot
-  * @param {Matrix} lHeatData List of 3d (third dimension = color) data points.
-  * @param {[Object]} lScatter List of data for scatter plot (each entry is an object of the following form: {lData, strName, strColor, fSize}).
-  * @param {String} strDiv Id of cotnainer of plot.
-  * @param {Float} fStepSize Distance between two values in the heatmap (heatmap is a simple grid hence fStepSize corresponds to the cell size).
+  * @memberof vml_PlotHelper
+  * @instance
+  * @param {Matrix} lHeatData - List of 3d (third dimension: color) data points.
+  * @param {Array} lScatter - List of data for scatter plot (each entry is an object of the following form: {lData, strName, strColor, fSize}).
+  * @param {String} strDiv - Id of cotnainer of plot.
+  * @param {Float} fStepSize - Distance between two values in the heatmap (heatmap is a simple grid hence fStepSize corresponds to the cell size).
   */
   this.CreateHeatmapScatterPlot = function( lHeatData, lScatter, strDiv, fStepSize ) {
     // Remove current plot
@@ -102,48 +104,5 @@ function vml_PlotHelper() {
          }
        }
      }
-  };
-
-  // lScatter: {lData, name, color, size, symbol}
-  this.CreateHeatmap2 = function( lData, lHeat, lScatter, strDiv ) {
-    var lPlotData = [];
-
-    // Build headmap
-    var oHeatmap = { type: 'heatmap', x: [], y: [], z: [], showscale: false, connectgaps: true, hoverinfo: 'none' };
-
-    for( var i=0; i != lData.length; i++ ) {
-      oHeatmap.x.push( lData[ i ][ 0 ] );
-      oHeatmap.y.push( lData[ i ][ 1 ] );
-      oHeatmap.z.push( lHeat[ i ] );
-    }
-
-    lPlotData.push( oHeatmap );
-
-    // Optional: Build scatter plot
-    for( var i=0; i != lScatter.length; i++ ) {
-      var oScatter = { x: [], y: [], mode: 'markers', type: 'scatter'/*, name: lScatter[ i ].name*/, hoverinfo: 'none', showlegend: false,
-                       marker: {size: lScatter[ i ].size, color: lScatter[ i ].color }, symbol: lScatter[ i ].symbol };
-
-      for( var j=0; j != lScatter[ i ].lData.length; j++ ) {
-        oScatter.x.push( lScatter[ i ].lData[ j ][ 0 ] );
-        oScatter.y.push( lScatter[ i ].lData[ j ][ 1 ] );
-      }
-
-      lPlotData.push( oScatter );
-    }
-
-    // Build some settings
-    var oLayout = { showgrid: false, xaxis: {showgrid: false, showline: false, zeroline: false, showticklabels: false, ticks: '', width: 800, height: 600, autosize: false},
-                    yaxis: {showgrid: false, showline: false, zeroline: false, showticklabels: false, ticks: '', height: 600, width: 800, autosize: false}, width: 800, height: 600,
-                    hovermode: false, margin: { b: 0, l: 0, r: 0, t: 0, autoexpand: false } };
-
-    // Plot
-    document.getElementById( strDiv ).innerHTML = "";
-    Plotly.newPlot( strDiv, lPlotData, oLayout );
-  };
-
-
-  this.CreateScatterPlot = function() {
-
   };
 }

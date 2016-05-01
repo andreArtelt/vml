@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of csv import/export of labled data sets.
+* @classdesc Implementation of csv import/export of labled data sets.
 * @class vml_CsvHelper
 * @constructor
 * @static
@@ -29,50 +29,52 @@
 function vml_CsvHelper() {
 }
 
-  /**
-  * Import data points and labels from a given csv string.
-  * @method Import
-  * @param {String} strData
-  * @return
-  */
-  vml_CsvHelper.Import = function( strData ) {
-    var lData = [];
-    var lLabels = [];
+/**
+* @classdesc Import data points and labels from a given csv string.
+* @method Import
+* @memberof vml_CsvHelper
+* @param {String} strData - Csv data.
+* @return {Array} Array (first entry: Data matrix, second entry: Labels vector)
+*/
+vml_CsvHelper.Import = function( strData ) {
+  var lData = [];
+  var lLabels = [];
 
-    var lRows = strData.split( "\n" );
-    for( var i=1;  i < lRows.length; i++ ) {
-      if( lRows[ i ] == "" ) {  // Skip empty rows
-        continue;
-      }
-
-      var tmp = lRows[ i ].split( "," );
-
-      // Convert to list of float
-      var data = tmp[ 0 ].split( " " );
-      for( var j=0; j != data.length; j++ ) {
-        data[ j ] = parseFloat( data[ j ] );
-      }
-
-      lData.push( data );
-      lLabels.push( tmp[ 1 ] );
+  var lRows = strData.split( "\n" );
+  for( var i=1;  i < lRows.length; i++ ) {
+    if( lRows[ i ] == "" ) {  // Skip empty rows
+      continue;
     }
 
-    return [ lData, lLabels ];
-  }
+    var tmp = lRows[ i ].split( "," );
 
-  /**
-  * Export a given set of data points + labels into a csv string.
-  * @method Export
-  * @param {} lData
-  * @param {} lLabels
-  * @return
-  */
-  vml_CsvHelper.Export = function( lData, lLabels) {
-    var strResult = "x,t\r\n";    
-
-    for( var i=0; i != lData.length; i++ ) {
-      strResult += lData[ i ].toString().replace( ",", " " ) + "," + lLabels[ i ] + "\r\n";
+    // Convert to list of float
+    var data = tmp[ 0 ].split( " " );
+    for( var j=0; j != data.length; j++ ) {
+      data[ j ] = parseFloat( data[ j ] );
     }
 
-    return strResult;
+    lData.push( data );
+    lLabels.push( tmp[ 1 ] );
   }
+
+  return [ lData, lLabels ];
+}
+
+/**
+* Export a given set of data points + labels into a csv string.
+* @method Export
+* @memberof vml_CsvHelper
+* @param {Matrix} lData - Data (List of vectors).
+* @param {Vector} lLabel - Labels of each data point.
+* @return {String} Csv data.
+*/
+vml_CsvHelper.Export = function( lData, lLabels) {
+  var strResult = "x,t\r\n";    
+
+  for( var i=0; i != lData.length; i++ ) {
+    strResult += lData[ i ].toString().replace( ",", " " ) + "," + lLabels[ i ] + "\r\n";
+  }
+
+  return strResult;
+}

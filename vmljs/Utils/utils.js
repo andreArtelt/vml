@@ -21,8 +21,8 @@
 //  SOFTWARE.
 
 /**
-* Implementation of various utils (general usefull functions which does not fit into any other class).
-* @class
+* @classdesc Implementation of various utils (general usefull functions which does not fit into any other class).
+* @class vml_utils
 * @static
 * @constructor
 */
@@ -30,17 +30,17 @@ function vml_utils() {
 }
 
 /**
-*
-* @method
-* @static
-* @param
-* @param
-* @param
-* @param
-* @param
-* @param
-* @param
-* @return
+* Scale a given 2d dataset to a given range.
+* @method ScaleData
+* @memberof vml_utils
+* @param {Double} minX - Min. x value of given data.
+* @param {Double} maxX - Max. x value of given data.
+* @param {Double} minY - Min. y value of given data.
+* @param {Double} maxY - Max. y value of given data.
+* @param {Array} data - Array/List of 2d data points.
+* @param {Array} xRange - Range (first entry: minimum, second entry: maximum) of x axis.
+* @param {Array} yRange - Range (first entry: minimum, second entry: maximum) of y axis.
+* @return {Array} Scaled data.
 */
 vml_utils.ScaleData = function( minX, maxX, minY, maxY, data, xRange, yRange ) {
   xRange = xRange == undefined ? [ -5, 5 ] : xRange;
@@ -57,12 +57,12 @@ vml_utils.ScaleData = function( minX, maxX, minY, maxY, data, xRange, yRange ) {
 }
 
 /**
-* Implementation of gradient clipping.
+* Implementation of gradient clipping/scaling.
 * @method GradientClipping
-* @static
-* @param grad Gradient.
-* @param {Float} fThreshold Threshold of gradient norm/size.
-* @return (Clipped/Scaled) gradient
+* @memberof vml_utils
+* @param {Matrix} grad - Gradient.
+* @param {Float} fThreshold - Threshold of gradient norm/size.
+* @return {Matrix} (Clipped/Scaled) gradient
 */
 vml_utils.GradientClipping = function( grad, fThreshold ) {
   var fNorm = math.norm( grad, 2 );
@@ -75,13 +75,13 @@ vml_utils.GradientClipping = function( grad, fThreshold ) {
 }
 
 /**
-* .
+* Transform a given dataset using a polynomial.
 * @method
-* @static
-* @param {Matrix}
-* @param {Integer} Dimension of a data point.
-* @param {Integer} Degree of polynomial.
-* @return
+* @memberof vml_utils
+* @param {Matrix} lData - 
+* @param {Integer} iDim Dimension of a data point.
+* @param {Integer} iDegree Degree of polynomial.
+* @return {Matrix} Transformed data.
 */
 vml_utils.PolynomFeatureTransform = function(lData, iDim, iDegree) {
   var matBigPhi = [];
@@ -104,9 +104,9 @@ vml_utils.PolynomFeatureTransform = function(lData, iDim, iDegree) {
 /*
 * Transform a given value using a polynomial. phi(x)=(1, x, x^2, x^3, ...)(1 is the "hidden" bias)
 * @method ComputePolynomPhi
-* @static
-* @param {Double} x Value to be transformed. 
-* @param {Integer} Degree of polynomial.
+* @memberof vml_utils
+* @param {Double} x - Value to be transformed. 
+* @param {Integer} - Degree of polynomial.
 * @return {Vector} Transformed value.
 */
 vml_utils.ComputePolynomPhi = function( x, iDegree ) {
@@ -122,9 +122,9 @@ vml_utils.ComputePolynomPhi = function( x, iDegree ) {
 /**
 * Create a matrix (with given dimension) and fill it with random values.
 * @method CreateRandMatrix
-* @static
-* @param {[Int]} lDim Dimension of the matrix.
-* @return Matrix with random values.
+* @memberof vml_utils
+* @param {Array} lDim - Array of dimensions (integer) of the matrix.
+* @return {Matrix} Matrix with random values.
 */
 vml_utils.CreateRandMatrix = function( lDim ) {
   return math.random( lDim );
@@ -133,13 +133,13 @@ vml_utils.CreateRandMatrix = function( lDim ) {
 /**
 * Build 2d grid/mesh (includes a 'hidden' bias for each point).
 * @method BuildGrid
-* @static
-* @param {Double} x1 X coordinate of upper left corner.
-* @param {Double} x2 X coordinate of lower right corner.
-* @param {Double} y1 Y coordinate of upper left corner.
-* @param {Double} y2 Y coordinate of lower right corner.
-* @param {Double} stepsize "Size" of a cell (if not specified 0.02 units).
-* @return Grid as one 'big' list (of vectors).
+* @memberof vml_utils
+* @param {Double} x1 - X coordinate of upper left corner.
+* @param {Double} x2 - X coordinate of lower right corner.
+* @param {Double} y1 - Y coordinate of upper left corner.
+* @param {Double} y2 - Y coordinate of lower right corner.
+* @param {Double} stepsize - "Size" of a cell (if not specified 0.02 units).
+* @return {Array} Grid as one 'big' list (of vectors).
 */
 vml_utils.BuildGrid = function( x1, x2, y1, y2, stepsize ) {
       // Create grid/mesh for drawing/evaluating the decision boundary
@@ -159,13 +159,13 @@ vml_utils.BuildGrid = function( x1, x2, y1, y2, stepsize ) {
 /**
 * Build 2d grid/mesh (without a 'hidden' bias).
 * @method BuildGridWithoutBias
-* @static
-* @param {Double} x1 X coordinate of upper left corner.
-* @param {Double} x2 X coordinate of lower right corner.
-* @param {Double} y1 Y coordinate of upper left corner.
-* @param {Double} y2 Y coordinate of lower right corner.
-* @param {Double} stepsize "Size" of a cell (if not specified 0.02 units).
-* @return Grid as one big list (of vectors).
+* @memberof vml_utils
+* @param {Double} x1 - X coordinate of upper left corner.
+* @param {Double} x2 - X coordinate of lower right corner.
+* @param {Double} y1 - Y coordinate of upper left corner.
+* @param {Double} y2 - Y coordinate of lower right corner.
+* @param {Double} stepsize - "Size" of a cell (if not specified 0.02 units).
+* @return {Array} Grid as one big list (of vectors).
 */
 vml_utils.BuildGridWithoutBias = function( x1, x2, y1, y2, stepsize ) {
       // Create grid/mesh for drawing/evaluating the decision boundary
@@ -185,11 +185,11 @@ vml_utils.BuildGridWithoutBias = function( x1, x2, y1, y2, stepsize ) {
 /**
 * Build 1d grid/mesh (without a 'hidden' bias).
 * @method BuildGrid1d
-* @static
-* @param {Double} x1 Left corner.
-* @param {Double} x2 Right corner
-* @param {Double} stepsize "Size" of a cell (if not specified 0.02 units).
-* @return Grid as one big list (of vectors).
+* @memberof vml_utils
+* @param {Double} x1 - Left corner.
+* @param {Double} x2 - Right corner
+* @param {Double} stepsize - "Size" of a cell (if not specified 0.02 units).
+* @return {Array} Grid as one big list (of vectors).
 */
 vml_utils.BuildGrid1d = function( x1, x2, stepsize ) {
       // Create grid/mesh for drawing/evaluating the decision boundary
@@ -204,6 +204,13 @@ vml_utils.BuildGrid1d = function( x1, x2, stepsize ) {
       return lResult;
 };
 
+/**
+* Find the index at which the largest number of a given array occurs.
+* @method ArgMax
+* @memberof vml_utils
+* @param {Array} lData - List of numbers.
+* @return {Integer} Index of largest number.
+*/
 vml_utils.ArgMax = function( lData ) {
   if( lData.length == 0 ) {
     throw "Empty list";
@@ -222,6 +229,13 @@ vml_utils.ArgMax = function( lData ) {
   return iResult;
 };
 
+/**
+* Choose a random item from a given array.
+* @method PickRandom
+* @memberof vml_utils
+* @param {Array} lData - Array/List of objects.
+* @return {Object} Randomly choosen item.
+*/
 vml_utils.PickRandom = function( lData ) {
   var iIndex = Math.floor( Math.random() * lData.length );
 
@@ -231,10 +245,10 @@ vml_utils.PickRandom = function( lData ) {
 /**
 * Fill list/array with a given default value.
 * @method FillList
-* @static
-* @param {Int} iLen Length of list/array.
-* @param _Value Default value (can be of any type).
-* @return Filled list (with given length and default value).
+* @memberof vml_utils
+* @param {Int} iLen - Length of list/array.
+* @param _Value - Default value (can be of any type).
+* @return {Array} Filled list (with given length and default value).
 */
 vml_utils.FillList = function( iLen, _Value ) {
    lResult = [];

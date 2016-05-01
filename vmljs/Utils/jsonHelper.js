@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of json import/export of labled data sets.
+* @classdesc Implementation of json import/export of labled data sets.
 * @class vml_JsonHelper
 * @constructor
 * @static
@@ -32,8 +32,9 @@ function vml_JsonHelper() {
 /**
 * Import data points + labels from a given json string.
 * @method Import
-* @param {String} strData
-* @return
+* @memberof vml_JsonHelper
+* @param {String} strData - Json data.
+* @return {Array} Array (first entry: Data matrix, second entry: Labels vector).
 */
 vml_JsonHelper.Import = function( strData ) {
   var oData = JSON.parse( strData );
@@ -47,9 +48,9 @@ vml_JsonHelper.Import = function( strData ) {
 /**
 * Export a given set of data points + labels to a json string.
 * @method
-* @param
-* @param
-* @return {String} Exported data.
+* @param {Matrix} lData - Data (List of vectors).
+* @param {Vector} lLabel - Labels of each data point.
+* @return {String} Json data.
 */
 vml_JsonHelper.Export = function( lData, lLabels ) {
   return JSON.stringify( { Data: lData, Labels: lLabels } );

@@ -21,8 +21,8 @@
 //  SOFTWARE.
 
 /**
-* Implementation of some helper functions concerning file access.
-* @class
+* @classdesc Implementation of some helper functions concerning file access.
+* @class vml_FileHelper
 * @static
 * @constructor
 */
@@ -32,8 +32,9 @@ function vml_FileHelper() {
 /**
 * Write a given string to a specific file (will trigger download dialog).
 * @method WriteFile
-* @param {String} strFilename Filename.
-* @param {String} strData Base64 encoded file content.
+* @memberof vml_FileHelper
+* @param {String} strFilename - Filename.
+* @param {String} strData - Base64 encoded file content.
 */
 vml_FileHelper.WriteFile = function( strFilename, strData ) {
   // Create invisible link
@@ -53,8 +54,8 @@ vml_FileHelper.WriteFile = function( strFilename, strData ) {
 /**
 * Read the content (as a string) of a given file.
 * @method ReadFileAsStringAsync
-* @static
-* @param oFile File reference.
+* @memberof vml_FileHelper
+* @param {File} oFile - File reference.
 * @param {function} funcCallback Callback which is called with the content of the file.
 */
 vml_FileHelper.ReadFileAsStringAsync = function( oFile, funcCallback ) {
@@ -68,8 +69,8 @@ vml_FileHelper.ReadFileAsStringAsync = function( oFile, funcCallback ) {
 /**
 * Read the content (as an ArrayBuffer) of a given file.
 * @method ReadFileAsArrayBufferAsync
-* @static
-* @param oFile File reference.
+* @memberof vml_FileHelper
+* @param {File} oFile - File reference.
 * @param {function} funcCallback Callback which is called with the content of the file.
 */
 vml_FileHelper.ReadFileAsArrayBufferAsync = function( oFile, funcCallback ) {

@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Collection of various math functions.
+* @classdesc Collection of various math functions.
 * @class vml_math
 * @static
 * @constructor
@@ -32,17 +32,26 @@ function vml_math() {
 /**
 * Matrix-Scalar multiplication (for math.js matricies only!).
 * @method MultiplyScalar
-* @static
-* @param {Matrix} matA Matrix for multiplication.
-* @param {Double} dScalar Scalar for multiplication.
+* @memberof vml_math
+* @param {Matrix} matA - Matrix for multiplication.
+* @param {Double} dScalar - Scalar for multiplication.
 * @return {Matrix} matA * dScalar
 */
-vml_math.MultiplyScalar = function( matA, dScalar ) { // TODO: Replace with math.dotMultiply(x, y)?
+vml_math.MultiplyScalar = function( matA, dScalar ) {
   return matA.map( function( value, index, matrix ) {
     return value * dScalar;
   } );
 }
 
+/**
+* Compute the outerproduct of two given matricies/vectors.
+* @method Outer
+* @memberof vml_math
+* @param {Matrix} matA - Matrix/Vector A.
+* @param {Matrix} matB - Same matrix/vector as matA.
+* @param {Integer} iDimA - Dimension of A.
+* @return {Matrix} matA * matA (where * is the outer product operator).
+*/
 vml_math.Outer = function( matA, matB, iDim ) {
   var _matA = matA;
   for( var i=0; i != iDim - 1; i++ ) {
@@ -53,6 +62,16 @@ vml_math.Outer = function( matA, matB, iDim ) {
   return math.dotMultiply( _matA, _matB );
 };
 
+/**
+* Compute the outerproduct of two given matricies/vectors.
+* @method OuterEx
+* @memberof vml_math
+* @param {Matrix} matA - Matrix/Vector A.
+* @param {Matrix} matB - Matrix/Vector B.
+* @param {Integer} iDimA - Dimension of A.
+* @param {Integer} iDimB - Dimension of B
+* @return {Matrix} matA * matB (where * is the outer product operator).
+*/
 vml_math.OuterEx = function( matA, matB, iDimA, iDimB ) {
   var _matA = matA;
   var _matB = matB;
@@ -71,10 +90,10 @@ vml_math.OuterEx = function( matA, matB, iDimA, iDimB ) {
 /**
 * Gaussian kernel.
 * @method Kernel_Gaussian
-* @static
-* @param {Vector} x1 First data point.
-* @param {Vector} x2 Second data point.
-* @param {Double} sigma Sigma of gauss curve.
+* @memberof vml_math
+* @param {Vector} x1 - First data point.
+* @param {Vector} x2 - Second data point.
+* @param {Double} sigma - Sigma of gauss curve.
 * @return {Double} k(x1, x2) where k is the gaussian kernel.
 */
 vml_math.Kernel_Gaussian = function( x1, x2, sigma ) {
@@ -84,10 +103,10 @@ vml_math.Kernel_Gaussian = function( x1, x2, sigma ) {
 /**
 * Linear kernel.
 * @method Kernel_Linear
-* @static
-* @param {Vector} x1 First data point.
-* @param {Vector} x2 Second data point.
-* @param {Double} b Bias.
+* @memberof vml_math
+* @param {Vector} x1 - First data point.
+* @param {Vector} x2 - Second data point.
+* @param {Double} b - Bias.
 * @return {Double} k(x1, x2) where k is the linear kernel.
 */
 vml_math.Kernel_Linear = function( x1, x2, b ) {
@@ -97,45 +116,13 @@ vml_math.Kernel_Linear = function( x1, x2, b ) {
 /**
 * Polynomial kernel.
 * @method Kernel_Polynomial
-* @static
-* @param {Vector} x1 First data point.
-* @param {Vector} x2 Second data point.
-* @param {Int} d Degree of polynomial.
-* @param {Double} b Bias.
+* @memberof vml_math
+* @param {Vector} x1 - First data point.
+* @param {Vector} x2 - Second data point.
+* @param {Int} d - Degree of polynomial.
+* @param {Double} b - Bias.
 * @return {Double} k(x1, x2) where k is the polynomial kernel.
 */
 vml_math.Kernel_Polynomial = function( x1, x2, d, b ) {
   return math.dotPow( ( math.multiply(math.transpose( x1 ), x2 ) + b ), d );
 };
-
-/**
-* ELM kernel.
-* @method Kernel_ELM
-* @static
-* @param {Vector} x1 First data point.
-* @param {Vector} x2 Second data point.
-* @param {Double} s TODO
-* @return {Double} k(x1, x2) where k is the elm kernel.
-*/
-vml_math.Kernel_ELM = function( x1, x2, s ) {
-  var A = math.multiply( math.transpose( x1 ), x2 );
-  var B = math.multiply( math.transpose( x1 ), x1 );
-  var C = math.multiply( math.transpose( x2 ), x2 );
-  var D = 1.0 / Math.pow( 2*s, 2 );
-
-  return ( 2.0 / math.pi ) * math.asin( ( 1 + A ) / math.sqrt( ( D + 1 + B ) * ( D + 1 + C ) ) );
-}
-
-/**
-* Sigmoid kernel.
-* @method Kernel_Sigmoid
-* @static
-* @param {Vector} x1 First data point.
-* @param {Vector} x2 Second data point.
-* @param {Double} a TODO
-* @param {Double} b TODO
-* @return {Double} k(x1, x2) where k is the sigmoid kernel.
-*/
-vml_math.Kernel_Sigmoid = function( x1, x2, a, b ) {
-  return math.tanh( a * ( math.transpose( x1 )*x2 ) + b );
-}

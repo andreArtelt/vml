@@ -4,7 +4,7 @@
         "dictionaries": ["jsdoc","closure"]
     },
     "source": {
-        "include": ["vmljs/"],
+        "include": ["vmljs/", "vmljs/Utils/"],
         "includePattern": ".+\\.js(doc)?$"
     },
     "plugins": [],

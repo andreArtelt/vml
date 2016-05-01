@@ -1,5 +1,7 @@
 var runSync = require('child_process').execSync;
 
+runSync('jsdoc -c conf.json');
+
 runSync('vulcanize --exclude "../Libs/" --exclude "../vmljs/" --exclude "../Components/DataGen/dataGen.js" --exclude "../Components/Evaluation/evaluation.js" --exclude "svmui.js" SVM/index_dev.htm --out-html SVM/index.htm', {stdio:[0,1,2]});
 
 runSync('vulcanize --exclude "../Libs/" --exclude "../vmljs/" --exclude "../Components/DataGen/dataGen.js" --exclude "../Components/Evaluation/evaluation.js" --exclude "polynomialRegUi.js" PolynomialRegression/index_dev.htm --out-html PolynomialRegression/index.htm', {stdio:[0,1,2]});
