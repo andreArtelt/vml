@@ -21,7 +21,9 @@
 //  SOFTWARE.
 
 /**
-* Implementation if SVM (Support Vector Machine)
+* @classdescImplementation of SVM (Support Vector Machine)
+* @class vml_SVM
+* @constructor
 */
 function vml_SVM() {
   this.kernel = undefined;
@@ -35,7 +37,15 @@ function vml_SVM() {
   this.lData = [];
   this.lLabels = [];
 
-  // Init
+  /**
+  * Initilalize model.
+  * @method Init
+  * @memberof vml_SVM
+  * @instance
+  * @param {Matrix} lData - Data set.
+  * @param {Vector} lLabels - Labels of each data point.
+  * @param {Integer} iC - Slack penalty.
+  */
   this.Init = function( lData, lLabels, iC ) {
      if( lLabels instanceof Array == false ) {
        throw "lLabels has to be a vector (Array)"
@@ -56,16 +66,30 @@ function vml_SVM() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_SVM
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
   };
 
+  /**
+  * Initalize all alphas with 0.
+  * @method InitAlphas
+  * @memberof vml_SVM
+  * @instance
+  */
   this.InitAlphas = function() {
      this.lAlphas = vml_utils.FillList( this.lData.length, 0 );
   };
 
+  /**
+  * Determine all support vectors (vector with alpha != 0).
+  * @method GetSupportVectors
+  * @memberof vml_SVM
+  * @instance
+  */
   this.GetSupportVectors = function() {
      this.lSuppVecs = [];
      this.lSuppVecsLabels = [];
@@ -82,8 +106,11 @@ function vml_SVM() {
   };
 
   /**
-  *
-  *
+  * Compute the current error on the dataset (value of the cost function for the current parameters)
+  * @method ComputeError
+  * @memberof vml_SVM
+  * @instance
+  * @return {Double} Error.
   */
   this.ComputeError = function() {
      var fError = 0.0;
@@ -103,7 +130,13 @@ function vml_SVM() {
   };
 
   /**
-  *
+  * Compute predicted class probabilities for a given point.
+  * @method Predict
+  * @memberof vml_SVM
+  * @instance
+  * @param {Vector} vecPoint - Point to be classified/labeled.
+  * @param {Boolean} bComputeSuppVecs - true if support vectors should be computed/determined again, false otherwise.
+  * @return {Vector} Probabilities for each class.
   */
   this.Predict = function( vecPoint, bRecomputeSuppVecs ) {
      if( vecPoint instanceof Array == false && vecPoint._data == undefined ) {
@@ -134,7 +167,11 @@ function vml_SVM() {
   };
 
   /**
-  *
+  * Perform one step of fitting/training.
+  * @method FitStep
+  * @memberof vml_SVM
+  * @instance
+  * @param {Double} fLambda - Learning rate (step size).
   */
   this.FitStep = function( fLambda ) {
      // Select random sample

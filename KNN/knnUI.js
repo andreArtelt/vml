@@ -34,7 +34,7 @@ function vml_KnnUI() {
      try {
        // Init
        this.oDataGen = oDataGen;
-       this.oModel = new vml_knn();
+       this.oModel = new vml_KNN();
 
        // Register eventhandler
        document.getElementById( "fitBtn" ).addEventListener( "click", this.Fit.bind( this ), false );

@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of the gaussian mixture model.
+* @classdesc Implementation of the gaussian mixture model.
 * @class vml_GaussMixture
 * @constructor
 */
@@ -36,8 +36,10 @@ function vml_GaussMixture() {
   /**
   * Initialization.
   * @method Init
-  * @param {Matrix} Set of all data points used for fitting (List of vectors).
-  * @param {Integer} Number of gaussian distributions used in mixture.
+  * @memberof vml_GaussMixture
+  * @instance
+  * @param {Matrix} lData - Set of all data points used for fitting (List of vectors).
+  * @param {Integer} iNumDist - Number of gaussian distributions used in mixture.
   */
   this.Init = function( lData, iNumDist ) {
      if( typeof( iNumDist ) != "number" ) {
@@ -94,7 +96,9 @@ function vml_GaussMixture() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_GaussMixture
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
@@ -102,7 +106,9 @@ function vml_GaussMixture() {
 
   /**
   * Perform one step of fitting using the EM algorithm (expectation-maximization algorithm).
-  * @method Fit
+  * @method FitStep
+  * @memberof vml_GaussMixture
+  * @instance
   */
   this.FitStep = function() {
     // Expectation
@@ -139,9 +145,11 @@ function vml_GaussMixture() {
   };
 
   /**
-  * Predict the pobability of a given point.
+  * Compute the pobability of observing a given point.
   * @method Predict
-  * @param {Vector} vecPoint Point.
+  * @memberof vml_GaussMixture
+  * @instance
+  * @param {Vector} vecPoint - Point to be observed.
   * @return {Double} Probability of the given point under the gaussian mixture distribution.
   */
   this.Predict = function( vecPoint ) {
@@ -161,6 +169,8 @@ function vml_GaussMixture() {
   /**
   * Compute the loglikelihood of data set.
   * @method LogLikelihood
+  * @memberof vml_GaussMixture
+  * @instance
   * @return {Double} Loglikelihood.
   */
   this.LogLikelihood = function() {
@@ -200,9 +210,11 @@ function vml_GaussMixture() {
   /**
   * Compute the multivariate gaussian distribution over a given point and parameters.
   * @method GaussDistMultiDim
-  * @param {Vector} vecX Point used as input of gaussian distribution.
-  * @param {Vector} vecMean Mean of gaussian distribution.
-  * @param {Matrix} matCov Covariance matrix of gaussian distribution.
+  * @memberof vml_GaussMixture
+  * @instance
+  * @param {Vector} vecX - Point used as input of gaussian distribution.
+  * @param {Vector} vecMean - Mean of gaussian distribution.
+  * @param {Matrix} matCov - Covariance matrix of gaussian distribution.
   * @return {Double} Probability of the given point.
   */
   this.GaussDistMultiDim = function( vecX, vecMean, matCov ) {

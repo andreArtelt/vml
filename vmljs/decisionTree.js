@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of an learning algorithm for decision trees.
+* @classdesc Implementation of an learning algorithm for decision trees.
 * @class vml_DecisionTree
 * @constructor
 */
@@ -32,15 +32,16 @@ function vml_DecisionTree() {
   this.oTreeRoot = undefined;  // Root node of decision tree.
 
   /**
-  * Node of a decision tree.
+  * @memberof vml_DecisionTree
+  * @classdesc Node of a decision tree.
   * @class TreeNode
   * @constructor
-  * @param {Boolean} True if node is a leaf, False otherwise.
-  * @param {Array} Array of predictions (probabilities) for each class (NOTE: Only specified if this node is a leaf).
-  * @param {TreeNode} oLeftTree Left child/tree of this node (NOTE: Only specified if this node if NOT a leaf).
-  * @param {TreeNode} oRightTree Right child/tree of this node (NOTE: Only specified if this node if NOT a leaf).
-  * @param {Integer} iFeatureIndex Index of feature to split data (NOTE: Only specified if this node if NOT a leaf).
-  * @param {Float} Threshold used for splitting (NOTE: Only specified if this node is NOT a leaf).
+  * @param {Boolean} bIsLeaf - True if node is a leaf, False otherwise.
+  * @param {Array} lPred - Array of predictions (probabilities) for each class (NOTE: Only specified if this node is a leaf).
+  * @param {TreeNode} oLeftTree  -Left child/tree of this node (NOTE: Only specified if this node if NOT a leaf).
+  * @param {TreeNode} oRightTree - Right child/tree of this node (NOTE: Only specified if this node if NOT a leaf).
+  * @param {Integer} iFeatureIndex - Index of feature to split data (NOTE: Only specified if this node if NOT a leaf).
+  * @param {Float} fThreshold - Threshold used for splitting (NOTE: Only specified if this node is NOT a leaf).
   */
   function TreeNode( bIsLeaf, lPred, oLeftTree, oRightTree, iFeatureIndex, fThreshold ) {
     this.bIsLeaf = bIsLeaf;
@@ -54,10 +55,13 @@ function vml_DecisionTree() {
   /**
   * Fit a decision tree for some given data.
   * @method Fit
-  * @param {Matrix} lData List of data points.
-  * @param {Vector} Labels for each data point (Assuming labels as: 0, 1, 2, ...).
-  * @param {Integer} Max depth of tree.
-  * @param {Integer} Number of different labels/classes.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Matrix} lData - List of data points.
+  * @param {Vector} lLabels - Labels for each data point (Assuming labels as: 0, 1, 2, ...).
+  * @param {Integer} iDepth - Max depth of tree.
+  * @param {Integer} iNumClasses - Number of different labels/classes.
+  * @param {Integer} iNumFeature - Number of features (dimension of input vectors).
   */
   this.Fit = function( lData, lLabels, iDepth, iNumClasses, iNumFeature ) {
      if( lLabels instanceof Array == false ) {
@@ -84,7 +88,9 @@ function vml_DecisionTree() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
@@ -93,7 +99,9 @@ function vml_DecisionTree() {
   /**
   * Predict the label of a give data point.
   * @method Predict
-  * @param {Vector} Data point.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Vector} vecPoint - Data point.
   * @return {Array} Array of predictions (probabilities) for each class.
   */
   this.Predict = function( vecPoint ) {
@@ -115,8 +123,10 @@ function vml_DecisionTree() {
   /**
   * Walk through a given tree using a given data point until a leaf is reached.
   * @method walkTree
-  * @param {Vector} Data point.
-  * @param {TreeNode} Current node.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Vector} vecPoint - Data point.
+  * @param {TreeNode} oNode - Current node.
   * @return {TreeNode} Reached leaf.
   */
   this.walkTree = function( vecPoint, oNode ) {
@@ -137,9 +147,11 @@ function vml_DecisionTree() {
   /**
   * Method for learning/building a tree to fit a given set of labeled data (NOTE: Only real valued features are supported).
   * @method buildTree
-  * @param {Matrix} lData List of data points.
-  * @param {Vector} lLabels Labels of each data point.
-  * @param {Integer} iDepth Max depth of tree.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Matrix} lData - List of data points.
+  * @param {Vector} lLabels - Labels of each data point.
+  * @param {Integer} iDepth - Max depth of tree.
   * @return {TreeNode} Root node of tree.
   */
   this.buildTree = function( lData, lLabels, iDepth ) {
@@ -165,7 +177,9 @@ function vml_DecisionTree() {
   /**
   * Build a leaf (prediction based on a majority classifier) using a given set of labels.
   * @method createLeaf
-  * @param {Vector} lLabels Labels of each data point.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Vector} lLabels - Labels of each data point.
   * @return {TreeNode} Leaf makeing a prediction.
   */
   this.createLeaf = function( lLabels ) {
@@ -175,8 +189,10 @@ function vml_DecisionTree() {
   /**
   * Find the best split over a given set of labeled data.
   * @method findBestSplit
-  * @param {Matrix} lData List of data points.
-  * @param {Vector} lLabels Labels of each data point.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Matrix} lData - List of data points.
+  * @param {Vector} lLabels - Labels of each data point.
   * @return {Object} Object containing information about the best split ({ iFeatureIndex, fThreshold }).
   */
   this.findBestSplit = function( lData, lLabels ) {
@@ -204,10 +220,12 @@ function vml_DecisionTree() {
   /**
   * Split a given data set on a given feature using a given threshold.
   * @method doSplit
-  * @param {Matrix} lData List of data points.
-  * @param {Vector} lLabels Labels of each data point.
-  * @param {Integer} iFeatureIndex Index of feature to split data.
-  * @param {Float} Threshold used for splitting.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Matrix} lData - List of data points.
+  * @param {Vector} lLabels - Labels of each data point.
+  * @param {Integer} iFeatureIndex - Index of feature to split data.
+  * @param {Float} fThreshold - Threshold used for splitting.
   * @return {Object} Object containing splitted data ({ lLeftData:, lLeftLabels, lRightData, lRightLabels}).
   */
   this.doSplit = function( lData, lLabels, iFeatureIndex, fThreshold ) {
@@ -231,10 +249,12 @@ function vml_DecisionTree() {
   /**
   * Compute the error (sume over entropy of left and right set) of a given split.
   * @method computeErrorOfSplit
-  * @param {Matrix} lData List of data points.
-  * @param {Vector} lLabels Labels of each data point.
-  * @param {Integer} iFeatureIndex Index of feature to split data.
-  * @param {Float} fThreshold Threshold used for splitting.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Matrix} lData - List of data points.
+  * @param {Vector} lLabels - Labels of each data point.
+  * @param {Integer} iFeatureIndex - Index of feature to split data.
+  * @param {Float} fThreshold - Threshold used for splitting.
   * @return {Double} Computed error of the split.
   */
   this.computeErrorOfSplit = function( lData, lLabels, iFeatureIndex, fThreshold ) {
@@ -250,7 +270,9 @@ function vml_DecisionTree() {
   /**
   * Compute the error (entropy) of the majority classifier (probabilistic) for a given set of labels.
   * @method computeErrorOfMajorityClassifier
-  * @param {Vector} lLabels List of labels (used to fit the majority classifier).
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Vector} lLabels - List of labels (used to fit the majority classifier).
   * @return {Float} Error of the majority classifier.
   */
   this.computeErrorOfMajorityClassifier = function( lLabels ) {
@@ -275,7 +297,9 @@ function vml_DecisionTree() {
   /**
   * A probabilistic majority classifier over a given set of labels.
   * @method majorityClassifier
-  * @param {Vector} lLabel List of labels used to fit the classifier.
+  * @memberof vml_DecisionTree
+  * @instance
+  * @param {Vector} lLabel - List of labels used to fit the classifier.
   * @return {Object} Classifier as an object of the following format: { lPred, iLabel }.
   */
   this.majorityClassifier = function( lLabels ) {

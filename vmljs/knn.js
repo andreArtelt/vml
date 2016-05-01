@@ -22,11 +22,11 @@
 
 /**
 * @classdesc Implementation of the k-nearest-neighbor algorithm.
-* @class vml_knn
+* @class vml_KNN
 * @constructor 
 * @requires mathjs
 */
-function vml_knn() {
+function vml_KNN() {
   // Vars
   this.iK = 1;
   this.lData = [];
@@ -36,7 +36,7 @@ function vml_knn() {
 
   /**
   * Init the model.
-  * @memberof vml_knn
+  * @memberof vml_KNN
   * @instance
   * @method Init
   * @param {Matrix} lData - Data (List of vectors).
@@ -60,7 +60,9 @@ function vml_knn() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_KNN
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
@@ -77,7 +79,7 @@ function vml_knn() {
 
   /**
   * Find the k nearest neighbors (including their labels) of a given point.
-  * @memberof vml_knn
+  * @memberof vml_KNN
   * @instance
   * @method FindKnn
   * @param {Vector} vecPoint - Point used to compute neighborhood.
@@ -112,7 +114,7 @@ function vml_knn() {
 
   /**
   * Predict the value (regression) of a given point.
-  * @memberof vml_knn
+  * @memberof vml_KNN
   * @instance
   * @method PredictRegression
   * @param {Vector} vecPoint - Input of model.
@@ -140,10 +142,10 @@ function vml_knn() {
 
   /**
   * Predict the label/class of a given point.
-  * @memberof vml_knn
+  * @memberof vml_KNN
   * @instance
   * @method PredictClassification
-  * @param {Vector} - vecPoint Point to label (input of model).
+  * @param {Vector} vecPoint - Point to label (input of model).
   * @returns {Array} Predicted class labels (probabilities) for each class.
   */
   this.PredictClassification = function( vecPoint ) {

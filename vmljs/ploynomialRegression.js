@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of polynomial regression.
+* @classdesc Implementation of polynomial regression.
 * @class vml_PolynomialRegression
 * @constructor
 */
@@ -36,8 +36,10 @@ function vml_PolynomialRegression() {
   /**
   * Initialize the model.
   * @method Init
-  * @param {Integer} iDegree Degree of polynomial.
-  * @param {Matrix} lData Complete data set used in this model.
+  * @memberof vml_PolynomialRegression
+  * @instance
+  * @param {Integer} iDegree - Degree of polynomial.
+  * @param {Matrix} lData - Complete data set used in this model.
   */
   this.Init = function( iDegree, lData ) {
     if( typeof( iDegree ) != "number" ) {
@@ -57,7 +59,9 @@ function vml_PolynomialRegression() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_PolynomialRegression
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
@@ -66,7 +70,9 @@ function vml_PolynomialRegression() {
   /**
   * Transform a given value using a polynomial.
   * @method ComputePhi
-  * @param {Double} x Value/Feature to be transformed.
+  * @memberof vml_PolynomialRegression
+  * @instance
+  * @param {Double} x - Value/Feature to be transformed.
   * @return {Vector} Transformed value.
   */
   this.ComputePhi = function( x ) {
@@ -76,7 +82,9 @@ function vml_PolynomialRegression() {
   /**
   * Convert a given set of data (add hidden bias + perform polynomial feature transformation)
   * @method ConvertData
-  * @param {Matrix} lData All samples (data set).
+  * @memberof vml_PolynomialRegression
+  * @instance
+  * @param {Matrix} lData - All samples (data set).
   */
   this.ConvertData = function( lData ) {
      this.lData = [];
@@ -99,6 +107,8 @@ function vml_PolynomialRegression() {
   /**
   * Compute the RSS (Residual Sum of Squares).
   * @method ComputeRSS
+  * @memberof vml_PolynomialRegression
+  * instance
   * @return {Double} RSS of current data and weights.
   */
   this.ComputeError = function() {
@@ -119,7 +129,9 @@ function vml_PolynomialRegression() {
   /**
   * Fit the model using Least-Square.
   * @method Fit
-  * @param {Double} fReg Regularization rate.
+  * @memberof vml_PolynomialRegression
+  * @instance
+  * @param {Double} fReg - Regularization rate.
   */
   this.Fit = function( fReg ) {
     if( typeof( fReg ) != "number" ) {
@@ -144,8 +156,10 @@ function vml_PolynomialRegression() {
   /**
   * Update weights using gradient descent.
   * @method UpdateWeights
-  * @param {Double} fLambda Learning rate.
-  * @param {Double} fReg Regularization rate.
+  * @memberof vml_PolynomialRegression
+  * @instance
+  * @param {Double} fLambda - Learning rate.
+  * @param {Double} fReg - Regularization rate.
   */
   this.UpdateWeights = function( fLambda, fReg ) {
      if( typeof( fLambda ) != "number" ) {
@@ -185,7 +199,9 @@ function vml_PolynomialRegression() {
   /**
   * Predict the value of a given point.
   * @method Predict
-  * @param {Float} vecPoint Data point used for prediction.
+  * @memberof vml_PolynomialRegression
+  * @instance
+  * @param {Float} vecPoint - Data point used for prediction.
   * @return {Double} Predicted value.
   */
   this.Predict = function( vecPoint ) {

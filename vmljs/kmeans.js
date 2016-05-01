@@ -21,8 +21,8 @@
 //  SOFTWARE.
 
 /**
-* Implementation of the k-means clustering algorithm.
-* @class vml_kmeans
+* @classdesc Implementation of the k-means clustering algorithm.
+* @class vml_KMeans
 * @constructor 
 */
 function vml_KMeans() {
@@ -38,8 +38,10 @@ function vml_KMeans() {
   /**
   * Initialization.
   * @method Init
-  * @param {Matrix} lData List/Set of two dimensional data points.
-  * @param {Integer} iNumCluster Number of clusters the algorithm should compute.
+  * @memberof vml_KMeans
+  * @instance
+  * @param {Matrix} lData - List/Set of two dimensional data points.
+  * @param {Integer} iNumCluster - Number of clusters the algorithm should compute.
   */
   this.Init = function( lData, iNumCluster ) {
      if( typeof( iNumCluster ) != "number" ) {
@@ -64,7 +66,9 @@ function vml_KMeans() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_KMeans
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
@@ -73,6 +77,8 @@ function vml_KMeans() {
   /**
   * Perform one step of fitting/training.
   * @method FitStep
+  * @memberof vml_KMeans
+  * @instance
   */
   this.FitStep = function() {
      // Expectation step
@@ -95,7 +101,9 @@ function vml_KMeans() {
   /**
   * Predict the cluster of a given point.
   * @method Predict
-  * @param {Vector} vecPoint Point to be assigned to a cluster.
+  * @memberof vml_KMeans
+  * @instance
+  * @param {Vector} vecPoint - Point to be assigned to a cluster.
   */
   this.Predict = function( vecPoint ) {
       if( vecPoint instanceof Array == false ) {

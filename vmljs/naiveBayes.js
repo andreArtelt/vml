@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of gaussian naive bayes classification.
+* @classdesc Implementation of gaussian naive bayes classification.
 * @class vml_NaiveBayes
 * @constructor
 */
@@ -39,9 +39,11 @@ function vml_NaiveBayes() {
   /**
   * Initialization of the classifier (including fitting/training).
   * @method Fit
-  * @param {Matrix} lClassA All samples of class A.
-  * @param {Matrix} lClassB All samples of class B.
-  * @param {Integer} iNumFeatures Number of features/dimension of a data point (if not specified it's set to 2).
+  * @memberof vml_NaiveBayes
+  * @instance
+  * @param {Matrix} lClassA - All samples of class A.
+  * @param {Matrix} lClassB - All samples of class B.
+  * @param {Integer} iNumFeatures - Number of features/dimension of a data point (if not specified it's set to 2).
   */
   this.Fit = function( lClassA, lClassB, iNumFeatures ) {
      if( iNumFeatures == undefined ) {  // If number of features has not been specified, assume 2 (because of 2d)
@@ -78,7 +80,9 @@ function vml_NaiveBayes() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_NaiveBayes
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
@@ -87,7 +91,9 @@ function vml_NaiveBayes() {
   /**
   * Predict the class of a given sample.
   * @method Predict
-  * @param {Vector} vecPoint Point to be classified.
+  * @memberof vml_NaiveBayes
+  * @instance
+  * @param {Vector} vecPoint - Point to be classified.
   * @return Score/Probability for each class label (a list with two values).
   */
   this.Predict = function( vecPoint ) {

@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of the perceptron.
+* @classdesc Implementation of the perceptron.
 * @class vml_Perceptron
 * @constructor
 */
@@ -34,8 +34,10 @@ function vml_Perceptron() {
   /**
   * Inititalization.
   * @method Init
-  * @param {Matrix} lClassA All samples of class A.
-  * @param {Matrix} lClassB All samples of class B.
+  * @memberof vml_Perceptron
+  * @instance
+  * @param {Matrix} lClassA - All samples of class A.
+  * @param {Matrix} lClassB - All samples of class B.
   */
   this.Init = function( lClassA, lClassB ) {
     // Convert dataset
@@ -50,7 +52,9 @@ function vml_Perceptron() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_Perceptron
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
@@ -59,6 +63,8 @@ function vml_Perceptron() {
   /**
   * Init weights with random values.
   * @method InitWeightRand
+  * @memberof vml_Perceptron
+  * @instance
   */
   this.InitWeightsRand = function() {
      // Fill weight matrix (including bias) with random values
@@ -69,8 +75,10 @@ function vml_Perceptron() {
   * Convert Make given data suiteable for training (bias 1 has to be included into samples).
   * @method convertData
   * @private
-  * @param {Matrix} lClassA All samples of class A.
-  * @param {Matrix} lClassB All samples of class B.
+  * @memberof vml_Perceptron
+  * @instance
+  * @param {Matrix} lClassA - All samples of class A.
+  * @param {Matrix} lClassB - All samples of class B.
   */
   this.convertData = function( lClassA, lClassB ) {
      this.lData = [];
@@ -94,7 +102,9 @@ function vml_Perceptron() {
   /**
   * Update weights using the perceptron learing rule (perform one step of fitting/training).
   * @method FitStep
-  * @param {Double} fLambda Learning rate
+  * @memberof vml_Perceptron
+  * @instance
+  * @param {Double} fLambda - Learning rate.
   */
   this.FitStep = function( fLambda ) {
      if( typeof( fLambda ) != "number" ) {
@@ -119,7 +129,9 @@ function vml_Perceptron() {
   /**
   * Predict the class/label of a given point.
   * @method
-  * @param {Vector} vecPoint Point to classify.
+  * @memberof vml_Perceptron
+  * @instance
+  * @param {Vector} vecPoint - Point to classify.
   * @return {Integer} Predicted label/class (-1 or +1).
   */
   this.Predict = function( vecPoint ) {
@@ -143,6 +155,8 @@ function vml_Perceptron() {
   /**
   * Compute the cost/error of the model on the current data set (using current parameters).
   * @method ComputeError
+  * @memberof vml_Perceptron
+  * @instance
   * @return {Double} Total error/cost on the current params + data.
   */
   this.ComputeError = function() {

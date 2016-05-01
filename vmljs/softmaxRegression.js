@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 /**
-* Implementation of softmax regression (in the case of two classes it reduces to logistic regression).
+* @classdesc Implementation of softmax regression (in the case of two classes it reduces to logistic regression).
 * @class vml_SoftmaxRegression
 * @constructor
 */
@@ -37,10 +37,12 @@ function vml_SoftmaxRegression() {
   /**
   * Initialize model.
   * @method Init
-  * @param {Matrix} lData Data set.
-  * @param {Vector} lLabels Labels of each data point.
-  * @param {Integer} iDim Dimension of data.
-  * @param {Integer} iNumClasses Number of classes/labels.
+  * @memberof vml_SoftmaxRegression
+  * @instance
+  * @param {Matrix} lData - Data set.
+  * @param {Vector} lLabels - Labels of each data point.
+  * @param {Integer} iDim - Dimension of data.
+  * @param {Integer} iNumClasses - Number of classes/labels.
   */
   this.Init = function( lData, lLabels, iDim, iNumClasses ) {
     if( lLabels instanceof Array == false ) {
@@ -66,7 +68,9 @@ function vml_SoftmaxRegression() {
   /**
   * Checks if the model has been initialized or not.
   * @method IsReady
-  * @return {boolean} true if it has been initialized, false otherwise.
+  * @memberof vml_SoftmaxRegression
+  * @instance
+  * @return {Boolean} true if it has been initialized, false otherwise.
   */
   this.IsReady = function() {
     return this.bReady;
@@ -74,6 +78,8 @@ function vml_SoftmaxRegression() {
 
   /**
   * Initialize weights with random values.
+  * @memberof vml_SoftmaxRegression
+  * @instance
   * @method ResetWeihts
   */
   this.ResetWeights = function() {
@@ -86,8 +92,10 @@ function vml_SoftmaxRegression() {
   /**
   * Perform one step of training/fitting using gd (gd = gradient descent).
   * @method TrainStep
-  * @param {Double} fLambda Learning rate (stepsize).
-  * @param {Double} fL2 "Strength" of L2 regularization.
+  * @memberof vml_SoftmaxRegression
+  * @instance
+  * @param {Double} fLambda - Learning rate (stepsize).
+  * @param {Double} fL2 - "Strength" of L2 regularization.
   * @return {Double} Current log likelihood.
   */
   this.TrainStep = function( fLambda, fL2 ) {
@@ -141,6 +149,8 @@ function vml_SoftmaxRegression() {
   /**
   * Compute the log likelihood of the training data.
   * @method LogLikelihood
+  * @memberof vml_SoftmaxRegression
+  * @instance
   * @return {Double} Log likelihood.
   */
   this.LogLikelihood = function() {
@@ -160,7 +170,9 @@ function vml_SoftmaxRegression() {
   /**
   * Compute predicted class probabilities for a given point.
   * @method Predict
-  * @param {Vector} vecPoint Point to be classified/labeled.
+  * @memberof vml_SoftmaxRegression
+  * @instance
+  * @param {Vector} vecPoint - Point to be classified/labeled.
   * @return {Vector} Class probabilities.
   */
   this.Predict = function( vecPoint ) {
@@ -190,18 +202,5 @@ function vml_SoftmaxRegression() {
     }
 
     return lResult;
-  };
-
-  this.Evaluate = function() {
-    var oResult = [];
-
-    for( var i=0; i != this.lData.length; i++ ) {
-       var pred = this.Predict( this.lData[ i ] );
-       var label = this.lLabels[ i ];
-
-       oResult.push( {predT: pred, t: label} );
-    }
-
-    return oResult;
   };
 }
