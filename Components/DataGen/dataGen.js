@@ -66,7 +66,7 @@ function vml_DataGen() {
         document.getElementById( "btnExportToMAT" ).addEventListener( "click", this.ExportMAT.bind( this ), false );
         document.getElementById( "btnImportFromJSON" ).addEventListener( "click", this.ImportJSON.bind( this ), false );
         document.getElementById( "btnImportFromCSV" ).addEventListener( "click", this.ImportCSV.bind( this ), false );
-        document.getElementById( "btnImportFromMAT" ).addEventListener( "change", this.ImportMAT.bind( this ), false );
+        document.getElementById( "ctrlImportFromMAT" ).addEventListener( "change", this.ImportMAT.bind( this ), false );
         document.getElementById( "importCloseBtn" ).addEventListener( "click", this.ImportClose.bind( this ), false );
         document.getElementById( "importUpload" ).addEventListener( "change", this.ImportUpload.bind( this ), false );
 

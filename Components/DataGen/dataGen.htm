@@ -33,11 +33,11 @@
         <div id="importBtn" class="dropdown dropDownBtn">Import</button>
          <div class="dropdown-content">
            <button id="btnImportFromJSON" class="button">JSON</button>
-           <button id="btnImportFromCSV" class="button">CSV</button><br>
-           <!--<button id="btnImportFromMAT" class="button">MAT</button>-->
-           <div class="dialogBtn fileUploadBtn boxAlign">MAT<input id="btnImportFromMAT" type="file" name="file" class="upload" /></div>
+           <button id="btnImportFromCSV" class="button">CSV</button>
+	   <button id="btnImportFromMAT" class="button" onclick="document.getElementById('ctrlImportFromMAT').click();">MAT</button>
          </div>
         </div>
+        <input id="ctrlImportFromMAT" type="file" name="file" style="visibility:hidden" />
       </div> 
       <br>
       <div id="dataGenType">
