@@ -26,193 +26,193 @@
 * @constructor
 */
 function vml_PolynomialRegression() {
-  this.lWeights = null;
-  this.lData = [];
-  this.lLabels = [];
-  this.BigPhi = null;
-  this.iDegree = 0;
-  this.bReady = false;
+    this.lWeights = null;
+    this.lData = [];
+    this.lLabels = [];
+    this.BigPhi = null;
+    this.iDegree = 0;
+    this.bReady = false;
 
-  /**
-  * Initialize the model.
-  * @method Init
-  * @memberof vml_PolynomialRegression
-  * @instance
-  * @param {Integer} iDegree - Degree of polynomial.
-  * @param {Matrix} lData - Complete data set used in this model.
-  */
-  this.Init = function( iDegree, lData ) {
-    if( typeof( iDegree ) != "number" ) {
-      throw "iDegree has to be number"
-    }
+    /**
+    * Initialize the model.
+    * @method Init
+    * @memberof vml_PolynomialRegression
+    * @instance
+    * @param {Integer} iDegree - Degree of polynomial.
+    * @param {Matrix} lData - Complete data set used in this model.
+    */
+    this.Init = function( iDegree, lData ) {
+        if( typeof( iDegree ) != "number" ) {
+            throw "iDegree has to be number"
+        }
 
-    this.iDegree = iDegree;
+        this.iDegree = iDegree;
 
-    this.ConvertData( lData );
+        this.ConvertData( lData );
 
-     // Fill weight matrix (including bias) with random values
-     this.lWeights = math.random( [ this.iDegree + 1 ], -5, 5 );
+        // Fill weight matrix (including bias) with random values
+        this.lWeights = math.random( [ this.iDegree + 1 ], -5, 5 );
 
-     this.bReady = true;
-  };
+        this.bReady = true;
+    };
 
-  /**
-  * Checks if the model has been initialized or not.
-  * @method IsReady
-  * @memberof vml_PolynomialRegression
-  * @instance
-  * @return {Boolean} true if it has been initialized, false otherwise.
-  */
-  this.IsReady = function() {
-    return this.bReady;
-  };
+    /**
+    * Checks if the model has been initialized or not.
+    * @method IsReady
+    * @memberof vml_PolynomialRegression
+    * @instance
+    * @return {Boolean} true if it has been initialized, false otherwise.
+    */
+    this.IsReady = function() {
+        return this.bReady;
+    };
 
-  /**
-  * Transform a given value using a polynomial.
-  * @method ComputePhi
-  * @memberof vml_PolynomialRegression
-  * @instance
-  * @param {Double} x - Value/Feature to be transformed.
-  * @return {Vector} Transformed value.
-  */
-  this.ComputePhi = function( x ) {
-     return vml_utils.ComputePolynomPhi( x, this.iDegree );
-  };
+    /**
+    * Transform a given value using a polynomial.
+    * @method ComputePhi
+    * @memberof vml_PolynomialRegression
+    * @instance
+    * @param {Double} x - Value/Feature to be transformed.
+    * @return {Vector} Transformed value.
+    */
+    this.ComputePhi = function( x ) {
+        return vml_Utils.ComputePolynomPhi( x, this.iDegree );
+    };
 
-  /**
-  * Convert a given set of data (add hidden bias + perform polynomial feature transformation)
-  * @method ConvertData
-  * @memberof vml_PolynomialRegression
-  * @instance
-  * @param {Matrix} lData - All samples (data set).
-  */
-  this.ConvertData = function( lData ) {
-     this.lData = [];
-     this.lLabels = [];
-     this.BigPhi = [];
+    /**
+    * Convert a given set of data (add hidden bias + perform polynomial feature transformation)
+    * @method ConvertData
+    * @memberof vml_PolynomialRegression
+    * @instance
+    * @param {Matrix} lData - All samples (data set).
+    */
+    this.ConvertData = function( lData ) {
+        this.lData = [];
+        this.lLabels = [];
+        this.BigPhi = [];
 
-     // Create list of vectors of shape (phi(x))  phi(x)=(1, x, x^2, x^3, ...)(1 is the "hidden" bias)
-     for( var i=0; i != lData.length; i++ ) {
-        var point = lData[ i ];
+        // Create list of vectors of shape (phi(x))  phi(x)=(1, x, x^2, x^3, ...)(1 is the "hidden" bias)
+        for( var i=0; i != lData.length; i++ ) {
+            var point = lData[ i ];
        
-        var phi = this.ComputePhi( point[ 0 ] );
+            var phi = this.ComputePhi( point[ 0 ] );
 
-        this.BigPhi.push( phi );
-        this.lData.push( math.matrix( phi ) );
-        this.lLabels.push( point[ 1 ] );
-     }
-     this.BigPhi = math.matrix( this.BigPhi );
-  };
+            this.BigPhi.push( phi );
+            this.lData.push( math.matrix( phi ) );
+            this.lLabels.push( point[ 1 ] );
+        }
+        this.BigPhi = math.matrix( this.BigPhi );
+    };
 
-  /**
-  * Compute the RSS (Residual Sum of Squares).
-  * @method ComputeRSS
-  * @memberof vml_PolynomialRegression
-  * instance
-  * @return {Double} RSS of current data and weights.
-  */
-  this.ComputeError = function() {
-     var fResult = 0.0;
+    /**
+    * Compute the RSS (Residual Sum of Squares).
+    * @method ComputeRSS
+    * @memberof vml_PolynomialRegression
+    * instance
+    * @return {Double} RSS of current data and weights.
+    */
+    this.ComputeError = function() {
+        var fResult = 0.0;
 
-     var weights_t = math.transpose( this.lWeights );  // Transpose weight matrix
-     for( var i=0; i != this.lData.length; i++ ) {
-       var input = this.lData[ i ];
-       var label = this.lLabels[ i ];
+        var weights_t = math.transpose( this.lWeights );  // Transpose weight matrix
+        for( var i=0; i != this.lData.length; i++ ) {
+            var input = this.lData[ i ];
+            var label = this.lLabels[ i ];
 
-       fResult += Math.pow( label - math.multiply( weights_t, input ), 2 );
-     }
-     fResult *= 0.5;
+            fResult += Math.pow( label - math.multiply( weights_t, input ), 2 );
+        }
+        fResult *= 0.5;
 
-     return fResult;
-  };
+        return fResult;
+    };
 
-  /**
-  * Fit the model using Least-Square.
-  * @method Fit
-  * @memberof vml_PolynomialRegression
-  * @instance
-  * @param {Double} fReg - Regularization rate.
-  */
-  this.Fit = function( fReg ) {
-    if( typeof( fReg ) != "number" ) {
-      throw "fReg has to be number"
-    }
+    /**
+    * Fit the model using Least-Square.
+    * @method Fit
+    * @memberof vml_PolynomialRegression
+    * @instance
+    * @param {Double} fReg - Regularization rate.
+    */
+    this.Fit = function( fReg ) {
+        if( typeof( fReg ) != "number" ) {
+            throw "fReg has to be number";
+        }
 
-    // Least Square:
-    // w=(X^T * X + lambda*I)^-1 * X^T * y   where X is the design matrix big phi
-    var bigPhi_t = math.transpose( this.BigPhi );
-    var d = this.iDegree + 1;
-    var regI = math.eye( d, d );
-    var y = math.matrix( this.lLabels );
-    var fLambda = fReg;
-    var matReg = vml_math.MultiplyScalar( regI, fLambda );
+        // Least Square:
+        // w=(X^T * X + lambda*I)^-1 * X^T * y   where X is the design matrix big phi
+        var bigPhi_t = math.transpose( this.BigPhi );
+        var d = this.iDegree + 1;
+        var regI = math.eye( d, d );
+        var y = math.matrix( this.lLabels );
+        var fLambda = fReg;
+        var matReg = vml_Math.MultiplyScalar( regI, fLambda );
 
-    this.lWeights = math.multiply( math.multiply( math.inv( math.add( matReg , math.multiply( bigPhi_t, this.BigPhi ) ) ), bigPhi_t ), y );
-    if( d == 1 ) {  // Note: If result is 1d, mathjs does not return a matrix but a single float
-      this.lWeights = math.matrix( [ this.lWeights ] );
-    }
-  };
+        this.lWeights = math.multiply( math.multiply( math.inv( math.add( matReg , math.multiply( bigPhi_t, this.BigPhi ) ) ), bigPhi_t ), y );
+        if( d == 1 ) {  // Note: If result is 1d, mathjs does not return a matrix but a single float
+            this.lWeights = math.matrix( [ this.lWeights ] );
+        }
+    };
 
-  /**
-  * Update weights using gradient descent.
-  * @method UpdateWeights
-  * @memberof vml_PolynomialRegression
-  * @instance
-  * @param {Double} fLambda - Learning rate.
-  * @param {Double} fReg - Regularization rate.
-  * @param {Boolean} bUseGradientClipping - True if gradient clipping shoud be used, false otherwise.
-  */
-  this.UpdateWeights = function( fLambda, fReg, bUseGradientClipping ) {
-     if( typeof( fLambda ) != "number" ) {
-       throw "fLambda has to be a number"
-     }
-     if( typeof( fReg ) != "number" ) {
-       throw "fReg has to be number"
-     }
+    /**
+    * Update weights using gradient descent.
+    * @method UpdateWeights
+    * @memberof vml_PolynomialRegression
+    * @instance
+    * @param {Double} fLambda - Learning rate.
+    * @param {Double} fReg - Regularization rate.
+    * @param {Boolean} bUseGradientClipping - True if gradient clipping shoud be used, false otherwise.
+    */
+    this.UpdateWeights = function( fLambda, fReg, bUseGradientClipping ) {
+        if( typeof( fLambda ) != "number" ) {
+            throw "fLambda has to be a number";
+        }
+        if( typeof( fReg ) != "number" ) {
+            throw "fReg has to be number";
+        }
 
-     // Apply gradient descent
-     var myGrad = undefined;
-     var weights_t = math.transpose( this.lWeights );
+        // Apply gradient descent
+        var myGrad = undefined;
+        var weights_t = math.transpose( this.lWeights );
 
-     var reg = vml_math.MultiplyScalar( math.abs( this.lWeights ), fReg );  // Regularization
+        var reg = vml_Math.MultiplyScalar( math.abs( this.lWeights ), fReg );  // Regularization
 
-     for( var i=0; i != this.lData.length; i++ ) {  // Full batch
-       var input = this.lData[ i ];
-       var label = this.lLabels[ i ];
+        for( var i=0; i != this.lData.length; i++ ) {  // Full batch
+            var input = this.lData[ i ];
+            var label = this.lLabels[ i ];
 	     
-       var grad = vml_math.MultiplyScalar( input, label - math.multiply( weights_t, input ) );    
+            var grad = vml_Math.MultiplyScalar( input, label - math.multiply( weights_t, input ) );
 
-       if( myGrad == undefined ) {
-         myGrad = grad
-       }
-       else {
-         myGrad = math.add( myGrad, grad );
-       }
-     }
-     myGrad = vml_math.MultiplyScalar( myGrad, -1.0 / this.lData.length );    
+            if( myGrad == undefined ) {
+                myGrad = grad
+            }
+            else {
+                myGrad = math.add( myGrad, grad );
+            }
+        }
+        myGrad = vml_Math.MultiplyScalar( myGrad, -1.0 / this.lData.length );
 
-     var gradCost = math.add( myGrad, reg );  // Cost: RSS + Reg
+        var gradCost = math.add( myGrad, reg );  // Cost: RSS + Reg
 
-     if( bUseGradientClipping == true ) {
-       gradCost = vml_utils.GradientClipping( gradCost, 10 );   // Apply gradient clipping to avoid exploding gradient
-     }
+        if( bUseGradientClipping == true ) {
+            gradCost = vml_Utils.GradientClipping( gradCost, 10 );   // Apply gradient clipping to avoid exploding gradient
+        }
 
-     this.lWeights = math.subtract( this.lWeights, vml_math.MultiplyScalar( gradCost, fLambda ) );
-  };
+        this.lWeights = math.subtract( this.lWeights, vml_Math.MultiplyScalar( gradCost, fLambda ) );
+    };
 
-  /**
-  * Predict the value of a given point.
-  * @method Predict
-  * @memberof vml_PolynomialRegression
-  * @instance
-  * @param {Float} vecPoint - Data point used for prediction.
-  * @return {Double} Predicted value.
-  */
-  this.Predict = function( vecPoint ) {
-    if( typeof( vecPoint ) != "number" ) {
-      throw "vecPoint has to be a number"
-    }
+    /**
+    * Predict the value of a given point.
+    * @method Predict
+    * @memberof vml_PolynomialRegression
+    * @instance
+    * @param {Float} vecPoint - Data point used for prediction.
+    * @return {Double} Predicted value.
+    */
+    this.Predict = function( vecPoint ) {
+        if( typeof( vecPoint ) != "number" ) {
+            throw "vecPoint has to be a number";
+        }
 
-    return math.multiply( math.transpose( this.lWeights ), math.matrix( this.ComputePhi( vecPoint ) ) );
-  };
+        return math.multiply( math.transpose( this.lWeights ), math.matrix( this.ComputePhi( vecPoint ) ) );
+    };
 }

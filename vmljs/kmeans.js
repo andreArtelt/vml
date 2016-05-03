@@ -26,101 +26,100 @@
 * @constructor 
 */
 function vml_KMeans() {
-  // Vars
-  this.iNumCenter = 1;
-  this.lCenters = [];
-  this.lData = [];
-  this.lLabels = [];
-  this.lTempMean = [];
-  this.lTempLabelCount = [];
-  this.bReady = false;
+    this.iNumCenter = 1;
+    this.lCenters = [];
+    this.lData = [];
+    this.lLabels = [];
+    this.lTempMean = [];
+    this.lTempLabelCount = [];
+    this.bReady = false;
 
-  /**
-  * Initialization.
-  * @method Init
-  * @memberof vml_KMeans
-  * @instance
-  * @param {Matrix} lData - List/Set of two dimensional data points.
-  * @param {Integer} iNumCluster - Number of clusters the algorithm should compute.
-  */
-  this.Init = function( lData, iNumCluster ) {
-     if( typeof( iNumCluster ) != "number" ) {
-       throw "iNumCluster has to be a number"
-     }
+    /**
+    * Initialization.
+    * @method Init
+    * @memberof vml_KMeans
+    * @instance
+    * @param {Matrix} lData - List/Set of two dimensional data points.
+    * @param {Integer} iNumCluster - Number of clusters the algorithm should compute.
+    */
+    this.Init = function( lData, iNumCluster ) {
+        if( typeof( iNumCluster ) != "number" ) {
+            throw "iNumCluster has to be a number";
+        }
 
-     this.lCenters = [];
-     this.iNumCenter = iNumCluster;
-     this.lData = lData;
-     this.iDim = 2;
+        this.lCenters = [];
+        this.iNumCenter = iNumCluster;
+        this.lData = lData;
+        this.iDim = 2;
 
-     for( var i=0; i != this.iNumCenter; i++ ) {
-        this.lTempMean.push( vml_utils.FillList( this.iDim, 0.0 ) );
-        this.lTempLabelCount.push( 0 );
+        for( var i=0; i != this.iNumCenter; i++ ) {
+            this.lTempMean.push( vml_Utils.FillList( this.iDim, 0.0 ) );
+            this.lTempLabelCount.push( 0 );
 
-        this.lCenters.push( math.random( [ this.iDim ], -5, 5 ) );
-     }
+            this.lCenters.push( math.random( [ this.iDim ], -5, 5 ) );
+        }
 
-     this.bReady = true;
-  };
+        this.bReady = true;
+    };
 
-  /**
-  * Checks if the model has been initialized or not.
-  * @method IsReady
-  * @memberof vml_KMeans
-  * @instance
-  * @return {Boolean} true if it has been initialized, false otherwise.
-  */
-  this.IsReady = function() {
-    return this.bReady;
-  };
+    /**
+    * Checks if the model has been initialized or not.
+    * @method IsReady
+    * @memberof vml_KMeans
+    * @instance
+    * @return {Boolean} true if it has been initialized, false otherwise.
+    */
+    this.IsReady = function() {
+        return this.bReady;
+    };
 
-  /**
-  * Perform one step of fitting/training.
-  * @method FitStep
-  * @memberof vml_KMeans
-  * @instance
-  */
-  this.FitStep = function() {
-     // Expectation step
-     for( var i=0; i != this.lData.length; i++ ) {
-         this.lLabels[i] = this.Predict( this.lData[i] );
+    /**
+    * Perform one step of fitting/training.
+    * @method FitStep
+    * @memberof vml_KMeans
+    * @instance
+    */
+    this.FitStep = function() {
+        // Expectation step
+        for( var i=0; i != this.lData.length; i++ ) {
+            this.lLabels[i] = this.Predict( this.lData[i] );
          
-         this.lTempMean[ this.lLabels[i] ] = math.add( this.lTempMean[ this.lLabels[i] ], this.lData[i] );
-         this.lTempLabelCount[ this.lLabels[i] ] += 1;
-     }
+            this.lTempMean[ this.lLabels[i] ] = math.add( this.lTempMean[ this.lLabels[i] ], this.lData[i] );
+            this.lTempLabelCount[ this.lLabels[i] ] += 1;
+        }
 
-     // Maximization step
-     for( var i=0; i != this.iNumCenter; i++ ) {
-        this.lCenters[i] = vml_math.MultiplyScalar( this.lTempMean[i], ( 1.0 / this.lTempLabelCount[i] ) );
+        // Maximization step
+        for( var i=0; i != this.iNumCenter; i++ ) {
+            this.lCenters[i] = vml_Math.MultiplyScalar( this.lTempMean[i], ( 1.0 / this.lTempLabelCount[i] ) );
         
-        this.lTempMean[i] = vml_utils.FillList( this.iDim, 0.0 );
-        this.lTempLabelCount[i] = 0;
-     }
-  };
+            this.lTempMean[i] = vml_Utils.FillList( this.iDim, 0.0 );
+            this.lTempLabelCount[i] = 0;
+        }
+    };
 
-  /**
-  * Predict the cluster of a given point.
-  * @method Predict
-  * @memberof vml_KMeans
-  * @instance
-  * @param {Vector} vecPoint - Point to be assigned to a cluster.
-  */
-  this.Predict = function( vecPoint ) {
-      if( vecPoint instanceof Array == false ) {
-        throw "vecPoint has to be a vector (Array)"
-      }
+    /**
+    * Predict the cluster of a given point.
+    * @method Predict
+    * @memberof vml_KMeans
+    * @instance
+    * @param {Vector} vecPoint - Point to be assigned to a cluster.
+    */
+    this.Predict = function( vecPoint ) {
+        if( vecPoint instanceof Array == false ) {
+            throw "vecPoint has to be a vector (Array)";
+        }
 
-      var iCurBest = 0;
-      var fCurDist = -1;
+        var iCurBest = 0;
+        var fCurDist = -1;
 
-      for( var i=0; i != this.iNumCenter; i++ ) {
-          fDist = math.distance( this.lCenters[i], vecPoint );
-          if( fDist < fCurDist || fCurDist == -1 ) {
-             iCurBest = i;
-             fCurDist = fDist;
-          }
-      }
+        for( var i=0; i != this.iNumCenter; i++ ) {
+            fDist = math.distance( this.lCenters[i], vecPoint );
+            if( fDist < fCurDist || fCurDist == -1 ) {
+                iCurBest = i;
+                fCurDist = fDist;
+            }
+        }
 
-      return iCurBest;
-  };
+        return iCurBest;
+    };
 }

@@ -26,184 +26,183 @@
 * @constructor
 */
 function vml_SoftmaxRegression() {
-  // Vars
-  this.lData = [];
-  this.lLabels = [];  // Are expected to be {0, 1, 2, 3, ...}
-  this.iNumClasses = 0;
-  this.lParams = [];
-  this.iDim = 0;
-  this.bReady = false;
-
-  /**
-  * Initialize model.
-  * @method Init
-  * @memberof vml_SoftmaxRegression
-  * @instance
-  * @param {Matrix} lData - Data set.
-  * @param {Vector} lLabels - Labels of each data point.
-  * @param {Integer} iDim - Dimension of data.
-  * @param {Integer} iNumClasses - Number of classes/labels.
-  */
-  this.Init = function( lData, lLabels, iDim, iNumClasses ) {
-    if( lLabels instanceof Array == false ) {
-      throw "lLabels has to be a vector (Array)"
-    }
-    if( typeof( iDim ) != "number" ) {
-      throw "iDim has to be a number"
-    }
-    if( typeof( iNumClasses ) != "number" ) {
-      throw "iNumClasses has to be a number"
-    }
-
-    this.lData = lData;
-    this.lLabels = lLabels;
-    this.iNumClasses = iNumClasses;
-    this.iDim = iDim;
-
-    this.ResetWeights();
-
-    this.bReady = true;
-  };
-
-  /**
-  * Checks if the model has been initialized or not.
-  * @method IsReady
-  * @memberof vml_SoftmaxRegression
-  * @instance
-  * @return {Boolean} true if it has been initialized, false otherwise.
-  */
-  this.IsReady = function() {
-    return this.bReady;
-  };
-
-  /**
-  * Initialize weights with random values.
-  * @memberof vml_SoftmaxRegression
-  * @instance
-  * @method ResetWeihts
-  */
-  this.ResetWeights = function() {
+    this.lData = [];
+    this.lLabels = [];  // Are expected to be {0, 1, 2, 3, ...}
+    this.iNumClasses = 0;
     this.lParams = [];
-    for( var i=0; i != this.iNumClasses - 1; i++ ) {
-      this.lParams.push( vml_utils.CreateRandMatrix( [this.iDim] ) );
-    }
-  };
+    this.iDim = 0;
+    this.bReady = false;
 
-  /**
-  * Perform one step of training/fitting using gd (gd = gradient descent).
-  * @method TrainStep
-  * @memberof vml_SoftmaxRegression
-  * @instance
-  * @param {Double} fLambda - Learning rate (stepsize).
-  * @param {Double} fL2 - "Strength" of L2 regularization.
-  * @param {Boolean} bUseGradientClipping - True if gradient clipping shoud be used, false otherwise.
-  * @return {Double} Current log likelihood.
-  */
-  this.TrainStep = function( fLambda, fL2, bUseGradientClipping ) {
-     if( typeof( fLambda ) != "number" ) {
-       throw "fLambda has to be a number"
-     }
-     if( typeof( fL2 ) != "number" ) {
-       throw "fL2 has to be a number"
-     }
+    /**
+    * Initialize model.
+    * @method Init
+    * @memberof vml_SoftmaxRegression
+    * @instance
+    * @param {Matrix} lData - Data set.
+    * @param {Vector} lLabels - Labels of each data point.
+    * @param {Integer} iDim - Dimension of data.
+    * @param {Integer} iNumClasses - Number of classes/labels.
+    */
+    this.Init = function( lData, lLabels, iDim, iNumClasses ) {
+        if( lLabels instanceof Array == false ) {
+            throw "lLabels has to be a vector (Array)";
+        }
+        if( typeof( iDim ) != "number" ) {
+            throw "iDim has to be a number";
+        }
+        if( typeof( iNumClasses ) != "number" ) {
+            throw "iNumClasses has to be a number";
+        }
 
-     var fLogLikelihood = 0.0;
+        this.lData = lData;
+        this.lLabels = lLabels;
+        this.iNumClasses = iNumClasses;
+        this.iDim = iDim;
 
-     // Compute predictions
-     var lPreds = [];
-     for( var i=0; i != this.lData.length; i++ ) {
-       lPreds.push( this.Predict( this.lData[i] ) );
-     }
+        this.ResetWeights();
 
-     for( var i=0; i != this.lParams.length; i++ ) {
-       var vecGrad = undefined;       
+        this.bReady = true;
+    };
 
-       // Compute gradient
-       for( var j=0; j != this.lData.length; j++ ) {
-         var tmp = undefined
-         if( i == this.lLabels[j] ) {
-           tmp = vml_math.MultiplyScalar( this.lData[j], (1.0 - lPreds[j][i]) );
-         }
-         else {
-           tmp = vml_math.MultiplyScalar( this.lData[j], (0.0 - lPreds[j][i]) );
-         }
+    /**
+    * Checks if the model has been initialized or not.
+    * @method IsReady
+    * @memberof vml_SoftmaxRegression
+    * @instance
+    * @return {Boolean} true if it has been initialized, false otherwise.
+    */
+    this.IsReady = function() {
+        return this.bReady;
+    };
 
-         if( vecGrad == undefined ) {
-           vecGrad = tmp;
-         }
-         else {
-           vecGrad = math.add( vecGrad, tmp );
-         }
-       }
-       vecGrad = vml_math.MultiplyScalar( vecGrad, -1.0 / this.lData.length );
-       vecGrad = math.add( vecGrad, vml_math.MultiplyScalar( this.lParams[i], fL2 ) );  // L2 regularization
+    /**
+    * Initialize weights with random values.
+    * @memberof vml_SoftmaxRegression
+    * @instance
+    * @method ResetWeihts
+    */
+    this.ResetWeights = function() {
+        this.lParams = [];
+        for( var i=0; i != this.iNumClasses - 1; i++ ) {
+            this.lParams.push( vml_Utils.CreateRandMatrix( [this.iDim] ) );
+        }
+    };
 
-       if( bUseGradientClipping == true ) {
-         vecGrad = vml_utils.GradientClipping( vecGrad, 10 );   // Apply gradient clipping to avoid exploding gradient
-       }
+    /**
+    * Perform one step of training/fitting using gd (gd = gradient descent).
+    * @method TrainStep
+    * @memberof vml_SoftmaxRegression
+    * @instance
+    * @param {Double} fLambda - Learning rate (stepsize).
+    * @param {Double} fL2 - "Strength" of L2 regularization.
+    * @param {Boolean} bUseGradientClipping - True if gradient clipping shoud be used, false otherwise.
+    * @return {Double} Current log likelihood.
+    */
+    this.TrainStep = function( fLambda, fL2, bUseGradientClipping ) {
+        if( typeof( fLambda ) != "number" ) {
+            throw "fLambda has to be a number"
+        }
+        if( typeof( fL2 ) != "number" ) {
+            throw "fL2 has to be a number"
+        }
 
-       // Update param
-       this.lParams[i] = math.subtract( this.lParams[i], vml_math.MultiplyScalar( vecGrad, fLambda ) );
-     }
+        var fLogLikelihood = 0.0;
 
-     return fLogLikelihood;
-  };
+        // Compute predictions
+        var lPreds = [];
+        for( var i=0; i != this.lData.length; i++ ) {
+            lPreds.push( this.Predict( this.lData[i] ) );
+        }
 
-  /**
-  * Compute the log likelihood of the training data.
-  * @method LogLikelihood
-  * @memberof vml_SoftmaxRegression
-  * @instance
-  * @return {Double} Log likelihood.
-  */
-  this.LogLikelihood = function() {
-    var fCost = 0.0;
+        for( var i=0; i != this.lParams.length; i++ ) {
+            var vecGrad = undefined;
 
-    for( var i=0; i != this.lData.length; i++ ) {
-      var x = this.lData[i];
-      var t = this.lLabels[i];
-      var pred = this.Predict( x );
+            // Compute gradient
+            for( var j=0; j != this.lData.length; j++ ) {
+                var tmp = undefined
+                if( i == this.lLabels[j] ) {
+                    tmp = vml_Math.MultiplyScalar( this.lData[j], (1.0 - lPreds[j][i]) );
+                }
+                else {
+                    tmp = vml_Math.MultiplyScalar( this.lData[j], (0.0 - lPreds[j][i]) );
+                }
 
-      fCost += math.log( pred[ t ] );
-    }
+                if( vecGrad == undefined ) {
+                    vecGrad = tmp;
+                }
+                else {
+                   vecGrad = math.add( vecGrad, tmp );
+                }
+            }
+            vecGrad = vml_Math.MultiplyScalar( vecGrad, -1.0 / this.lData.length );
+            vecGrad = math.add( vecGrad, vml_Math.MultiplyScalar( this.lParams[i], fL2 ) );  // L2 regularization
 
-    return fCost;
-  };
+            if( bUseGradientClipping == true ) {
+                vecGrad = vml_Utils.GradientClipping( vecGrad, 10 );   // Apply gradient clipping to avoid exploding gradient
+            }
 
-  /**
-  * Compute predicted class probabilities for a given point.
-  * @method Predict
-  * @memberof vml_SoftmaxRegression
-  * @instance
-  * @param {Vector} vecPoint - Point to be classified/labeled.
-  * @return {Vector} Class probabilities.
-  */
-  this.Predict = function( vecPoint ) {
-    if( vecPoint instanceof Array == false ) {
-      throw "vecPoint has to be a vector (Array)"
-    }
+            // Update param
+            this.lParams[i] = math.subtract( this.lParams[i], vml_Math.MultiplyScalar( vecGrad, fLambda ) );
+        }
 
-    var lResult = []
+        return fLogLikelihood;
+    };
 
-    var fNorm = 0.0;
-    for( var i=0; i != this.lParams.length; i++ ) {
-      var fScore = math.exp( -1.0 * math.dot( this.lParams[i], vecPoint ) );
+    /**
+    * Compute the log likelihood of the training data.
+    * @method LogLikelihood
+    * @memberof vml_SoftmaxRegression
+    * @instance
+    * @return {Double} Log likelihood.
+    */
+    this.LogLikelihood = function() {
+        var fCost = 0.0;
+
+        for( var i=0; i != this.lData.length; i++ ) {
+            var x = this.lData[i];
+            var t = this.lLabels[i];
+            var pred = this.Predict( x );
+
+            fCost += math.log( pred[ t ] );
+        }
+
+        return fCost;
+    };
+
+    /**
+    * Compute predicted class probabilities for a given point.
+    * @method Predict
+    * @memberof vml_SoftmaxRegression
+    * @instance
+    * @param {Vector} vecPoint - Point to be classified/labeled.
+    * @return {Vector} Class probabilities.
+    */
+    this.Predict = function( vecPoint ) {
+        if( vecPoint instanceof Array == false ) {
+            throw "vecPoint has to be a vector (Array)";
+        }
+
+        var lResult = []
+
+        var fNorm = 0.0;
+        for( var i=0; i != this.lParams.length; i++ ) {
+            var fScore = math.exp( -1.0 * math.dot( this.lParams[i], vecPoint ) );
      
-      lResult.push( fScore )
-      fNorm += fScore;
-    }
+            lResult.push( fScore )
+            fNorm += fScore;
+        }
 
-    if( this.lParams.length > 1 ) {
-      fNorm = 1.0 / fNorm;
-      for( var i=0; i != this.lParams.length; i++ ) {
-        lResult[i] *= fNorm;
-      }
-    }
-    else {  // Special case: 2 classes => Logistic regression
-      lResult[0] = 1.0 / (1.0 + lResult[0]);
-      lResult.push( 1.0 - lResult[0] );
-    }
+        if( this.lParams.length > 1 ) {
+            fNorm = 1.0 / fNorm;
+            for( var i=0; i != this.lParams.length; i++ ) {
+                lResult[i] *= fNorm;
+            }
+        }
+        else {  // Special case: 2 classes => Logistic regression
+            lResult[0] = 1.0 / (1.0 + lResult[0]);
+            lResult.push( 1.0 - lResult[0] );
+        }
 
-    return lResult;
-  };
+        return lResult;
+    };
 }

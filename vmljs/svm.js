@@ -21,173 +21,173 @@
 //  SOFTWARE.
 
 /**
-* @classdescImplementation of SVM (Support Vector Machine)
+* @classdesc Implementation of SVM (Support Vector Machine)
 * @class vml_SVM
 * @constructor
 */
 function vml_SVM() {
-  this.kernel = undefined;
-  this.lAlphas = [];
-  this.iC = undefined;
-  this.lSuppVecs = [];
-  this.lSuppVecsLabels = [];
-  this.lSuppVecsAlphas = [];
-  this.bReady = false;
+    this.kernel = undefined;
+    this.lAlphas = [];
+    this.iC = undefined;
+    this.lSuppVecs = [];
+    this.lSuppVecsLabels = [];
+    this.lSuppVecsAlphas = [];
+    this.bReady = false;
 
-  this.lData = [];
-  this.lLabels = [];
+    this.lData = [];
+    this.lLabels = [];
 
-  /**
-  * Initilalize model.
-  * @method Init
-  * @memberof vml_SVM
-  * @instance
-  * @param {Matrix} lData - Data set.
-  * @param {Vector} lLabels - Labels of each data point.
-  * @param {Integer} iC - Slack penalty.
-  */
-  this.Init = function( lData, lLabels, iC ) {
-     if( lLabels instanceof Array == false ) {
-       throw "lLabels has to be a vector (Array)"
-     }
-     if( typeof( iC ) != "number" ) {
-       throw "iC has to be number"
-     }
-
-     this.lData = lData;
-     this.lLabels = lLabels;
-     this.iC = iC;
-
-     this.InitAlphas();
-
-     this.bReady = true;
-  };
-
-  /**
-  * Checks if the model has been initialized or not.
-  * @method IsReady
-  * @memberof vml_SVM
-  * @instance
-  * @return {Boolean} true if it has been initialized, false otherwise.
-  */
-  this.IsReady = function() {
-    return this.bReady;
-  };
-
-  /**
-  * Initalize all alphas with 0.
-  * @method InitAlphas
-  * @memberof vml_SVM
-  * @instance
-  */
-  this.InitAlphas = function() {
-     this.lAlphas = vml_utils.FillList( this.lData.length, 0 );
-  };
-
-  /**
-  * Determine all support vectors (vector with alpha != 0).
-  * @method GetSupportVectors
-  * @memberof vml_SVM
-  * @instance
-  */
-  this.GetSupportVectors = function() {
-     this.lSuppVecs = [];
-     this.lSuppVecsLabels = [];
-     this.lSuppVecsAlphas = [];
-
-     // Find all points with alpha=0 (these points are the so called "support vectors")
-     for(var i=0; i != this.lAlphas.length; i++) {
-        if( this.lAlphas[i] != 0 ) {
-           this.lSuppVecs.push( this.lData[ i ] );
-           this.lSuppVecsLabels.push( this.lLabels[ i ] );
-           this.lSuppVecsAlphas.push( this.lAlphas[ i ] );
+    /**
+    * Initilalize model.
+    * @method Init
+    * @memberof vml_SVM
+    * @instance
+    * @param {Matrix} lData - Data set.
+    * @param {Vector} lLabels - Labels of each data point.
+    * @param {Integer} iC - Slack penalty.
+    */
+    this.Init = function( lData, lLabels, iC ) {
+        if( lLabels instanceof Array == false ) {
+            throw "lLabels has to be a vector (Array)"
         }
-     }
-  };
+        if( typeof( iC ) != "number" ) {
+            throw "iC has to be number"
+        }
 
-  /**
-  * Compute the current error on the dataset (value of the cost function for the current parameters)
-  * @method ComputeError
-  * @memberof vml_SVM
-  * @instance
-  * @return {Double} Error.
-  */
-  this.ComputeError = function() {
-     var fError = 0.0;
+        this.lData = lData;
+        this.lLabels = lLabels;
+        this.iC = iC;
 
-     var fAlphas = 0.0;
-     for( var i=0; i != this.lData.length; i++ ) {
-       fAlphas += this.lAlphas[ i ];
+        this.InitAlphas();
 
-       for( var j=0; j != this.lData.length; j++ ) {
-         fError += this.lAlphas[ i ] * this.lAlphas[ j ] * this.lLabels[ i ] * this.lLabels[ j ] * this.kernel( this.lData[ i ], this.lData[ j ] );
-       }
-     }
-     fError *= -0.5;
-     fError += fAlphas;
+        this.bReady = true;
+    };
 
-     return fError;
-  };
+    /**
+    * Checks if the model has been initialized or not.
+    * @method IsReady
+    * @memberof vml_SVM
+    * @instance
+    * @return {Boolean} true if it has been initialized, false otherwise.
+    */
+    this.IsReady = function() {
+        return this.bReady;
+    };
 
-  /**
-  * Compute predicted class probabilities for a given point.
-  * @method Predict
-  * @memberof vml_SVM
-  * @instance
-  * @param {Vector} vecPoint - Point to be classified/labeled.
-  * @param {Boolean} bComputeSuppVecs - true if support vectors should be computed/determined again, false otherwise.
-  * @return {Vector} Probabilities for each class.
-  */
-  this.Predict = function( vecPoint, bRecomputeSuppVecs ) {
-     if( vecPoint instanceof Array == false && vecPoint._data == undefined ) {
-       throw "vecPoint has to be a vector (Array or math.matrix)"
-     }
+    /**
+    * Initalize all alphas with 0.
+    * @method InitAlphas
+    * @memberof vml_SVM
+    * @instance
+    */
+    this.InitAlphas = function() {
+        this.lAlphas = vml_Utils.FillList( this.lData.length, 0 );
+    };
 
-     // Make sure support vectors are available
-     if( bRecomputeSuppVecs == undefined || bRecomputeSuppVecs == true ) {
-       this.GetSupportVectors();
-     }
+    /**
+    * Determine all support vectors (vector with alpha != 0).
+    * @method GetSupportVectors
+    * @memberof vml_SVM
+    * @instance
+    */
+    this.GetSupportVectors = function() {
+        this.lSuppVecs = [];
+        this.lSuppVecsLabels = [];
+        this.lSuppVecsAlphas = [];
 
-     var fSum = 0.0;
+        // Find all points with alpha=0 (these points are the so called "support vectors")
+        for(var i=0; i != this.lAlphas.length; i++) {
+            if( this.lAlphas[i] != 0 ) {
+                this.lSuppVecs.push( this.lData[ i ] );
+                this.lSuppVecsLabels.push( this.lLabels[ i ] );
+                this.lSuppVecsAlphas.push( this.lAlphas[ i ] );
+            }
+        }
+    };
 
-     // Only the "support vectors" are needed (because the alphas of all other points are zero)
-     for( var i=0; i != this.lSuppVecs.length; i++ ) {
-        fSum += this.lSuppVecsLabels[ i ] * this.lSuppVecsAlphas[ i ] * this.kernel( this.lSuppVecs[ i ], vecPoint );
-     }
+    /**
+    * Compute the current error on the dataset (value of the cost function for the current parameters)
+    * @method ComputeError
+    * @memberof vml_SVM
+    * @instance
+    * @return {Double} Error.
+    */
+    this.ComputeError = function() {
+        var fError = 0.0;
 
-     if( fSum < 0 ) {
-       return [ 0.0, 1.0 ];
-     }
-     else if( fSum > 0 ) {
-       return [ 1.0, 0.0 ];
-     }
-     else {
-       return [ 0.5, 0.5 ];
-     }
-  };
+        var fAlphas = 0.0;
+        for( var i=0; i != this.lData.length; i++ ) {
+            fAlphas += this.lAlphas[ i ];
 
-  /**
-  * Perform one step of fitting/training.
-  * @method FitStep
-  * @memberof vml_SVM
-  * @instance
-  * @param {Double} fLambda - Learning rate (step size).
-  */
-  this.FitStep = function( fLambda ) {
-     // Select random sample
-     var iIndex = Math.floor( Math.random() * this.lData.length );
-     var input = this.lData[ iIndex ];
-     var label = this.lLabels[ iIndex ];
-     var alpha = this.lAlphas[ iIndex ];
+            for( var j=0; j != this.lData.length; j++ ) {
+                fError += this.lAlphas[ i ] * this.lAlphas[ j ] * this.lLabels[ i ] * this.lLabels[ j ] * this.kernel( this.lData[ i ], this.lData[ j ] );
+            }
+        }
+        fError *= -0.5;
+        fError += fAlphas;
 
-     // Apply SVM learning rule
-     var fSum = 0.0;
-     for( var i=0; i != this.lData.length; i++ ) {
-        fSum += this.lAlphas[ i ] * this.lLabels[ i ] * this.kernel( input, this.lData[ i ] );
-     }
+        return fError;
+    };
 
-     this.lAlphas[iIndex] = alpha + fLambda * (1 - label * fSum);
-     this.lAlphas[iIndex] = math.max( 0, this.lAlphas[ iIndex ] );
-     this.lAlphas[iIndex] = math.min( this.iC, this.lAlphas[ iIndex ] );
-  };
+    /**
+    * Compute predicted class probabilities for a given point.
+    * @method Predict
+    * @memberof vml_SVM
+    * @instance
+    * @param {Vector} vecPoint - Point to be classified/labeled.
+    * @param {Boolean} bComputeSuppVecs - true if support vectors should be computed/determined again, false otherwise.
+    * @return {Vector} Probabilities for each class.
+    */
+    this.Predict = function( vecPoint, bRecomputeSuppVecs ) {
+        if( vecPoint instanceof Array == false && vecPoint._data == undefined ) {
+            throw "vecPoint has to be a vector (Array or math.matrix)"
+        }
+
+        // Make sure support vectors are available
+        if( bRecomputeSuppVecs == undefined || bRecomputeSuppVecs == true ) {
+            this.GetSupportVectors();
+        }
+
+        var fSum = 0.0;
+
+        // Only the "support vectors" are needed (because the alphas of all other points are zero)
+        for( var i=0; i != this.lSuppVecs.length; i++ ) {
+            fSum += this.lSuppVecsLabels[ i ] * this.lSuppVecsAlphas[ i ] * this.kernel( this.lSuppVecs[ i ], vecPoint );
+        }
+
+        if( fSum < 0 ) {
+            return [ 0.0, 1.0 ];
+        }
+        else if( fSum > 0 ) {
+            return [ 1.0, 0.0 ];
+        }
+        else {
+            return [ 0.5, 0.5 ];
+        }
+    };
+
+    /**
+    * Perform one step of fitting/training.
+    * @method FitStep
+    * @memberof vml_SVM
+    * @instance
+    * @param {Double} fLambda - Learning rate (step size).
+    */
+    this.FitStep = function( fLambda ) {
+        // Select random sample
+        var iIndex = Math.floor( Math.random() * this.lData.length );
+        var input = this.lData[ iIndex ];
+        var label = this.lLabels[ iIndex ];
+        var alpha = this.lAlphas[ iIndex ];
+
+        // Apply SVM learning rule
+        var fSum = 0.0;
+        for( var i=0; i != this.lData.length; i++ ) {
+            fSum += this.lAlphas[ i ] * this.lLabels[ i ] * this.kernel( input, this.lData[ i ] );
+        }
+
+        this.lAlphas[iIndex] = alpha + fLambda * (1 - label * fSum);
+        this.lAlphas[iIndex] = math.max( 0, this.lAlphas[ iIndex ] );
+        this.lAlphas[iIndex] = math.min( this.iC, this.lAlphas[ iIndex ] );
+    };
 }

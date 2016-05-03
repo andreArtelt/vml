@@ -26,92 +26,92 @@
 * @constructor
 */
 function vml_NaiveBayes() {
-  this.bReady = false;
+    this.bReady = false;
 
-  // Probability distributions for all features of both classes
-  this.ProbDistA = [];
-  this.ProbDistB = [];
+    // Probability distributions for all features of both classes
+    this.ProbDistA = [];
+    this.ProbDistB = [];
   
-  // Prior probabilities
-  this.fProbA = 0.5;
-  this.fProbB = 0.5;
+    // Prior probabilities
+    this.fProbA = 0.5;
+    this.fProbB = 0.5;
 
-  /**
-  * Initialization of the classifier (including fitting/training).
-  * @method Fit
-  * @memberof vml_NaiveBayes
-  * @instance
-  * @param {Matrix} lClassA - All samples of class A.
-  * @param {Matrix} lClassB - All samples of class B.
-  * @param {Integer} iNumFeatures - Number of features/dimension of a data point (if not specified it's set to 2).
-  */
-  this.Fit = function( lClassA, lClassB, iNumFeatures ) {
-     if( iNumFeatures == undefined ) {  // If number of features has not been specified, assume 2 (because of 2d)
-       iNumFeatures = 2;
-     }
+    /**
+    * Initialization of the classifier (including fitting/training).
+    * @method Fit
+    * @memberof vml_NaiveBayes
+    * @instance
+    * @param {Matrix} lClassA - All samples of class A.
+    * @param {Matrix} lClassB - All samples of class B.
+    * @param {Integer} iNumFeatures - Number of features/dimension of a data point (if not specified it's set to 2).
+    */
+    this.Fit = function( lClassA, lClassB, iNumFeatures ) {
+         if( iNumFeatures == undefined ) {  // If number of features has not been specified, assume 2 (because of 2d)
+            iNumFeatures = 2;
+        }
 
-     // Extract features
-     var lFeatureX_A = []; var lFeatureX_B = [];
-     var lFeatureY_A = []; var lFeatureY_B = [];
+        // Extract features
+        var lFeatureX_A = []; var lFeatureX_B = [];
+        var lFeatureY_A = []; var lFeatureY_B = [];
     
-     for( var i = 0; i != lClassA.length; i++ ) {
-       lFeatureX_A.push( lClassA[i][0] );
-       lFeatureY_A.push( lClassA[i][1] );
-     }
-     for( var i = 0; i != lClassB.length; i++ ) {
-       lFeatureX_B.push( lClassB[i][0] );
-       lFeatureY_B.push( lClassB[i][1] );
-     }
+        for( var i = 0; i != lClassA.length; i++ ) {
+            lFeatureX_A.push( lClassA[i][0] );
+            lFeatureY_A.push( lClassA[i][1] );
+        }
+        for( var i = 0; i != lClassB.length; i++ ) {
+            lFeatureX_B.push( lClassB[i][0] );
+            lFeatureY_B.push( lClassB[i][1] );
+        }
 
-     // Fit probability distributions (gaussian) for each feature
-     this.lProbDistA = [];
-     var distX_A = new vml_GaussDist(); var distY_A = new vml_GaussDist();
-     distX_A.Fit( lFeatureX_A ); distY_A.Fit( lFeatureY_A );
-     this.lProbDistA.push( distX_A ); this.lProbDistA.push( distY_A );
+        // Fit probability distributions (gaussian) for each feature
+        this.lProbDistA = [];
+        var distX_A = new vml_GaussDist(); var distY_A = new vml_GaussDist();
+        distX_A.Fit( lFeatureX_A ); distY_A.Fit( lFeatureY_A );
+        this.lProbDistA.push( distX_A ); this.lProbDistA.push( distY_A );
 
-     this.lProbDistB = [];
-     var distX_B = new vml_GaussDist(); var distY_B = new vml_GaussDist();
-     distX_B.Fit( lFeatureX_B ); distY_B.Fit( lFeatureY_B );
-     this.lProbDistB.push( distX_B ); this.lProbDistB.push( distY_B );
+        this.lProbDistB = [];
+        var distX_B = new vml_GaussDist(); var distY_B = new vml_GaussDist();
+        distX_B.Fit( lFeatureX_B ); distY_B.Fit( lFeatureY_B );
+        this.lProbDistB.push( distX_B ); this.lProbDistB.push( distY_B );
 
-     this.bReady = true;
-  };
+        this.bReady = true;
+    };
 
-  /**
-  * Checks if the model has been initialized or not.
-  * @method IsReady
-  * @memberof vml_NaiveBayes
-  * @instance
-  * @return {Boolean} true if it has been initialized, false otherwise.
-  */
-  this.IsReady = function() {
-    return this.bReady;
-  };
+    /**
+    * Checks if the model has been initialized or not.
+    * @method IsReady
+    * @memberof vml_NaiveBayes
+    * @instance
+    * @return {Boolean} true if it has been initialized, false otherwise.
+    */
+    this.IsReady = function() {
+        return this.bReady;
+    };
 
-  /**
-  * Predict the class of a given sample.
-  * @method Predict
-  * @memberof vml_NaiveBayes
-  * @instance
-  * @param {Vector} vecPoint - Point to be classified.
-  * @return Score/Probability for each class label (a list with two values).
-  */
-  this.Predict = function( vecPoint ) {
-     if( vecPoint instanceof Array == false ) {
-       throw "vecPoint has to be a vector (Array)"
-     }
+    /**
+    * Predict the class of a given sample.
+    * @method Predict
+    * @memberof vml_NaiveBayes
+    * @instance
+    * @param {Vector} vecPoint - Point to be classified.
+    * @return Score/Probability for each class label (a list with two values).
+    */
+    this.Predict = function( vecPoint ) {
+        if( vecPoint instanceof Array == false ) {
+            throw "vecPoint has to be a vector (Array)";
+        }
 
-     var fA = this.fProbA;
-     var fB = this.fProbB;
+        var fA = this.fProbA;
+        var fB = this.fProbB;
 
-     for( var i=0; i != this.lProbDistA.length; i++ ) {
-        fA *= this.lProbDistA[i].Prob( vecPoint[i] );
-        fB *= this.lProbDistB[i].Prob( vecPoint[i] );
-     }
+        for( var i=0; i != this.lProbDistA.length; i++ ) {
+            fA *= this.lProbDistA[i].Prob( vecPoint[i] );
+            fB *= this.lProbDistB[i].Prob( vecPoint[i] );
+        }
 
-     var fScoreA = fA / (fA + fB);
-     var fScoreB = fB / (fA + fB);
+        var fScoreA = fA / (fA + fB);
+        var fScoreB = fB / (fA + fB);
 
-     return [fScoreA, fScoreB];
-  };
-};
+        return [fScoreA, fScoreB];
+    };
+}

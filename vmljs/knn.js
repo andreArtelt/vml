@@ -27,152 +27,152 @@
 * @requires mathjs
 */
 function vml_KNN() {
-  // Vars
-  this.iK = 1;
-  this.lData = [];
-  this.lLabel = [];
-  this.Predict = undefined;
-  this.bReady = false;
+    this.iK = 1;
+    this.lData = [];
+    this.lLabel = [];
+    this.Predict = undefined;
+    this.bReady = false;
 
-  /**
-  * Init the model.
-  * @memberof vml_KNN
-  * @instance
-  * @method Init
-  * @param {Matrix} lData - Data (List of vectors).
-  * @param {Vector} lLabel - Labels of each data point (assume binary label: -1 or 1).
-  * @param {Integer} iK - Size of neighborhood used for predictions.
-  */
-  this.Init = function( lData, lLabel, iK ) {
-     if( lLabel instanceof Array == false ) {
-       throw "lLabel has to be a vector (Array)"
-     }
-     if( typeof( iK ) != "number" ) {
-       throw "iK has to be a number"
-     }
+    /**
+    * Init the model.
+    * @memberof vml_KNN
+    * @instance
+    * @method Init
+    * @param {Matrix} lData - Data (List of vectors).
+    * @param {Vector} lLabel - Labels of each data point (assume binary label: -1 or 1).
+    * @param {Integer} iK - Size of neighborhood used for predictions.
+    */
+    this.Init = function( lData, lLabel, iK ) {
+        if( lLabel instanceof Array == false ) {
+            throw "lLabel has to be a vector (Array)";
+        }
+        if( typeof( iK ) != "number" ) {
+            throw "iK has to be a number";
+        }
 
-     this.iK = iK;
-     this.lData = lData;
-     this.lLabel = lLabel;
-     this.bReady = true;
-  };
+        this.iK = iK;
+        this.lData = lData;
+        this.lLabel = lLabel;
+        this.bReady = true;
+    };
 
-  /**
-  * Checks if the model has been initialized or not.
-  * @method IsReady
-  * @memberof vml_KNN
-  * @instance
-  * @return {Boolean} true if it has been initialized, false otherwise.
-  */
-  this.IsReady = function() {
-    return this.bReady;
-  };
+    /**
+    * Checks if the model has been initialized or not.
+    * @method IsReady
+    * @memberof vml_KNN
+    * @instance
+    * @return {Boolean} true if it has been initialized, false otherwise.
+    */
+    this.IsReady = function() {
+        return this.bReady;
+    };
 
-  this.myDistance = function( a, b ) {
-    if( a.length == 1 ) {  // Note: mathjs can not compute distance of 1d points!
-      return math.abs( a[0] - b[0] )
-    }
-    else {
-       return math.distance( a, b );
-    }
-  };
+    this.myDistance = function( a, b ) {
+        if( a.length == 1 ) {  // Note: mathjs can not compute distance of 1d points!
+            return math.abs( a[0] - b[0] )
+        }
+        else {
+            return math.distance( a, b );
+        }
+    };
 
-  /**
-  * Find the k nearest neighbors (including their labels) of a given point.
-  * @memberof vml_KNN
-  * @instance
-  * @method FindKnn
-  * @param {Vector} vecPoint - Point used to compute neighborhood.
-  * @returns {Object} List of knn (each entry is an object like {x: vecPoint, t: label, d: distance} where vecPoint,label and distance are replaced by values)
-  */
-  this.FindKnn = function( vecPoint ) {
-     var lKnn = [];
+    /**
+    * Find the k nearest neighbors (including their labels) of a given point.
+    * @memberof vml_KNN
+    * @instance
+    * @method FindKnn
+    * @param {Vector} vecPoint - Point used to compute neighborhood.
+    * @returns {Object} List of knn (each entry is an object like {x: vecPoint, t: label, d: distance} where vecPoint,label and distance are replaced by values)
+    */
+    this.FindKnn = function( vecPoint ) {
+        var lKnn = [];
 
-     for( var i=0; i != this.lData.length; i++ ) {
-        this.insert( lKnn, this.lData[ i ], this.lLabel[ i ], this.myDistance( vecPoint, this.lData[ i ] ) );
-     }
+        for( var i=0; i != this.lData.length; i++ ) {
+            this.insert( lKnn, this.lData[ i ], this.lLabel[ i ], this.myDistance( vecPoint, this.lData[ i ] ) );
+        }
 
-     return lKnn;
-  };
+        return lKnn;
+    };
 
-  this.insert = function( lKnn, x1, t1, fDist ) {
-    for( var i=0; i != lKnn.length; i++ ) {
-       if( lKnn[ i ].d >= fDist ) {
-         lKnn.splice( i, 0, {x: x1, t: t1, d: fDist} );
-         if( lKnn.length > this.iK ) {
-           lKnn.pop();
-         }         
+    this.insert = function( lKnn, x1, t1, fDist ) {
+        for( var i=0; i != lKnn.length; i++ ) {
+            if( lKnn[ i ].d >= fDist ) {
+                lKnn.splice( i, 0, {x: x1, t: t1, d: fDist} );
 
-         return;
-       }
-    }
+                if( lKnn.length > this.iK ) {
+                    lKnn.pop();
+                }
 
-    if( lKnn.length < this.iK ) {
-      lKnn.push( {x: x1, t: t1, d: fDist} );
-    }
-  }
+                return;
+            }
+        }
 
-  /**
-  * Predict the value (regression) of a given point.
-  * @memberof vml_KNN
-  * @instance
-  * @method PredictRegression
-  * @param {Vector} vecPoint - Input of model.
-  * @returns {Double} Predicted value.
-  */
-  this.PredictRegression = function( vecPoint ) {
-     if( vecPoint instanceof Array == false ) {
-       throw "vecPoint has to be a vector (Array)"
-     }
+        if( lKnn.length < this.iK ) {
+            lKnn.push( {x: x1, t: t1, d: fDist} );
+        }
+    };
 
-    this.Predict = this.PredictRegression;
+    /**
+    * Predict the value (regression) of a given point.
+    * @memberof vml_KNN
+    * @instance
+    * @method PredictRegression
+    * @param {Vector} vecPoint - Input of model.
+    * @returns {Double} Predicted value.
+    */
+    this.PredictRegression = function( vecPoint ) {
+        if( vecPoint instanceof Array == false ) {
+            throw "vecPoint has to be a vector (Array)";
+        }
 
-    // Find k nearest neighbors
-    lKnn = this.FindKnn( vecPoint );
+        this.Predict = this.PredictRegression;
 
-    // Compute predicted value as mean over knn.
-    var dPred = 0.0;
-    for( var i=0; i != lKnn.length; i++ ) {
-      dPred += lKnn[ i ].t;
-    }
-    dPred /= this.iK;
+        // Find k nearest neighbors
+        lKnn = this.FindKnn( vecPoint );
 
-    return dPred;
-  };
+        // Compute predicted value as mean over knn.
+        var dPred = 0.0;
+        for( var i=0; i != lKnn.length; i++ ) {
+            dPred += lKnn[ i ].t;
+        }
+        dPred /= this.iK;
 
-  /**
-  * Predict the label/class of a given point.
-  * @memberof vml_KNN
-  * @instance
-  * @method PredictClassification
-  * @param {Vector} vecPoint - Point to label (input of model).
-  * @returns {Array} Predicted class labels (probabilities) for each class.
-  */
-  this.PredictClassification = function( vecPoint ) {
-     if( vecPoint instanceof Array == false ) {
-       throw "vecPoint has to be a vector (Array)"
-     }
+        return dPred;
+    };
 
-    this.Predict = this.PredictClassification;
+    /**
+    * Predict the label/class of a given point.
+    * @memberof vml_KNN
+    * @instance
+    * @method PredictClassification
+    * @param {Vector} vecPoint - Point to label (input of model).
+    * @returns {Array} Predicted class labels (probabilities) for each class.
+    */
+    this.PredictClassification = function( vecPoint ) {
+        if( vecPoint instanceof Array == false ) {
+            throw "vecPoint has to be a vector (Array)";
+        }
 
-    // Find k nearest neighbors
-    lKnn = this.FindKnn( vecPoint );
+        this.Predict = this.PredictClassification;
 
-    // Compute predicited class label based on knn (assume -1 and 1 as labels)
-    var pred = 0;
-    for( var i=0; i != lKnn.length; i++ ) {
-      pred += lKnn[ i ].t;
-    }
-    if( pred < 0 ) {
-      pred = [ 1, 0 ];
-    }
-    else if( pred == 0 ) {
-      pred = [ 0.5, 0.5 ];
-    }
-    else {
-      pred = [ 0, 1 ];
-    }
+        // Find k nearest neighbors
+        lKnn = this.FindKnn( vecPoint );
 
-    return pred;
-  };
+        // Compute predicited class label based on knn (assume -1 and 1 as labels)
+        var pred = 0;
+        for( var i=0; i != lKnn.length; i++ ) {
+            pred += lKnn[ i ].t;
+        }
+        if( pred < 0 ) {
+            pred = [ 1, 0 ];
+        }
+        else if( pred == 0 ) {
+            pred = [ 0.5, 0.5 ];
+        }
+        else {
+            pred = [ 0, 1 ];
+        }
+
+        return pred;
+    };
 }

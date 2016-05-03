@@ -37,28 +37,28 @@ function vml_CsvHelper() {
 * @return {Array} Array (first entry: Data matrix, second entry: Labels vector)
 */
 vml_CsvHelper.Import = function( strData ) {
-  var lData = [];
-  var lLabels = [];
+    var lData = [];
+    var lLabels = [];
 
-  var lRows = strData.split( "\n" );
-  for( var i=1;  i < lRows.length; i++ ) {
-    if( lRows[ i ] == "" ) {  // Skip empty rows
-      continue;
+    var lRows = strData.split( "\n" );
+    for( var i=1;  i < lRows.length; i++ ) {
+        if( lRows[ i ] == "" ) {  // Skip empty rows
+            continue;
+        }
+
+        var tmp = lRows[ i ].split( "," );
+
+        // Convert to list of float
+        var data = tmp[ 0 ].split( " " );
+        for( var j=0; j != data.length; j++ ) {
+        data[ j ] = parseFloat( data[ j ] );
+        }
+
+        lData.push( data );
+        lLabels.push( tmp[ 1 ] );
     }
 
-    var tmp = lRows[ i ].split( "," );
-
-    // Convert to list of float
-    var data = tmp[ 0 ].split( " " );
-    for( var j=0; j != data.length; j++ ) {
-      data[ j ] = parseFloat( data[ j ] );
-    }
-
-    lData.push( data );
-    lLabels.push( tmp[ 1 ] );
-  }
-
-  return [ lData, lLabels ];
+    return [ lData, lLabels ];
 }
 
 /**
@@ -70,11 +70,11 @@ vml_CsvHelper.Import = function( strData ) {
 * @return {String} Csv data.
 */
 vml_CsvHelper.Export = function( lData, lLabels) {
-  var strResult = "x,t\r\n";    
+    var strResult = "x,t\r\n";
 
-  for( var i=0; i != lData.length; i++ ) {
-    strResult += lData[ i ].toString().replace( ",", " " ) + "," + lLabels[ i ] + "\r\n";
-  }
+    for( var i=0; i != lData.length; i++ ) {
+        strResult += lData[ i ].toString().replace( ",", " " ) + "," + lLabels[ i ] + "\r\n";
+    }
 
-  return strResult;
+    return strResult;
 }

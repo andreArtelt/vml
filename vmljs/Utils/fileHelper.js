@@ -37,18 +37,18 @@ function vml_FileHelper() {
 * @param {String} strData - Base64 encoded file content.
 */
 vml_FileHelper.WriteFile = function( strFilename, strData ) {
-  // Create invisible link
-  var oLink = document.createElement( 'a' );
-  oLink.setAttribute( 'href', 'data:application/octet-stream;charset=utf-16le;base64,' + strData );
-  oLink.setAttribute( 'download', strFilename );
-  oLink.style.display = 'none';
+    // Create invisible link
+    var oLink = document.createElement( 'a' );
+    oLink.setAttribute( 'href', 'data:application/octet-stream;charset=utf-16le;base64,' + strData );
+    oLink.setAttribute( 'download', strFilename );
+    oLink.style.display = 'none';
 
-  // Trigger link
-  document.body.appendChild( oLink );
-  oLink.click();
+    // Trigger link
+    document.body.appendChild( oLink );
+    oLink.click();
 
-  // Remove link
-  document.body.removeChild( oLink );
+    // Remove link
+    document.body.removeChild( oLink );
 }
 
 /**
@@ -59,11 +59,11 @@ vml_FileHelper.WriteFile = function( strFilename, strData ) {
 * @param {function} funcCallback Callback which is called with the content of the file.
 */
 vml_FileHelper.ReadFileAsStringAsync = function( oFile, funcCallback ) {
-  var oFileReader = new FileReader();
+    var oFileReader = new FileReader();
 
-  oFileReader.onload = function( evt ) { funcCallback( evt.target.result ) };
+    oFileReader.onload = function( evt ) { funcCallback( evt.target.result ) };
 
-  oFileReader.readAsText( oFile );
+    oFileReader.readAsText( oFile );
 }
 
 /**
@@ -74,9 +74,9 @@ vml_FileHelper.ReadFileAsStringAsync = function( oFile, funcCallback ) {
 * @param {function} funcCallback Callback which is called with the content of the file.
 */
 vml_FileHelper.ReadFileAsArrayBufferAsync = function( oFile, funcCallback ) {
-  var oFileReader = new FileReader();
+    var oFileReader = new FileReader();
 
-  oFileReader.onload = function( evt ) { funcCallback( evt.target.result ) };
+    oFileReader.onload = function( evt ) { funcCallback( evt.target.result ) };
 
-  oFileReader.readAsArrayBuffer( oFile );
+    oFileReader.readAsArrayBuffer( oFile );
 }

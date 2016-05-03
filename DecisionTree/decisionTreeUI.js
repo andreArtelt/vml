@@ -21,96 +21,96 @@
 //  SOFTWARE.
 
 function vml_DecisionTreeUI() {
-  this.oDataGen = null;
-  this.oModel = null;
+    this.oDataGen = null;
+    this.oModel = null;
 
-  this.lGrid = [];
-  this.lDecBound = [];
-
-  this.Init = function() {
-    try {
-      // Init
-      this.oDataGen = oDataGen;
-
-      this.InitGrid();
-
-      // Register eventhandler
-      document.getElementById( "fitBtn" ).addEventListener( "click", this.Fit.bind( this ), false );
-      document.getElementById( "evalBtn" ).addEventListener( "click", this.Evaluate.bind( this ), false );
-    }
-    catch( ex ) {
-      alert( "Fatal error: Can not initialize!\n" + err );
-    }
-  };
-
-  this.Fit = function() {
-    try {
-      // Get/Convert data
-      this.ConvertData( this.oDataGen.oClassA.Data, this.oDataGen.oClassB.Data );
-
-      // Create/Fit model
-      this.oModel = new vml_DecisionTree();
-      this.oModel.Fit( this.lData, this.lLabels, this.GetDepth(), 2, 2 );
-
-      // Compute decision boundary and update plot
-      this.ComputeDecisionBoundary();
-      this.Plot();
-    }
-    catch( ex ) {
-      alert( "Error: " + ex );
-    }
-  };
-
-  this.Evaluate = function() {
-    try {
-      // Evaluate model
-      var oEvaluation = new vml_ClassifierEvaluation( this.lData, this.lLabels, this.oModel, 2 ).AllMetrics();
-
-      // Show evaluation
-      var oEvalDlg = new vml_EvaluationDlg();
-      oEvalDlg.Init( false, oEvaluation );
-      oEvalDlg.Show();
-    }
-    catch( ex ) {
-      alert( "Error: " + ex );
-    }
-  };
-
-  this.Plot = function() {
-     var oPlotHelper = new vml_PlotHelper();
-
-     var lData = [ { lData: this.oDataGen.oClassA.Data, name: "Class A", color: "red", size: 3.5, symbol: "circle" }, { lData: this.oDataGen.oClassB.Data, name: "Class B", color: "black", size: 3.5, symbol: "circle" } ];
-
-     oPlotHelper.CreateHeatmapScatterPlot( this.lDecBound, lData, "plotArea", 0.05 );
-  };
-
-  this.ConvertData = function( lClassA, lClassB ) {
-     this.lData = lClassA.concat( lClassB );
-     this.lLabels = vml_utils.FillList( lClassA.length, 0 ).concat( vml_utils.FillList( lClassB.length, 1 ) );
-  };
-
-  this.ComputeDecisionBoundary = function() {
+    this.lGrid = [];
     this.lDecBound = [];
 
-    for( var i=0; i != this.lGrid.length; i++ ) {
-       var vecPoint = this.lGrid[ i ];
-       var fPred = this.oModel.Predict( vecPoint )[0];
+    this.Init = function() {
+        try {
+            // Init
+            this.oDataGen = oDataGen;
 
-       this.lDecBound.push( vecPoint.concat( [ fPred ] ) );
-    }
-  };
+            this.InitGrid();
 
-  this.GetDepth = function() {
-     var iResult = document.getElementById( "treeDepth" ).value;
-     if( iResult == "" || iResult == undefined ) {
-        return 1;
-     }
-     else {
-        return parseInt( iResult );
-     }
-  };
+            // Register eventhandler
+            document.getElementById( "fitBtn" ).addEventListener( "click", this.Fit.bind( this ), false );
+            document.getElementById( "evalBtn" ).addEventListener( "click", this.Evaluate.bind( this ), false );
+        }
+        catch( ex ) {
+            alert( "Fatal error: Can not initialize!\n" + err );
+        }
+    };
 
-  this.InitGrid = function() {
-      this.lGrid = vml_utils.BuildGridWithoutBias( -5, 5, -5, 5, 0.05 );
-  };
+    this.Fit = function() {
+        try {
+            // Get/Convert data
+            this.ConvertData( this.oDataGen.oClassA.Data, this.oDataGen.oClassB.Data );
+
+            // Create/Fit model
+            this.oModel = new vml_DecisionTree();
+            this.oModel.Fit( this.lData, this.lLabels, this.GetDepth(), 2, 2 );
+
+            // Compute decision boundary and update plot
+            this.ComputeDecisionBoundary();
+            this.Plot();
+        }
+        catch( ex ) {
+            alert( "Error: " + ex );
+        }
+    };
+
+    this.Evaluate = function() {
+        try {
+            // Evaluate model
+            var oEvaluation = new vml_ClassifierEvaluation( this.lData, this.lLabels, this.oModel, 2 ).AllMetrics();
+
+            // Show evaluation
+            var oEvalDlg = new vml_EvaluationDlg();
+            oEvalDlg.Init( false, oEvaluation );
+            oEvalDlg.Show();
+        }
+        catch( ex ) {
+            alert( "Error: " + ex );
+        }
+    };
+
+    this.Plot = function() {
+        var oPlotHelper = new vml_PlotHelper();
+
+        var lData = [ { lData: this.oDataGen.oClassA.Data, name: "Class A", color: "red", size: 3.5, symbol: "circle" }, { lData: this.oDataGen.oClassB.Data, name: "Class B", color: "black", size: 3.5, symbol: "circle" } ];
+
+        oPlotHelper.CreateHeatmapScatterPlot( this.lDecBound, lData, "plotArea", 0.05 );
+    };
+
+    this.ConvertData = function( lClassA, lClassB ) {
+        this.lData = lClassA.concat( lClassB );
+        this.lLabels = vml_Utils.FillList( lClassA.length, 0 ).concat( vml_Utils.FillList( lClassB.length, 1 ) );
+    };
+
+    this.ComputeDecisionBoundary = function() {
+        this.lDecBound = [];
+
+        for( var i=0; i != this.lGrid.length; i++ ) {
+            var vecPoint = this.lGrid[ i ];
+            var fPred = this.oModel.Predict( vecPoint )[0];
+
+            this.lDecBound.push( vecPoint.concat( [ fPred ] ) );
+        }
+    };
+
+    this.GetDepth = function() {
+        var iResult = document.getElementById( "treeDepth" ).value;
+        if( iResult == "" || iResult == undefined ) {
+            return 1;
+        }
+        else {
+            return parseInt( iResult );
+        }
+    };
+
+    this.InitGrid = function() {
+        this.lGrid = vml_Utils.BuildGridWithoutBias( -5, 5, -5, 5, 0.05 );
+    };
 }

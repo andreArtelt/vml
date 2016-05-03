@@ -37,12 +37,12 @@ function vml_JsonHelper() {
 * @return {Array} Array (first entry: Data matrix, second entry: Labels vector).
 */
 vml_JsonHelper.Import = function( strData ) {
-  var oData = JSON.parse( strData );
-  if( oData.Data == undefined || oData.Labels == undefined ) {
-    throw "Invalid format";
-  }
+    var oData = JSON.parse( strData );
+    if( oData.Data == undefined || oData.Labels == undefined ) {
+        throw "Invalid format";
+    }
 
-  return [ oData.Data, oData.Labels ];
+    return [ oData.Data, oData.Labels ];
 }
 
 /**
@@ -53,5 +53,5 @@ vml_JsonHelper.Import = function( strData ) {
 * @return {String} Json data.
 */
 vml_JsonHelper.Export = function( lData, lLabels ) {
-  return JSON.stringify( { Data: lData, Labels: lLabels } );
+    return JSON.stringify( { Data: lData, Labels: lLabels } );
 }

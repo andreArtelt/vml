@@ -21,42 +21,46 @@
 //  SOFTWARE.
 
 /**
-*
+* @classdesc vml_TrainingCurvePlotDlg
 * @class vml_TrainingCurvePlotDlg
 * @constructor
 */
 function vml_TrainingCurvePlotDlg() {
-  this.lData = [];
-  this.oPlotSettings = undefined;
+    this.lData = [];
+    this.oPlotSettings = undefined;
 
-  /**
-  * Initialize plot.
-  * @method Init
-  * @param {} strTitle
-  * @param {} lScoreTime
-  * @param {}
-  * @param {}
-  * @param {} strLabel
-  * @param {} strColor
-  */
-  this.Init = function( strTitle, lScoreTime, rangeX, rangeY, strLabel, strColor, strLegendPos ) {
-    strLabel = strLabel == undefined ? "" : strLabel;
-    strColor = strColor == undefined ? "#0000FF" : strColor;
-    strLegendPos = strLegendPos == undefined ? "se" : strLegendPos;
+    /**
+    * Initialize plot.
+    * @method Init
+    * @memberof vml_TrainingCurvePlotDlg
+    * @instance
+    * @param {String} strTitle -
+    * @param {Array} lScoreTime -
+    * @param {Object} rangeX -
+    * @param {Object} rangeY -
+    * @param {String} strLabel -
+    * @param {String} strColor -
+    */
+    this.Init = function( strTitle, lScoreTime, rangeX, rangeY, strLabel, strColor, strLegendPos ) {
+        strLabel = strLabel == undefined ? "" : strLabel;
+        strColor = strColor == undefined ? "#0000FF" : strColor;
+        strLegendPos = strLegendPos == undefined ? "se" : strLegendPos;
 
-    this.lData = [ { label: strLabel, color: strColor, data: lScoreTime, lines: {show: true } } ];
-    this.oPlotSettings = { legend: {position: strLegendPos}, xaxis: rangeX, yaxis: rangeY, grid: { borderWidth: 0, aboveData: false, margin: { left: 50, right: 50 } } };
+        this.lData = [ { label: strLabel, color: strColor, data: lScoreTime, lines: {show: true } } ];
+        this.oPlotSettings = { legend: {position: strLegendPos}, xaxis: rangeX, yaxis: rangeY, grid: { borderWidth: 0, aboveData: false, margin: { left: 50, right: 50 } } };
 
-    document.getElementById( "trainCurveDlgTitle" ).innerHTML = strTitle;
-  };
+        document.getElementById( "trainCurveDlgTitle" ).innerHTML = strTitle;
+    };
 
-  /**
-  * Show the dialog.
-  * @method Show
-  */
-  this.Show = function() {
-    $.plot( "#trainCurveDlgPlotArea", this.lData, this.oPlotSettings );
+    /**
+    * Show the dialog.
+    * @method Show
+    * @memberof vml_TrainingCurvePlotDlg
+    * @instance
+    */
+    this.Show = function() {
+        $.plot( "#trainCurveDlgPlotArea", this.lData, this.oPlotSettings );
 
-    document.getElementById( "trainCurveDlg" ).showModal();
-  };
+        document.getElementById( "trainCurveDlg" ).showModal();
+    };
 }
