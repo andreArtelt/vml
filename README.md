@@ -30,7 +30,14 @@ The aim is to help students **getting a better understanding** about the behavio
 See [wiki](https://github.com/andreArtelt/vml/wiki).
 
 ## Technical stuff
-This project is realized using HTML5, JavaScript and CSS3.
+This project is realized using *HTML5*, *JavaScript* and *CSS3*.
+
+## How to build?
+Make sure you have installed [nodejs](https://github.com/nodejs), [vulcanize](https://github.com/Polymer/vulcanize) and [jsdoc](https://github.com/jsdoc3/jsdoc).
+
+Execute from the root directory  
+`node build.js`  
+This will build the website and the documentation.
 
 ## Contribution
 Collaboration/Contributions/Pull-requests are highly welcome. Feel free to contact me.
