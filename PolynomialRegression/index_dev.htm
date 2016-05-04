@@ -34,9 +34,11 @@
     <input type="number" step="any" id="learningRate" value="0.001"></input><br>
     <div class="tooltip">Training iterations:<span class="tooltiptext">Number of SGD iterations</span></div><br>
     <input type="number" id="numTrainItr" value="10"></input><br>
-    <div class="tooltip">Gradient clipping: <input type="checkbox" id="gradientClipping" checked="true"></input>
-    <span class="tooltiptext">Use gradient clipping/scaling</span></div>
-    <br><br>
+    <div class="tooltip">Gradient clipping: <input type="checkbox" id="gradientClipping"></input>
+    <span class="tooltiptext">Use gradient clipping/scaling</span></div><br>
+    <div id="gradClipThresholdCtrl"><div class="tooltip">Threshold:<span class="tooltiptext">Threshold for gradient clipping</span></div><br>
+    <input type="number" id="gradClippingThreshold" value="10"></input></div>
+    <br>
     <button id="resetModel" class="button">Reset</button>
     <button id="evalBtn" class="button">Evaluate</button><br>
     <button id="fitBtn" class="button">Fit</button>

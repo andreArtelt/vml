@@ -41,6 +41,10 @@ function vml_LogisticRegressionUI() {
             document.getElementById( "trainBtn" ).addEventListener( "click", this.Train.bind( this ), false );
             document.getElementById( "evalBtn" ).addEventListener( "click", this.Evaluate.bind( this ), false );
             document.getElementById( "trainCurveBtn" ).addEventListener( "click", this.TrainCurve.bind( this ), false );
+            document.getElementById( "gradientClipping" ).addEventListener( "change", this.GradClippingChange.bind( this ), false );
+
+            // Init state of controls
+            this.GradClippingChange();
         }
         catch( ex ) {
             alert( "Fatal error: Can not initialize!" + ex );
@@ -50,6 +54,15 @@ function vml_LogisticRegressionUI() {
     this.Plot = function() {
         var oPlotHelper = new vml_PlotHelper();
         oPlotHelper.CreateHeatmapScatterPlot( this.lDecBound, [ {lData: this.oDataGen.oClassA.Data, name: "Class A", color: "red", size: 3.5, symbol: "circle"}, {lData: this.oDataGen.oClassB.Data, name: "Class B", color: "black", size: 3.5, symbol: "circle"}], "plotArea", 0.05 );
+    };
+
+    this.GradClippingChange = function() {
+        if( this.UseGradientClipping() == true ) {
+            document.getElementById( "gradClipThresholdCtrl" ).style.display = "block";
+        }
+        else {
+            document.getElementById( "gradClipThresholdCtrl" ).style.display = "none";
+        }
     };
 
     this.ComputeDecisionBoundary = function() {
@@ -98,7 +111,7 @@ function vml_LogisticRegressionUI() {
         try {
             // Training/Fitting
             for(var i=0; i != this.GetNumTrainItr(); i++) {
-                this.oModel.TrainStep( this.GetLearningRate(), this.GetL2Regularization(), this.UseGradientClipping() );
+                this.oModel.TrainStep( this.GetLearningRate(), this.GetL2Regularization(), this.UseGradientClipping(), this.GetGradientClippingThreshold() );
 
                 var fLogLikelihood = this.oModel.LogLikelihood();
                 if( fLogLikelihood == -Infinity ) {
@@ -195,6 +208,16 @@ function vml_LogisticRegressionUI() {
         }
         else {
             return parseInt( iResult );
+        }
+    };
+
+    this.GetGradientClippingThreshold = function() {
+        var fResult = document.getElementById( "gradClippingThreshold" ).value;
+        if( fResult == "" || fResult == undefined ) {
+            return 1.0;
+        }
+        else {
+            return parseFloat( fResult );
         }
     };
 

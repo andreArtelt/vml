@@ -96,14 +96,21 @@ function vml_SoftmaxRegression() {
     * @param {Double} fLambda - Learning rate (stepsize).
     * @param {Double} fL2 - "Strength" of L2 regularization.
     * @param {Boolean} bUseGradientClipping - True if gradient clipping shoud be used, false otherwise.
+    * @param {Double} fGradClippingThreshold - Threshold (norm of gradient) for gradient clipping.
     * @return {Double} Current log likelihood.
     */
-    this.TrainStep = function( fLambda, fL2, bUseGradientClipping ) {
+    this.TrainStep = function( fLambda, fL2, bUseGradientClipping, fGradClippingThreshold ) {
         if( typeof( fLambda ) != "number" ) {
             throw "fLambda has to be a number"
         }
         if( typeof( fL2 ) != "number" ) {
             throw "fL2 has to be a number"
+        }
+        if( typeof( bUseGradientClipping ) != "boolean" ) {
+            throw "bUseGradClientClipping has to be a boolean";
+        }
+        if( typeof( fGradClippingThreshold ) != "number" ) {
+            throw "fGradClippingThreshold has to be a number";
         }
 
         var fLogLikelihood = 0.0;
@@ -138,7 +145,7 @@ function vml_SoftmaxRegression() {
             vecGrad = math.add( vecGrad, vml_Math.MultiplyScalar( this.lParams[i], fL2 ) );  // L2 regularization
 
             if( bUseGradientClipping == true ) {
-                vecGrad = vml_Utils.GradientClipping( vecGrad, 10 );   // Apply gradient clipping to avoid exploding gradient
+                vecGrad = vml_Utils.GradientClipping( vecGrad, fGradClippingThreshold );   // Apply gradient clipping to avoid exploding gradient
             }
 
             // Update param

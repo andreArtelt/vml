@@ -44,9 +44,13 @@ function vml_PolynomialRegressionUI() {
             document.getElementById( "fitBtn" ).addEventListener( "click", this.Fit.bind( this ), false );
             document.getElementById( "evalBtn" ).addEventListener( "click", this.Evaluation.bind( this ), false );
             document.getElementById( "trainCurveBtn" ).addEventListener( "click", this.TrainCurve.bind( this ), false );
+            document.getElementById( "gradientClipping" ).addEventListener( "change", this.GradClippingChange.bind( this ), false );
 
             // Init grid
             this.InitGrid();
+            
+            // Init state of controls
+            this.GradClippingChange();
         }
         catch( ex ) {
             alert( "Fatal error: Can not initialize!\n" + ex );
@@ -60,6 +64,15 @@ function vml_PolynomialRegressionUI() {
         $.plot( "#"+this.oDataGen.strPlotDiv, lData, this.oDataGen.oPlotSettings );
 
         lData.splice( lData.length - 1, 1 ); // Remove current regression curve
+    };
+
+    this.GradClippingChange = function() {
+        if( this.UseGradientClipping() == true ) {
+            document.getElementById( "gradClipThresholdCtrl" ).style.display = "block";
+        }
+        else {
+            document.getElementById( "gradClipThresholdCtrl" ).style.display = "none";
+        }
     };
 
     this.Evaluation = function() {
@@ -96,7 +109,7 @@ function vml_PolynomialRegressionUI() {
         try {
             // Run training iterations
             for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
-                this.oModel.UpdateWeights( this.GetLearningRate(), this.GetRegularizationRate(), this.UseGradientClipping() );
+                this.oModel.UpdateWeights( this.GetLearningRate(), this.GetRegularizationRate(), this.UseGradientClipping(), this.GetGradientClippingThreshold() );
         
                 var fError = this.oModel.ComputeError();
                 this.lErrorOverTime.push( [this.iTime, fError] );
@@ -217,6 +230,16 @@ function vml_PolynomialRegressionUI() {
         }
         else {
             return parseFloat( fResult );
+        }
+    };
+
+    this.GetGradientClippingThreshold = function() {
+        var fResult = document.getElementById( "gradClippingThreshold" ).value;
+        if( fResult == "" || fResult == undefined ) {
+            return 1.0;
+        }
+        else {
+            return parseInt( fResult );
         }
     };
 
