@@ -110,7 +110,7 @@ vml_Math.Kernel_Gaussian = function( x1, x2, sigma ) {
 * @return {Double} k(x1, x2) where k is the linear kernel.
 */
 vml_Math.Kernel_Linear = function( x1, x2, b ) {
-    return vml_math.Kernel_Polynomial( x1, x2, 1, b );
+    return vml_Math.Kernel_Polynomial( x1, x2, 1, b );
 };
 
 /**
