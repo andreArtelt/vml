@@ -32,6 +32,7 @@ function vml_DataGen() {
     this.oClassA = { Data: [], Symbol: "circle", Label: "Class A", Color: "#FF0000" };
     this.oClassB = { Data: [], Symbol: "circle", Label: "Class B", Color: "#000000" };
     this.bSingleDataType = false;
+    this.lHistory = [];
 
     this.Base64ArrayBuffer = undefined;
 
@@ -60,6 +61,7 @@ function vml_DataGen() {
         dialogPolyfill.registerDialog( document.getElementById( 'importDlg' ) );
 
         // Register eventhandler
+	document.getElementById( "undoBtn" ).addEventListener( "click", this.Undo.bind( this ), false );
         document.getElementById( "resetBtn").addEventListener( "click", this.Reset.bind( this ), false );
         document.getElementById( "btnExportToJSON" ).addEventListener( "click", this.ExportJSON.bind( this ), false );
         document.getElementById( "btnExportToCSV" ).addEventListener( "click", this.ExportCSV.bind( this ), false );
@@ -141,9 +143,11 @@ function vml_DataGen() {
         // Store new point
         if( bClassA == true ) {  // Class A
             this.oClassA.Data.push( vecPoint );
+	    this.lHistory.push( "A" );
         }
         else {  // Class B
             this.oClassB.Data.push( vecPoint );
+	    this.lHistory.push( "B" );
         }
     };
 
@@ -178,9 +182,11 @@ function vml_DataGen() {
         for( var i=0; i != lData.length; i++ ) {
             if( lLabels[ i ] == 0 ) {
                 this.oClassA.Data.push( lData[ i ] );
+		this.lHistory.push( "A" );
             }
             else {
                 this.oClassB.Data.push( lData[ i ] );
+		this.lHistory.push( "B" );
             }
         }
     };
@@ -212,12 +218,14 @@ function vml_DataGen() {
         // Import
         var [ lData, lLabels ] = vml_CsvHelper.Import( strImport );
         for( var i=0; i != lData.length; i++ ) {
-        if( lLabels[ i ] == 0 ) {
-            this.oClassA.Data.push( lData[ i ] );
-        }
-        else {
-            this.oClassB.Data.push( lData[ i ] );
-        }
+            if( lLabels[ i ] == 0 ) {
+                this.oClassA.Data.push( lData[ i ] );
+                this.lHistory.push( "A" );
+            }
+            else {
+                this.oClassB.Data.push( lData[ i ] );
+                this.lHistory.push( "B" );
+            }
         }
     };
 
@@ -251,9 +259,11 @@ function vml_DataGen() {
             for( var i=0; i != oParsedMatBuffer.Data.length; i++ ) {
                 if( oParsedMatBuffer.Labels[ i ] == 0 ) {
                     this.oClassA.Data.push( oParsedMatBuffer.Data[ i ] );
+		    this.lHistory.push( "A" );
                 }
                 else {
                     this.oClassB.Data.push( oParsedMatBuffer.Data[ i ] );
+		    this.lHistory.push( "B" );
                 }
             }
 
@@ -354,6 +364,26 @@ function vml_DataGen() {
 
         // Close
         this.ImportClose();
+    };
+
+    /**
+    * Undo (remove last data point)
+    * @method Undo
+    * @memberof vml_DataGen
+    * @instance
+    */
+    this.Undo = function() {
+	// Remove last data point
+	var strType = this.lHistory.pop();
+	if( strType == "A" ) {
+	  this.oClassA.Data.pop();
+	}
+	else if( strType == "B" ) {
+	  this.oClassB.Data.pop();
+	}
+
+	// Refresh plot
+	this.Plot();
     };
 
     /**
