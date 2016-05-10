@@ -34,9 +34,9 @@
     <div class="tooltip">Bias:<span class="tooltiptext">Bias of linear function</span></div><br>
     <input type="number" id="bias" value="0"></input><br>
     <div id="degreeCtrl"><div class="tooltip">Degree:<span class="tooltiptext">Degree of polynomial</span></div><br>
-    <input type="number" id="degree" value="1"></input></div><br>
+    <input type="number" id="degree" value="1"></input></div>
     <div id="sigmaCtrl"><div class="tooltip">Sigma:<span class="tooltiptext">Sigma of gaussian dristribution</span></div><br>
-    <input type="number" id="sigma" value="1"></input></div><br>
+    <input type="number" id="sigma" value="1"></input></div>
 
     <div class="tooltip">Learning rate: <input type="number" id="learningRate" value="0.01"></input>
     <span class="tooltiptext">Learing-rate</span></div><br>
@@ -65,9 +65,8 @@
     importFooter();
  
     // Init
-    //vulcanize --exclude "../Libs/" --exclude "../vmljs/" --exclude "../Components/DataGen/dataGen.js" --exclude "../Components/Evaluation/evaluation.js" --exclude "svmui.js" index.htm > build.htm
     var oLogic = new vml_SvmUI();
     oLogic.Init();
   </script>
-<body>
+</body>
 </html>
