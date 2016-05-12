@@ -5,10 +5,10 @@
   <script src="../vmljs/Utils/math.js"></script>
   <script src="../vmljs/Utils/utils.js"></script>
   <script src="../vmljs/Utils/modelEvaluation.js"></script>
-  <script src="../vmljs/ploynomialRegression.js"></script>
+  <script src="../vmljs/softmaxRegression.js"></script>
   <script src="../Libs/d3js/d3-3.5.16/d3.js"></script>
   <script src="../vmljs/Utils/plotHelper.js"></script>
-  <script src="polynomialRegUI.js">// polynomialRegUI.js
+  <script src="logisticRegressionUI.js">// logisticRegressionUI.js
 // VML - Visualization Machine Learning
 // Copyright <c> André Artelt
 // The MIT License (MIT)
@@ -30,50 +30,40 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-function vml_PolynomialRegressionUI() {
+function vml_LogisticRegressionUI() {
     this.oDataGen = null;
     this.oModel = null;
 
-    this.lCurve = [];
     this.lGrid = [];
+    this.lGridTransformed = [];
+    this.lDecBound = [];
     this.lErrorOverTime = [];
     this.iTime = -1;
-    this.fMinError, this.fMaxError;
 
     this.Init = function() {
         try {
             // Init
             this.oDataGen = oDataGen;
-            this.oDataGen.SetSingleDataTypeOnly( true );
-
-            this.oModel = new vml_PolynomialRegression();
+            this.oModel = new vml_SoftmaxRegression();
 
             // Register eventhandler
+            document.getElementById( "resetModelBtn" ).addEventListener( "click", this.Reset.bind( this ), false );
             document.getElementById( "trainBtn" ).addEventListener( "click", this.Train.bind( this ), false );
-            document.getElementById( "resetModel" ).addEventListener( "click", this.Reset.bind( this ), false );
-            document.getElementById( "fitBtn" ).addEventListener( "click", this.Fit.bind( this ), false );
-            document.getElementById( "evalBtn" ).addEventListener( "click", this.Evaluation.bind( this ), false );
+            document.getElementById( "evalBtn" ).addEventListener( "click", this.Evaluate.bind( this ), false );
             document.getElementById( "trainCurveBtn" ).addEventListener( "click", this.TrainCurve.bind( this ), false );
             document.getElementById( "gradientClipping" ).addEventListener( "change", this.GradClippingChange.bind( this ), false );
 
-            // Init grid
-            this.InitGrid();
-            
             // Init state of controls
             this.GradClippingChange();
         }
         catch( ex ) {
-            alert( "Fatal error: Can not initialize!\n" + ex );
+            alert( "Fatal error: Can not initialize!" + ex );
         }
     };
 
     this.Plot = function() {
-        var lData = this.oDataGen.lData;
-        lData.push( { label: "Regression curve", data: this.lCurve, lines: {show: true} } );
-
-        $.plot( "#"+this.oDataGen.strPlotDiv, lData, this.oDataGen.oPlotSettings );
-
-        lData.splice( lData.length - 1, 1 ); // Remove current regression curve
+        var oPlotHelper = new vml_PlotHelper();
+        oPlotHelper.CreateHeatmapScatterPlot( this.lDecBound, [ {lData: this.oDataGen.oClassA.Data, name: "Class A", color: "red", size: 3.5, symbol: "circle"}, {lData: this.oDataGen.oClassB.Data, name: "Class B", color: "black", size: 3.5, symbol: "circle"}], "plotArea", 0.05 );
     };
 
     this.GradClippingChange = function() {
@@ -85,19 +75,31 @@ function vml_PolynomialRegressionUI() {
         }
     };
 
-    this.Evaluation = function() {
-        try {
-            var lData = [];
-            var lLabels = [];
-            for( var i=0; i != this.oDataGen.oClassA.Data.length; i++ ) {
-                lData.push( this.oDataGen.oClassA.Data[i][0] );
-                lLabels.push( this.oDataGen.oClassA.Data[i][1] );
-            }
+    this.ComputeDecisionBoundary = function() {
+        this.lDecBound = [];  // Reset current decision boundary
 
-            var oEvaluation = new vml_RegressionEvaluation( lData, lLabels, this.oModel ).AllMetrics();
-            var oEvalDlg = new vml_EvaluationDlg();
-            oEvalDlg.Init( true, oEvaluation );
-            oEvalDlg.Show();
+        for( var i=0; i != this.lGrid.length; i++ ) {
+            var vecPointTransformed = this.lGridTransformed[ i ];
+            var vecPoint = this.lGrid[ i ];
+            var fLabel = this.oModel.Predict( vecPointTransformed )[0];
+
+            this.lDecBound.push( vecPoint.concat( [ fLabel ] ) );
+        }
+    };
+
+    this.Evaluate = function() {
+        try {
+            var lData = this.oDataGen.oClassA.Data;
+            lData = lData.concat( this.oDataGen.oClassB.Data );
+            var lLabels = vml_Utils.FillList( this.oDataGen.oClassA.Data.length, [0] ).concat( vml_Utils.FillList( this.oDataGen.oClassB.Data.length, [1] ) );
+            var X = vml_Utils.PolynomFeatureTransform( lData, 2, this.GetPolynomDegree() );
+
+            var oEval = new vml_ClassifierEvaluation( X, lLabels, this.oModel, 2 );
+            var oModelEvaluation = oEval.AllMetrics();
+
+            var oDlg = new vml_EvaluationDlg()
+            oDlg.Init( false, oModelEvaluation );
+            oDlg.Show();
         }
         catch( ex ) {
             alert( "Error: " + ex );
@@ -107,7 +109,7 @@ function vml_PolynomialRegressionUI() {
     this.TrainCurve = function() {
         try {
             var oDlg = new vml_TrainingCurvePlotDlg();
-            oDlg.Init( "Training curve", this.lErrorOverTime, {min: 0, max: this.iTime}, {min: 0, max: this.fMaxError}, "Error", undefined, "ne" );
+            oDlg.Init( "Training curve", this.lErrorOverTime, {min: 0, max: this.iTime}, {min: this.lErrorOverTime[ 0 ][ 1 ], max: 0}, "LogLikelihood" );
             oDlg.Show();
         }
         catch( ex ) {
@@ -117,99 +119,65 @@ function vml_PolynomialRegressionUI() {
 
     this.Train = function() {
         try {
-            // Run training iterations
-            for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
-                this.oModel.UpdateWeights( this.GetLearningRate(), this.GetRegularizationRate(), this.UseGradientClipping(), this.GetGradientClippingThreshold() );
-        
-                var fError = this.oModel.ComputeError();
-                this.lErrorOverTime.push( [this.iTime, fError] );
-                this.iTime++;
+            // Training/Fitting
+            for(var i=0; i != this.GetNumTrainItr(); i++) {
+                this.oModel.TrainStep( this.GetLearningRate(), this.GetL2Regularization(), this.UseGradientClipping(), this.GetGradientClippingThreshold() );
 
-                if( fError < this.fMinError || this.fMinError == undefined ) {
-                    this.fMinError = fError;
+                var fLogLikelihood = this.oModel.LogLikelihood();
+                if( fLogLikelihood == -Infinity ) {
+                    this.bNeedFixInfinity = true;
                 }
-                if( fError > this.fMaxError || this.fMaxError == undefined ) {
-                    this.fMaxError = fError;
+                else if( this.bNeedFixInfinity == true ) {
+                    this.bNeedFixInfinity = false;
+                    for( var j=0; j != this.lErrorOverTime.length; j++ ) {
+                        this.lErrorOverTime[ j ][ 1 ] = fLogLikelihood - 10;
+                    }
                 }
+
+                this.lErrorOverTime.push( [ this.iTime, fLogLikelihood ] );
+                this.iTime++;
             }
 
-            // Recompute curve
-            this.ComputeRegressionCurve();
+            // Compute decision boundary
+            this.ComputeDecisionBoundary();
 
-            // Refresh plot
+            // Plot boundary
             this.Plot();
         }
         catch( ex ) {
             alert( "Error: " + ex );
         }
-    };
-
-    this.Fit = function() {
-        try {
-            // Init model
-            this.oModel.Init( this.GetPolynomDegree(), this.oDataGen.oClassA.Data );
-
-            // Fit model
-            this.oModel.Fit( this.GetRegularizationRate() );
-
-            // Recompute regression curve
-            this.ComputeRegressionCurve();
-
-            // Refresh plot
-            this.Plot();
-        }
-        catch( ex ) {
-            alert( "Error: " + ex );
-        }
-    };
-
-    this.ComputeRegressionCurve = function() {
-        this.lCurve = []; // Reset current curve
-
-        // Compute predicited output for each point
-        for( var i=0; i != this.lGrid.length; i++ ) {
-            var x = this.lGrid[ i ];
-            this.lCurve.push( [ x, this.oModel.Predict( x ) ] );
-        };
     };
 
     this.Reset = function() {
         try {
-            // Init weights with random values
-            this.oModel.Init( this.GetPolynomDegree(), this.oDataGen.oClassA.Data );
+            // Get data
+            var lData = this.oDataGen.oClassA.Data;
+            lData = lData.concat( this.oDataGen.oClassB.Data );
 
-            // Recompute decision boundary
-            this.ComputeRegressionCurve();
+            var lLabels = vml_Utils.FillList( this.oDataGen.oClassA.Data.length, 0 ).concat( vml_Utils.FillList( this.oDataGen.oClassB.Data.length, 1 ) );
 
-            // Refresh plot
-            this.Plot();
+            // Perform feature transformation
+            var X = vml_Utils.PolynomFeatureTransform( lData, 2, this.GetPolynomDegree() );
+
+            // Init grid
+            this.lGrid = vml_Utils.BuildGridWithoutBias( -5, 5, -5, 5, 0.05 );
+            this.lGridTransformed = vml_Utils.PolynomFeatureTransform( this.lGrid, 2, this.GetPolynomDegree() );
+
+            // Init model
+            this.oModel.Init( X, lLabels, (this.GetPolynomDegree() + 1) * 2, 2 );
 
             // Reset training curve
             this.lErrorOverTime = [];
             this.iTime = 0;
-            this.fMinError = undefined;
-            this.fMaxError = undefined;
+            this.bNeedFixInfinity = false;
+
+            // Compute decision boundary + refresh plot
+            this.ComputeDecisionBoundary();
+            this.Plot();
         }
         catch( ex ) {
             alert( "Error: " + ex );
-        }
-    };
-
-    this.InitGrid = function() {
-        this.lGrid = vml_Utils.BuildGrid1d( -5, 5, 0.05 );
-    };
-
-    this.IsAnimated = function() {
-        return document.getElementById( "showAnimation" ).checked;
-    };
-
-    this.GetPolynomDegree = function() {
-        var iResult = document.getElementById( "polynomDegree" ).value;
-        if( iResult == "" || iResult == undefined ) {
-            return 1;
-        }
-        else {
-            return parseInt( iResult );
         }
     };
 
@@ -223,23 +191,33 @@ function vml_PolynomialRegressionUI() {
         }
     };
 
-    this.GetNumberOfIterations = function() {
+    this.GetNumTrainItr = function() {
         var iResult = document.getElementById( "numTrainItr" ).value;
         if( iResult == "" || iResult == undefined ) {
-            return 0;
+            return 1;
         }
         else {
             return parseInt( iResult );
         }
     };
 
-    this.GetRegularizationRate = function() {
-        var fResult = document.getElementById( "regulRate" ).value;
+    this.GetL2Regularization = function() {
+         var fResult = document.getElementById( "regulRate" ).value;
         if( fResult == "" || fResult == undefined ) {
-            return 0.0;
+            return 1.0;
         }
         else {
             return parseFloat( fResult );
+        }
+    };
+
+    this.GetPolynomDegree = function() {
+        var iResult = document.getElementById( "polynomDegree" ).value;
+        if( iResult == "" || iResult == undefined ) {
+            return 1;
+        }
+        else {
+            return parseInt( iResult );
         }
     };
 
@@ -249,17 +227,16 @@ function vml_PolynomialRegressionUI() {
             return 1.0;
         }
         else {
-            return parseInt( fResult );
+            return parseFloat( fResult );
         }
     };
 
     this.UseGradientClipping = function() {
         return document.getElementById( "gradientClipping" ).checked;
     };
-}
-</script>
+}</script>
 
-  <title>VML - Polynomial regression</title>
+  <title>VML - Logistic regression</title>
 </head>
 <body><div hidden="" by-vulcanize=""><link rel="stylesheet" type="text/css" href="../Components/Footer/footer.css">
 
@@ -597,30 +574,29 @@ function vml_TrainingCurvePlotDlg() {
   };
 </script>
 </div>
-  <center><h1>Polynomial regression</h1></center>
+  <center><h1>Logistic regression</h1></center>
 
-  <div id="dataGenPlaceholder"></div>  
+  <div id="dataGenPlaceholder"></div>
 
   <div id="model" class="groupBox">
     <b>Model:</b><br>
-    <div class="tooltip">Degree of polynom:<span class="tooltiptext">Complexity of the model</span></div><br>
+    <div class="tooltip">Degree of polynomial:<span class="tooltiptext">Polynomial feature transformation</span></div><br>
     <input type="number" id="polynomDegree" value="1"><br>
+    <div class="tooltip">Learning rate:<span class="tooltiptext">Learing-rate/step-size in GD</span></div><br>
+    <input type="number" id="learningRate" value="0.01"><br>
     <div class="tooltip">Regularization (L2):<span class="tooltiptext">Strength of L2 regularization</span></div><br>
-    <input type="number" step="any" id="regulRate" value="0.0"><br>
-    <div class="tooltip">Learning rate:<span class="tooltiptext">Learing-rate/step-size in SGD</span></div><br>
-    <input type="number" step="any" id="learningRate" value="0.001"><br>
-    <div class="tooltip">Training iterations:<span class="tooltiptext">Number of SGD iterations</span></div><br>
+    <input type="number" id="regulRate" value="0.0"><br>
+    <div class="tooltip">Training iterations:<span class="tooltiptext">Number of GD iterations</span></div><br>
     <input type="number" id="numTrainItr" value="10"><br>
     <div class="tooltip">Gradient clipping: <input type="checkbox" id="gradientClipping">
     <span class="tooltiptext">Use gradient clipping/scaling</span></div><br>
     <div id="gradClipThresholdCtrl"><div class="tooltip">Threshold:<span class="tooltiptext">Threshold for gradient clipping</span></div><br>
     <input type="number" id="gradClippingThreshold" value="10"></div>
     <br>
-    <button id="resetModel" class="button">Reset</button>
+    <button id="resetModelBtn" class="button">Reset weights</button>
     <button id="evalBtn" class="button">Evaluate</button><br>
-    <button id="fitBtn" class="button">Fit</button>
     <button id="trainBtn" class="button">Train</button>
-    <button id="trainCurveBtn" class="button">TrainCurve</button>
+    <button id="trainCurveBtn" class="button">Training curve</button>
   </div>
 
   <div id="evaluationDlgsPlaceholder"></div>
@@ -637,7 +613,7 @@ function vml_TrainingCurvePlotDlg() {
     importFooter();
  
     // Init
-    var oLogic = new vml_PolynomialRegressionUI();
+    var oLogic = new vml_LogisticRegressionUI();
     oLogic.Init();
   </script>
 

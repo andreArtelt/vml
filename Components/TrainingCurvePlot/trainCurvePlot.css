@@ -1,0 +1,14 @@
+.trainCurveArea {
+    box-sizing: border-box;
+    width: 830px;
+    height: 650px;
+    padding: 20px 15px 15px 15px;
+    margin: 15px auto 30px auto;
+}
+
+.trainCurvePlot {
+    width: 800px;
+    height: 600px;
+    font-size: 14px;
+    line-height: 1.2em;
+}

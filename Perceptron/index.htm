@@ -1,79 +1,470 @@
-<!DOCTYPE HTML>
-<html>
-<head>
+<!DOCTYPE html><html><head><meta charset="UTF-8">
   <meta http-equiv="content-type" content="text/html; charset=UTF8">
 
-  <link rel="stylesheet" type="text/css" href="../Libs/dialog-polyfill/dialog-polyfill.css">
-  <link rel="stylesheet" type="text/css" href="../vmljs/styles/datagen.css">
-  <link rel="stylesheet" type="text/css" href="../vmljs/styles/buttons.css">
-  <link rel="stylesheet" type="text/css" href="../vmljs/styles/footer.css">
-  <link rel="stylesheet" type="text/css" href="../vmljs/styles/tooltips.css">
-
-  <script src="../Libs/dialog-polyfill/dialog-polyfill.js"></script>
-  <script src="../Libs/flot/jquery.js"></script>
-  <script src="../Libs/flot/jquery.flot.js"></script>
-  <script src="../Libs/flot/jquery.flot.symbol.js"></script>
   <script src="../Libs/mathjs/math.js"></script>
-  <script src="../vmljs/Utils/fileHelper.js"></script>
-  <script src="../vmljs/datagen.js"></script>
   <script src="../vmljs/Utils/math.js"></script>
   <script src="../vmljs/Utils/utils.js"></script>
-  <script src="perceptronui.js"></script>
+  <script src="../vmljs/Utils/modelEvaluation.js"></script>
   <script src="../vmljs/perceptron.js"></script>
+  <script src="perceptronUI.js">// perceptronUI.js
+// VML - Visualization Machine Learning
+// Copyright <c> André Artelt
+// The MIT License (MIT)
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all
+//  copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//  SOFTWARE.
+
+function vml_PerceptronUI() {
+    this.oDataGen = undefined;
+    this.oModel = undefined;
+
+    this.lDecBound = [];
+    this.lErrorOverTime = [];
+    this.iTime = -1;
+
+    this.Init = function() {
+        try {
+            // Init
+            this.oDataGen = oDataGen;
+            this.oModel = new vml_Perceptron();
+
+            // Register eventhandler
+            document.getElementById( "trainBtn" ).addEventListener( "click", this.Train.bind( this ), false);
+            document.getElementById( "resetModelBtn" ).addEventListener( "click", this.Reset.bind( this ), false);
+            document.getElementById( "evalBtn" ).addEventListener( "click", this.Evaluate.bind( this ), false );
+            document.getElementById( "trainCurveBtn" ).addEventListener( "click", this.TrainCurve.bind( this ), false );
+        }
+        catch( ex ) {
+            alert( "Fatal error: Can not initialize!\n" + ex );
+        }
+    };
+
+    this.Plot = function() {
+        var lData = this.oDataGen.lData;  // Extend plotting data from dataGen
+        lData.push( {label: "Decision boundary", data: this.lDecBound, lines: {show: true}} );
+
+        $.plot( "#plotArea", lData, this.oDataGen.oPlotSettings );  // Draw plot
+
+        lData.splice( lData.length - 1, 2 ); // Remove current decision boundary!
+    };
+
+    this.Evaluate = function() {
+        try {
+            // Evaluate model
+            var lLabels = this.oModel.lLabels.map( function( x ){ return x == -1 ? 1 : 0; } );
+            var oEvaluation = new vml_ClassifierEvaluation( this.oModel.lData, lLabels, this.oModel, 2 ).AllMetrics();
+
+            // Show evaluation
+            var oEvalDlg = new vml_EvaluationDlg();
+            oEvalDlg.Init( false, oEvaluation );
+            oEvalDlg.Show();
+        }
+        catch( ex ) {
+            alert( "Error: " + ex );
+        }
+  } ;
+
+    this.TrainCurve = function() {
+        try {
+            var oDlg = new vml_TrainingCurvePlotDlg();
+            oDlg.Init( "Training curve", this.lErrorOverTime, {min: 0, max: this.iTime}, {min: this.lErrorOverTime[ this.iTime - 1 ][ 1 ] - 10, max: this.lErrorOverTime[ 0 ][ 1 ]}, "Error", undefined, "ne" );
+            oDlg.Show();
+        }
+        catch( ex ) {
+            alert( "Error: " + ex );
+        }
+    };
+
+    this.ComputeDecisionBoundary = function() {
+        // Clear decision boundary
+        this.lDecBound = [];
+
+        // Recompute decision boundary
+        // Compute params of linear function
+        var w = this.oModel.lWeights.valueOf();
+        var m=-1*(w[0]/w[1]);
+        var b = w[2]/w[1];
+
+        // Collect points on this line (discriminant)
+        for( var i=-5; i <=5; i += 0.05 ) {
+            this.lDecBound.push( [i, m*i - b] );
+        }
+    };
+
+    this.GetLearningRate = function() {
+        var fResult = document.getElementById( "learningRate" ).value;
+        if( fResult == "" || fResult == undefined ) {
+            return 1.0;
+        }
+        else {
+            return parseFloat( fResult );
+        }
+    };
+
+    this.GetNumberOfIterations = function() {
+        var iResult = document.getElementById( "numTrainItr" ).value;
+        if( iResult == "" || iResult == undefined ) {
+            return 0;
+        }
+        else {
+            return parseInt( iResult );
+        }
+    };
+
+    this.Reset = function() {
+        try {
+            // Init/Reset perceptron
+            this.oModel.Init( this.oDataGen.oClassA.Data, this.oDataGen.oClassB.Data );
+
+            // Recompute decision boundary
+            this.ComputeDecisionBoundary();
+
+            // Refresh plot
+            this.Plot();
+
+            // Reset training curve
+            this.lErrorOverTime = [];
+            this.iTime = 0;
+        }
+        catch( ex ) {
+            alert( "Error: " + ex );
+        }
+    };
+
+    this.Train = function() {
+        try {
+            // Run training iterations
+            for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
+                this.oModel.FitStep( this.GetLearningRate() );
+
+                var fError = this.oModel.ComputeError();
+                this.lErrorOverTime.push( [ this.iTime, fError ] );
+                this.iTime++;
+            }
+
+            // Recompute decision boundary
+            this.ComputeDecisionBoundary();
+
+            // Refresh plot
+            this.Plot();
+        }
+        catch( ex ) {
+            alert( "Error: " + ex );
+        }
+    };
+}</script>
 
   <title>VML - Perceptron</title>
 </head>
-<body>
-  <center><h1>Perceptron</h1></center>
+<body><div hidden="" by-vulcanize=""><link rel="stylesheet" type="text/css" href="../Components/Footer/footer.css">
 
-  <div id="plotArea"></div>
+<div id="footer" class="footer">
+ <br><br><br><br>
+  VML - Visualization of Machine Learning<br>
+  <a href="https://github.com/andreArtelt/vml">Project on GitHub</a><br>
+  Copyright © 2016-2016 André Artelt
+</div>
+
+<script>
+  function importFooter() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    var oPlaceholder = document.getElementById( 'footerPlaceholder' );
+    var oElement = oImport.querySelector( '#footer' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+  };
+</script>
+<link rel="stylesheet" type="text/css" href="../Libs/dialog-polyfill/dialog-polyfill.css">
+<link rel="stylesheet" type="text/css" href="../styles/dialog.css">
+<link rel="stylesheet" type="text/css" href="../Components/Evaluation/evaluation.css">
+
+<script src="../Libs/dialog-polyfill/dialog-polyfill.js"></script>
+<script src="../Components/Evaluation/evaluation.js"></script>
+
+<div id="evaluationDlgs">
+  <dialog id="evaluationClassifierDlg" class="dialog evalDlg">
+    <center><h3>Evaluation</h3></center>
+    <form method="dialog">
+      <div class="textAlign">
+        <section>
+          <b>Accuracy: </b>
+          <span id="EVAL_ACC"></span>
+        </section>
+        <section>
+          <b>AvgAccPerClass: </b>
+          <span id="EVAL_AVGACCPERCLASS"></span>
+        </section>
+        <section>
+          <b>PerClassAcc: </b>
+          <span id="EVAL_PERCLASSACC"></span>
+        </section>
+        <section>
+          <b>Confusion matrix: </b>
+          <table>
+	    <tbody><tr>
+              <td>Label\Pred</td>
+	      <td>Pos</td>
+	      <td>Neg</td>
+	    </tr>
+	    <tr>
+	      <td>Pos</td>
+	      <td id="EVAL_CONFMAT_TP"></td>
+	      <td id="EVAL_CONFMAT_FN"></td>
+            </tr> 
+            <tr>
+	      <td>Neg</td>
+	      <td id="EVAL_CONFMAT_FP"></td>
+	      <td id="EVAL_CONFMAT_TN"></td>
+	    </tr>
+	  </tbody></table>
+        </section>
+        <section>
+          <b>Precision: </b>
+          <span id="EVAL_PRECISION"></span>
+        </section>
+        <section>
+          <b>Recall: </b>
+          <span id="EVAL_RECALL"></span>
+        </section>
+        <section>
+          <b>F1: </b>
+          <span id="EVAL_F1SCORE"></span>
+        </section>
+        <section>
+          <b>FallOut: </b>
+          <span id="EVAL_FALLOUT"></span>
+        </section>
+        <section>
+          <b>LogLoss: </b>
+          <span id="EVAL_LOGLOSS"></span>
+        </section>
+      </div>
+      <br>
+
+      <button class="dialogBtn">Close</button>
+    </form>
+  </dialog>
+
+  <dialog id="evaluationRegressionDlg" class="dialog">
+    <center><h3>Evaluation</h3></center>
+    <form method="dialog">
+      <div class="textAlign">
+        <section>
+          <b>RMSE: </b>
+          <span id="EVAL_RMSE"></span>
+        </section>
+        <section>
+          <b>MAPE: </b>
+          <span id="EVAL_MAPE"></span>
+        </section>
+        <section>
+          <b>ACP: </b>
+          <span id="EVAL_ACP"></span>
+        </section>
+      </div>
+      <br>
+
+      <button class="dialogBtn">Close</button>
+    </form>
+  </dialog>
+</div>
+
+<script>
+  function importEvaluation() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    var oPlaceholder = document.getElementById( 'evaluationDlgsPlaceholder' );
+    var oElement = oImport.querySelector( '#evaluationDlgs' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+
+    // Register dialogs
+    dialogPolyfill.registerDialog( document.getElementById( 'evaluationClassifierDlg' ) );
+    dialogPolyfill.registerDialog( document.getElementById( 'evaluationRegressionDlg' ) );
+  };
+</script>
+<link rel="stylesheet" type="text/css" href="../Libs/dialog-polyfill/dialog-polyfill.css">
+<link rel="stylesheet" type="text/css" href="../styles/dialog.css">
+<link rel="stylesheet" type="text/css" href="../Components/TrainingCurvePlot/trainCurvePlot.css">
+
+<script src="../Libs/dialog-polyfill/dialog-polyfill.js"></script>
+<script src="../Libs/flot/jquery.js"></script>
+<script src="../Libs/flot/jquery.flot.js"></script>
+<script src="../Libs/flot/jquery.flot.symbol.js"></script>
+<script src="../Components/TrainingCurvePlot/trainingCurvePlot.js">// trainingCurvePlot.js
+// VML - Visualization Machine Learning
+// Copyright <c> André Artelt
+// The MIT License (MIT)
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all
+//  copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//  SOFTWARE.
+
+/**
+* @classdesc vml_TrainingCurvePlotDlg
+* @class vml_TrainingCurvePlotDlg
+* @constructor
+*/
+function vml_TrainingCurvePlotDlg() {
+    this.lData = [];
+    this.oPlotSettings = undefined;
+
+    /**
+    * Initialize plot.
+    * @method Init
+    * @memberof vml_TrainingCurvePlotDlg
+    * @instance
+    * @param {String} strTitle -
+    * @param {Array} lScoreTime -
+    * @param {Object} rangeX -
+    * @param {Object} rangeY -
+    * @param {String} strLabel -
+    * @param {String} strColor -
+    */
+    this.Init = function( strTitle, lScoreTime, rangeX, rangeY, strLabel, strColor, strLegendPos ) {
+        strLabel = strLabel == undefined ? "" : strLabel;
+        strColor = strColor == undefined ? "#0000FF" : strColor;
+        strLegendPos = strLegendPos == undefined ? "se" : strLegendPos;
+
+        this.lData = [ { label: strLabel, color: strColor, data: lScoreTime, lines: {show: true } } ];
+        this.oPlotSettings = { legend: {position: strLegendPos}, xaxis: rangeX, yaxis: rangeY, grid: { borderWidth: 0, aboveData: false, margin: { left: 50, right: 50 } } };
+
+        document.getElementById( "trainCurveDlgTitle" ).innerHTML = strTitle;
+    };
+
+    /**
+    * Show the dialog.
+    * @method Show
+    * @memberof vml_TrainingCurvePlotDlg
+    * @instance
+    */
+    this.Show = function() {
+        $.plot( "#trainCurveDlgPlotArea", this.lData, this.oPlotSettings );
+
+        document.getElementById( "trainCurveDlg" ).showModal();
+    };
+}
+</script>
+
+<dialog id="trainCurveDlg" class="dialog">
+  <center><h3 id="trainCurveDlgTitle"></h3></center>
+
+  <div class="trainCurveArea">
+    <div id="trainCurveDlgPlotArea" class="trainCurvePlot"></div>
+  </div><br>
+
+  <form method="dialog">
+    <button id="trainCurveDlgCloseBtn" class="dialogBtn">Close</button>
+  </form>
+</dialog>
+
+<script>
+  function importTrainCurve() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    // Add import to document
+    var oPlaceholder = document.getElementById( 'trainCurvePlaceholder' );
+    var oElement = oImport.querySelector( '#trainCurveDlg' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+
+    // Register dialog
+    dialogPolyfill.registerDialog( document.getElementById( 'trainCurveDlg' ) );
+  };
+</script>
+<link rel="stylesheet" type="text/css" href="../Libs/dialog-polyfill/dialog-polyfill.css">
+<link rel="stylesheet" type="text/css" href="../styles/buttons.css">
+<link rel="stylesheet" type="text/css" href="../styles/tooltips.css">
+<link rel="stylesheet" type="text/css" href="../Components/DataGen/dataGen.css">
+
+<script src="../Libs/dialog-polyfill/dialog-polyfill.js"></script>
+<script src="../Libs/flot/jquery.js"></script>
+<script src="../Libs/flot/jquery.flot.js"></script>
+<script src="../Libs/flot/jquery.flot.symbol.js"></script>
+<script src="../vmljs/Utils/utils.js"></script>
+<script src="../vmljs/Utils/fileHelper.js"></script>
+<script src="../vmljs/Utils/matFileHelper.js"></script>
+<script src="../vmljs/Utils/jsonHelper.js"></script>
+<script src="../vmljs/Utils/csvHelper.js"></script>
+<script src="../Components/DataGen/dataGen.js"></script>
+<script src="../Libs/base64-arraybuffer-0.1.5/lib/base64-arraybuffer.js"></script>
+
+<div id="dataGen">
+  <div id="plotArea" class="boxAlign"></div>
   
   <div class="boxAlign">
-  <div class="groupBox">
-    <div id="actions">
-      <b>Actions:</b><br><br>
-      <button id="resetBtn" class="button">Reset</button><br>
-      <div id="exportBtn" class="dropdown dropDownBtn">Export</button>
-       <div class="dropdown-content">
-         <button id="btnExportToJSON" class="button">JSON</button>
-         <button id="btnExportToCSV" class="button">CSV</button>
-       </div>
+    <div class="groupBox">
+      <div id="actions">
+        <b>Actions:</b><br>
+	<button id="undoBtn" class="button">Undo</button>
+        <button id="resetBtn" class="button">Reset</button><br>
+        <div id="exportBtn" class="dropdown dropDownBtn">Export
+         <div class="dropdown-content">
+           <button id="btnExportToJSON" class="button">JSON</button>
+           <button id="btnExportToCSV" class="button">CSV</button>
+           <button id="btnExportToMAT" class="button">MAT</button>
+         </div>
+        </div>
+        <div id="importBtn" class="dropdown dropDownBtn">Import
+         <div class="dropdown-content">
+           <button id="btnImportFromJSON" class="button">JSON</button>
+           <button id="btnImportFromCSV" class="button">CSV</button>
+	   <button id="btnImportFromMAT" class="button" onclick="document.getElementById('ctrlImportFromMAT').click();">MAT</button>
+         </div>
+        </div>
+        <input id="ctrlImportFromMAT" type="file" name="file" style="visibility:hidden">
+      </div> 
+      <br>
+      <div id="dataGenType">
+        <div class="tooltip"><b>Click type:</b>
+        <span class="tooltiptext">Specify what type of point a click in the plot will generate</span>
+        </div><br>
+        <input type="radio" name="dataClass" id="genClassA" checked="">Class A<br>
+        <div id="genClassBGroup"><input type="radio" name="dataClass" id="genClassB">Class B</div><br>
       </div>
-      <div id="importBtn" class="dropdown dropDownBtn">Import</button>
-       <div class="dropdown-content">
-         <button id="btnImportFromJSON" class="button">JSON</button>
-         <button id="btnImportFromCSV" class="button">CSV</button>
-       </div>
-      </div>
-    </div> 
-    <br><br>
-    <div id="dataGenType">
-      <div class="tooltip"><b>Click type:</b>
-      <span class="tooltiptext">Specify what type of point a click in the plot will generate</span>
-      </div><br>
-      <input type="radio" name="dataClass" id="genClassA" checked>Class A</input><br>
-      <input type="radio" name="dataClass" id="genClassB">Class B</input><br>
     </div>
-    </div>
-    <br><br>
-    <div id="perceptronParams" class="groupBox">
-      <b>Perceptron:</b><br><br>
-      <div class="tooltip">Learning rate: <input type="number" id="learningRate" value="0.01"></input>
-      <span class="tooltiptext">Learing-rate/step-size in SGD</span></div><br>
-      <div class="tooltip">Training iterations: <input type="number" id="numTrainItr" value="10"></input>
-      <span class="tooltiptext">Number of SGD iterations</span></div><br>
-      <div class="tooltip">Animation: <input type="checkbox" id="showAnimation"></input><span class="tooltiptext">Animate training</span></div>
-      <br><br>
-      <button id="resetPerceptron" class="button">Reset weights</button><br>
-      <button id="trainBtn" class="button">Train</button>
-      <button id="stopBtn" class="button">Stop</button>
-    </div>
+    <br>
+    <div id="modelPlaceholder"></div>
   </div>
 
   <dialog id="exportDlg" class="dialog">
     <center><h3>Export</h3></center>
       <form method="dialog">
-        <textarea id="exportData" cols=50 rows=30></textarea><br>
+        <textarea id="exportData" cols="50" rows="30"></textarea><br>
         <a id="exportDownloadBtn" class="dialogBtn downloadBtn" href="">Download</a>
         <button id="exportCloseBtn" class="dialogBtn">Close</button>
       </form>
@@ -82,24 +473,73 @@
   <dialog id="importDlg" class="dialog">
     <center><h3>Import</h3></center>
       <form method="dialog">
-        <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
-        <div class="dialogBtn fileUploadBtn boxAlign">Upload<input id="importUpload" type="file" name="file" class="upload" /></div>
+        <textarea id="importData" cols="50" rows="30" placeholder="Paste/Type your import here!"></textarea><br>
+        <div class="dialogBtn fileUploadBtn boxAlign">Upload<input id="importUpload" type="file" name="file" class="upload"></div>
         <button id="importDataBtn" class="dialogBtn">Import</button>
-        <button id="importCloseBtn" class="dialogBtn">Close</button>
+        <button id="importCloseBtn" class="dialogBtn">Close</button> 
       </form>
   </dialog>
+</div>
 
-  <br><br>
-  <div class="footer">
-   <br><br><br><br>
-    VML - Visualization of Machine Learning<br>
-    <a href="https://github.com/andreArtelt/vml">Project on GitHub</a><br>
-    Copyright &copy; 2016-2016 André Artelt
+<script>
+  function importDataGen() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    // Fill model placeholder
+    var oModelElem = document.getElementById( 'model' );
+    var oElement = oImport.querySelector( '#modelPlaceholder' );
+    oElement.appendChild( oModelElem.cloneNode( true ) );    
+
+    oModelElem.parentNode.removeChild( oModelElem );
+
+    // Add import to document
+    var oPlaceholder = document.getElementById( 'dataGenPlaceholder' );
+    oElement = oImport.querySelector( '#dataGen' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+
+    // Init logic
+    oDataGen = new vml_DataGen();
+    oDataGen.Init();
+  };
+</script>
+</div>
+  <center><h1>Perceptron</h1></center>
+
+  <div id="dataGenPlaceholder"></div>
+
+  <div id="model" class="groupBox">
+    <b>Model:</b><br>
+    <div class="tooltip">Learning rate:<span class="tooltiptext">Learing-rate/step-size in SGD</span></div><br>
+    <input type="number" id="learningRate" value="0.01"><br>
+    <div class="tooltip">Training iterations:<span class="tooltiptext">Number of SGD iterations</span></div><br>
+    <input type="number" id="numTrainItr" value="10">
+    <br><br>
+    <button id="resetModelBtn" class="button">Reset weights</button>
+    <button id="evalBtn" class="button">Evaluate</button><br>
+    <button id="trainBtn" class="button">Train</button>
+    <button id="trainCurveBtn" class="button">TrainCurve</button>
   </div>
 
+  <div id="evaluationDlgsPlaceholder"></div>
+
+  <div id="trainCurvePlaceholder"></div>
+
+  <div id="footerPlaceholder"></div>
+
   <script type="text/javascript">
+    // Import
+    importDataGen();
+    importEvaluation();
+    importTrainCurve();
+    importFooter();
+ 
+    // Init
     var oLogic = new vml_PerceptronUI();
     oLogic.Init();
   </script>
-<body>
-</html>
+
+
+</body></html>

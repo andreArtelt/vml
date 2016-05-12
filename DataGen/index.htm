@@ -1,61 +1,88 @@
-<!DOCTYPE HTML>
-<html>
-<head>
+<!DOCTYPE html><html><head><meta charset="UTF-8">
   <meta http-equiv="content-type" content="text/html; charset=UTF8">
-
-  <link rel="stylesheet" type="text/css" href="../Libs/dialog-polyfill/dialog-polyfill.css">
-  <link rel="stylesheet" type="text/css" href="../vmljs/styles/datagen.css">
-  <link rel="stylesheet" type="text/css" href="../vmljs/styles/buttons.css">
-  <link rel="stylesheet" type="text/css" href="../vmljs/styles/footer.css">
-  <link rel="stylesheet" type="text/css" href="../vmljs/styles/tooltips.css">
-
-  <script src="../Libs/dialog-polyfill/dialog-polyfill.js"></script>
-  <script src="../Libs/flot/jquery.js"></script>
-  <script src="../Libs/flot/jquery.flot.js"></script>
-  <script src="../Libs/flot/jquery.flot.symbol.js"></script>
-  <script src="../vmljs/Utils/fileHelper.js"></script>
-  <script src="../vmljs/datagen.js"></script>
 
   <title>VML - Data generation</title>
 </head>
-<body>
-  <center><h1>Data generation</h1></center>
+<body><div hidden="" by-vulcanize=""><link rel="stylesheet" type="text/css" href="../Components/Footer/footer.css">
 
+<div id="footer" class="footer">
+ <br><br><br><br>
+  VML - Visualization of Machine Learning<br>
+  <a href="https://github.com/andreArtelt/vml">Project on GitHub</a><br>
+  Copyright © 2016-2016 André Artelt
+</div>
+
+<script>
+  function importFooter() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    var oPlaceholder = document.getElementById( 'footerPlaceholder' );
+    var oElement = oImport.querySelector( '#footer' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+  };
+</script>
+<link rel="stylesheet" type="text/css" href="../Libs/dialog-polyfill/dialog-polyfill.css">
+<link rel="stylesheet" type="text/css" href="../styles/buttons.css">
+<link rel="stylesheet" type="text/css" href="../styles/tooltips.css">
+<link rel="stylesheet" type="text/css" href="../Components/DataGen/dataGen.css">
+
+<script src="../Libs/dialog-polyfill/dialog-polyfill.js"></script>
+<script src="../Libs/flot/jquery.js"></script>
+<script src="../Libs/flot/jquery.flot.js"></script>
+<script src="../Libs/flot/jquery.flot.symbol.js"></script>
+<script src="../vmljs/Utils/utils.js"></script>
+<script src="../vmljs/Utils/fileHelper.js"></script>
+<script src="../vmljs/Utils/matFileHelper.js"></script>
+<script src="../vmljs/Utils/jsonHelper.js"></script>
+<script src="../vmljs/Utils/csvHelper.js"></script>
+<script src="../Components/DataGen/dataGen.js"></script>
+<script src="../Libs/base64-arraybuffer-0.1.5/lib/base64-arraybuffer.js"></script>
+
+<div id="dataGen">
   <div id="plotArea" class="boxAlign"></div>
   
   <div class="boxAlign">
-  <div class="groupBox">
-    <div id="actions">
-      <b>Actions:</b><br>
-      <button id="resetBtn" class="button">Reset</button><br>
-      <div id="exportBtn" class="dropdown dropDownBtn">Export</button>
-       <div class="dropdown-content">
-         <button id="btnExportToJSON" class="button">JSON</button>
-         <button id="btnExportToCSV" class="button">CSV</button>
-       </div>
+    <div class="groupBox">
+      <div id="actions">
+        <b>Actions:</b><br>
+	<button id="undoBtn" class="button">Undo</button>
+        <button id="resetBtn" class="button">Reset</button><br>
+        <div id="exportBtn" class="dropdown dropDownBtn">Export
+         <div class="dropdown-content">
+           <button id="btnExportToJSON" class="button">JSON</button>
+           <button id="btnExportToCSV" class="button">CSV</button>
+           <button id="btnExportToMAT" class="button">MAT</button>
+         </div>
+        </div>
+        <div id="importBtn" class="dropdown dropDownBtn">Import
+         <div class="dropdown-content">
+           <button id="btnImportFromJSON" class="button">JSON</button>
+           <button id="btnImportFromCSV" class="button">CSV</button>
+	   <button id="btnImportFromMAT" class="button" onclick="document.getElementById('ctrlImportFromMAT').click();">MAT</button>
+         </div>
+        </div>
+        <input id="ctrlImportFromMAT" type="file" name="file" style="visibility:hidden">
+      </div> 
+      <br>
+      <div id="dataGenType">
+        <div class="tooltip"><b>Click type:</b>
+        <span class="tooltiptext">Specify what type of point a click in the plot will generate</span>
+        </div><br>
+        <input type="radio" name="dataClass" id="genClassA" checked="">Class A<br>
+        <div id="genClassBGroup"><input type="radio" name="dataClass" id="genClassB">Class B</div><br>
       </div>
-      <div id="importBtn" class="dropdown dropDownBtn">Import</button>
-       <div class="dropdown-content">
-         <button id="btnImportFromJSON" class="button">JSON</button>
-         <button id="btnImportFromCSV" class="button">CSV</button>
-       </div>
-      </div>
-    </div> 
-    <br><br>
-    <div id="dataGenType">
-      <div class="tooltip"><b>Click type:</b>
-      <span class="tooltiptext">Specify what type of point a click in the plot will generate</span>
-      </div><br>
-      <input type="radio" name="dataClass" id="genClassA" checked>Class A</input><br>
-      <input type="radio" name="dataClass" id="genClassB">Class B</input><br>
     </div>
-  </div>
+    <br>
+    <div id="modelPlaceholder"></div>
   </div>
 
   <dialog id="exportDlg" class="dialog">
     <center><h3>Export</h3></center>
       <form method="dialog">
-        <textarea id="exportData" cols=50 rows=30></textarea><br>
+        <textarea id="exportData" cols="50" rows="30"></textarea><br>
         <a id="exportDownloadBtn" class="dialogBtn downloadBtn" href="">Download</a>
         <button id="exportCloseBtn" class="dialogBtn">Close</button>
       </form>
@@ -64,24 +91,52 @@
   <dialog id="importDlg" class="dialog">
     <center><h3>Import</h3></center>
       <form method="dialog">
-        <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
-        <div class="dialogBtn fileUploadBtn boxAlign">Upload<input id="importUpload" type="file" name="file" class="upload" /></div>
+        <textarea id="importData" cols="50" rows="30" placeholder="Paste/Type your import here!"></textarea><br>
+        <div class="dialogBtn fileUploadBtn boxAlign">Upload<input id="importUpload" type="file" name="file" class="upload"></div>
         <button id="importDataBtn" class="dialogBtn">Import</button>
-        <button id="importCloseBtn" class="dialogBtn">Close</button>
+        <button id="importCloseBtn" class="dialogBtn">Close</button> 
       </form>
   </dialog>
+</div>
 
-  <br><br>
-  <div class="footer">
-   <br><br><br><br>
-    VML - Visualization of Machine Learning<br>
-    <a href="https://github.com/andreArtelt/vml">Project on GitHub</a><br>
-    Copyright &copy; 2016-2016 André Artelt
-  </div>
+<script>
+  function importDataGen() {
+    // Import/Add
+    var oImport = document.currentScript.ownerDocument;
+
+    // Fill model placeholder
+    var oModelElem = document.getElementById( 'model' );
+    var oElement = oImport.querySelector( '#modelPlaceholder' );
+    oElement.appendChild( oModelElem.cloneNode( true ) );    
+
+    oModelElem.parentNode.removeChild( oModelElem );
+
+    // Add import to document
+    var oPlaceholder = document.getElementById( 'dataGenPlaceholder' );
+    oElement = oImport.querySelector( '#dataGen' );
+    oPlaceholder.appendChild( oElement.cloneNode( true ) );
+
+    oElement.parentNode.removeChild( oElement );
+
+    // Init logic
+    oDataGen = new vml_DataGen();
+    oDataGen.Init();
+  };
+</script>
+</div>
+  <center><h1>Data generation</h1></center>
+
+  <div id="dataGenPlaceholder"></div>
+
+  <div id="model"></div>
+
+  <div id="footerPlaceholder"></div>
 
   <script type="text/javascript">
-    var oLogic = new vml_DataGen();
-    oLogic.Init();
+    // Import
+    importDataGen();
+    importFooter();
   </script>
-<body>
-</html>
+
+
+</body></html>
