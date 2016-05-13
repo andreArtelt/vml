@@ -64,13 +64,14 @@
 
   <dialog id="importDlg" class="dialog">
     <center><h3>Import</h3></center>
-      <form method="dialog">
-        <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
-        <div class="dialogBtn fileUploadBtn boxAlign">Upload<input id="importUpload" type="file" name="file" class="upload" /></div>
-        <button id="importDataBtn" class="dialogBtn">Import</button>
-        <button id="importCloseBtn" class="dialogBtn">Close</button> 
-      </form>
+    <form method="dialog">
+      <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
+      <button id="btnUpload" class="dialogBtn" onclick="document.getElementById('importUpload').click();">Upload</button>
+      <button id="importDataBtn" class="dialogBtn">Import</button>
+      <button id="importCloseBtn" class="dialogBtn">Close</button>
+    </form>
   </dialog>
+  <input id="importUpload" type="file" name="file" style="visibility:hidden;width:1em;height:1em;"/>
 </div>
 
 <script>
