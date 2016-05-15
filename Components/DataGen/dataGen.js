@@ -38,9 +38,11 @@ function vml_DataGen() {
 
     this.rangeX = {min: -5, max: 5};  // Settings for grid/axis
     this.rangeY = {min: -5, max: 5};
-    this.bShowAxis = false;
 
     this.strPlotDiv = "plotArea";   // Container for plot
+
+    this.calcX = d3.scale.linear().domain( [ 0, 800 ] ).range( [ -5, 5 ] );
+    this.calcY = d3.scale.linear().domain( [ 0, 600 ] ).range( [ 5, -5 ] );
 
     // Plot settings
     this.lData = [ { label: this.oClassA.Label, color: this.oClassA.Color, data: this.oClassA.Data, points: { show: true, symbol: this.oClassA.Symbol } },
@@ -61,13 +63,15 @@ function vml_DataGen() {
         dialogPolyfill.registerDialog( document.getElementById( 'importDlg' ) );
 
         // Register eventhandler
-	document.getElementById( "undoBtn" ).addEventListener( "click", this.Undo.bind( this ), false );
+	    document.getElementById( "undoBtn" ).addEventListener( "click", this.Undo.bind( this ), false );
         document.getElementById( "resetBtn").addEventListener( "click", this.Reset.bind( this ), false );
         document.getElementById( "btnExportToJSON" ).addEventListener( "click", this.ExportJSON.bind( this ), false );
         document.getElementById( "btnExportToCSV" ).addEventListener( "click", this.ExportCSV.bind( this ), false );
         document.getElementById( "btnExportToMAT" ).addEventListener( "click", this.ExportMAT.bind( this ), false );
+        document.getElementById( "btnExportToOctave" ).addEventListener( "click", this.ExportOctave.bind( this ), false );
         document.getElementById( "btnImportFromJSON" ).addEventListener( "click", this.ImportJSON.bind( this ), false );
         document.getElementById( "btnImportFromCSV" ).addEventListener( "click", this.ImportCSV.bind( this ), false );
+        document.getElementById( "ctrlImportFromOctave" ).addEventListener( "change", this.ImportOctave.bind( this ), false );
         document.getElementById( "ctrlImportFromMAT" ).addEventListener( "change", this.ImportMAT.bind( this ), false );
         document.getElementById( "importCloseBtn" ).addEventListener( "click", this.ImportClose.bind( this ), false );
         document.getElementById( "importUpload" ).addEventListener( "change", this.ImportUpload.bind( this ), false );
@@ -120,7 +124,7 @@ function vml_DataGen() {
             this.lData.push( { label: this.oClassB.Label, color: this.oClassB.Color, data: this.oClassB.Data, points: { show: true, symbol: this.oClassB.Symbol } } );
         }
 
-        $.plot( "#"+this.strPlotDiv, this.lData, this.oPlotSettings);
+        this.oPlot = $.plot( "#"+this.strPlotDiv, this.lData, this.oPlotSettings);
     };
 
     this.PlotClickEvent = function( oEvent, vecPos, oItem ) {
@@ -143,11 +147,11 @@ function vml_DataGen() {
         // Store new point
         if( bClassA == true ) {  // Class A
             this.oClassA.Data.push( vecPoint );
-	    this.lHistory.push( "A" );
+	        this.lHistory.push( "A" );
         }
         else {  // Class B
             this.oClassB.Data.push( vecPoint );
-	    this.lHistory.push( "B" );
+	        this.lHistory.push( "B" );
         }
     };
 
@@ -173,21 +177,29 @@ function vml_DataGen() {
     * @param {String} strImport Json data to be imported.
     */
     this.ImportDataFromJSON = function( strImport ) {
-        // Clean
-        this.oClassA.Data = [];
-        this.oClassB.Data = [];
+        try {
+            // Clean
+            this.oClassA.Data = [];
+            this.oClassB.Data = [];
 
-        // Import
-        var [ lData, lLabels ] = vml_JsonHelper.Import( strImport );
-        for( var i=0; i != lData.length; i++ ) {
-            if( lLabels[ i ] == 0 ) {
-                this.oClassA.Data.push( lData[ i ] );
-		this.lHistory.push( "A" );
+            // Import
+            var [ lData, lLabels ] = vml_JsonHelper.Import(strImport);
+
+            lData = vml_Utils.ScaleData(lData);  // Scale data if necessary
+
+            for (var i = 0; i != lData.length; i++) {
+                if (lLabels[i] == 0) {
+                    this.oClassA.Data.push(lData[i]);
+                    this.lHistory.push("A");
+                }
+                else {
+                    this.oClassB.Data.push(lData[i]);
+                    this.lHistory.push("B");
+                }
             }
-            else {
-                this.oClassB.Data.push( lData[ i ] );
-		this.lHistory.push( "B" );
-            }
+        }
+        catch( ex ) {
+            alert( "Error: " + ex );
         }
     };
 
@@ -211,22 +223,80 @@ function vml_DataGen() {
     * @param {String} strImport CSV data to be imported.
     */
     this.ImportDataFromCSV = function( strImport ) {
-        // Clean
-        this.oClassA.Data = [];
-        this.oClassB.Data = [];
+        try {
+            // Clean
+            this.oClassA.Data = [];
+            this.oClassB.Data = [];
 
-        // Import
-        var [ lData, lLabels ] = vml_CsvHelper.Import( strImport );
-        for( var i=0; i != lData.length; i++ ) {
-            if( lLabels[ i ] == 0 ) {
-                this.oClassA.Data.push( lData[ i ] );
-                this.lHistory.push( "A" );
-            }
-            else {
-                this.oClassB.Data.push( lData[ i ] );
-                this.lHistory.push( "B" );
+            // Import
+            var [ lData, lLabels ] = vml_CsvHelper.Import(strImport);
+
+            lData = vml_Utils.ScaleData(lData);  // Scale data if necessary
+
+            for (var i = 0; i != lData.length; i++) {
+                if (lLabels[i] == 0) {
+                    this.oClassA.Data.push(lData[i]);
+                    this.lHistory.push("A");
+                }
+                else {
+                    this.oClassB.Data.push(lData[i]);
+                    this.lHistory.push("B");
+                }
             }
         }
+        catch( ex ) {
+            alert( "Error: " + ex );
+        }
+    };
+
+    this.ExportOctave = function() {
+        // Collect data
+        var lLabels = vml_Utils.FillList( this.oClassA.Data.length, 0 );
+        lLabels = lLabels.concat( vml_Utils.FillList( this.oClassB.Data.length, 1 ) );
+        var lData = this.oClassA.Data.concat( this.oClassB.Data );
+
+        // Export
+        var strData = new vml_OctaveFileHelper().Export( lData, lLabels );
+
+        // Write to file
+        vml_FileHelper.WriteFile( "data.mat", btoa( strData ) );
+    };
+
+    this.ImportOctave = function( evt ) {
+        if( evt.target.files.length != 1 ) {
+            return;
+        }
+
+        // Read buffer from file
+        vml_FileHelper.ReadFileAsStringAsync( evt.target.files[0], function( strBuffer ) {
+            try {
+                // Clean
+                this.oClassA.Data = [];
+                this.oClassB.Data = [];
+
+                // Parse
+                var oParsedData = new vml_OctaveFileHelper().Import(strBuffer);
+
+                oParsedData.Data = vml_Utils.ScaleData(oParsedData.Data);  // Scale data if necessary
+
+                for (var i = 0; i != oParsedData.Data.length; i++) {
+                    if (oParsedData.Labels[i][0] == 0) {
+                        this.oClassA.Data.push(oParsedData.Data[i]);
+                        this.lHistory.push("A");
+                    }
+                    else {
+                        this.oClassB.Data.push(oParsedData.Data[i]);
+                        this.lHistory.push("B");
+                    }
+                }
+
+                // Refresh plot
+                this.Plot();
+            }
+            catch( ex ) {
+                alert( "Error: " + ex );
+            }
+        }.bind( this ) );
     };
 
     this.ExportMAT = function() {
@@ -249,26 +319,33 @@ function vml_DataGen() {
 
         // Read buffer from file
         vml_FileHelper.ReadFileAsArrayBufferAsync( evt.target.files[0], function( oBuffer ) {
-            // Clean
-            this.oClassA.Data = [];
-            this.oClassB.Data = [];
+            try {
+                // Clean
+                this.oClassA.Data = [];
+                this.oClassB.Data = [];
 
-            // Parse
-            var oParsedMatBuffer = new vml_MatFileHelper().Import( oBuffer );
+                // Parse
+                var oParsedMatBuffer = new vml_MatFileHelper().Import(oBuffer);
 
-            for( var i=0; i != oParsedMatBuffer.Data.length; i++ ) {
-                if( oParsedMatBuffer.Labels[ i ] == 0 ) {
-                    this.oClassA.Data.push( oParsedMatBuffer.Data[ i ] );
-		    this.lHistory.push( "A" );
+                oParsedMatBuffer.Data = vml_Utils.ScaleData(oParsedMatBuffer.Data);  // Scale data if necessary
+
+                for (var i = 0; i != oParsedMatBuffer.Data.length; i++) {
+                    if (oParsedMatBuffer.Labels[i] == 0) {
+                        this.oClassA.Data.push(oParsedMatBuffer.Data[i]);
+                        this.lHistory.push("A");
+                    }
+                    else {
+                        this.oClassB.Data.push(oParsedMatBuffer.Data[i]);
+                        this.lHistory.push("B");
+                    }
                 }
-                else {
-                    this.oClassB.Data.push( oParsedMatBuffer.Data[ i ] );
-		    this.lHistory.push( "B" );
-                }
+
+                // Refresh plot
+                this.Plot();
             }
-
-            // Refresh plot
-            this.Plot();
+            catch( ex ) {
+                alert( "Error: " + ex );
+            }
         }.bind( this ) );
     };
 
@@ -373,17 +450,17 @@ function vml_DataGen() {
     * @instance
     */
     this.Undo = function() {
-	// Remove last data point
-	var strType = this.lHistory.pop();
-	if( strType == "A" ) {
-	  this.oClassA.Data.pop();
-	}
-	else if( strType == "B" ) {
-	  this.oClassB.Data.pop();
-	}
+        // Remove last data point
+	    var strType = this.lHistory.pop();
+	    if( strType == "A" ) {
+	        this.oClassA.Data.pop();
+	    }
+	    else if( strType == "B" ) {
+	        this.oClassB.Data.pop();
+	    }
 
-	// Refresh plot
-	this.Plot();
+	    // Refresh plot
+	    this.Plot();
     };
 
     /**

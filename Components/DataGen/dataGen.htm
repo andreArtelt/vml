@@ -7,11 +7,14 @@
 <script src="../../Libs/flot/jquery.js"></script>
 <script src="../../Libs/flot/jquery.flot.js"></script>
 <script src="../../Libs/flot/jquery.flot.symbol.js"></script>
+<script src="../../Libs/mathjs/math.js"></script>
+<script src="../../Libs/d3js/d3-3.5.16/d3.js"></script>
 <script src="../../vmljs/Utils/utils.js"></script>
 <script src="../../vmljs/Utils/fileHelper.js"></script>
 <script src="../../vmljs/Utils/matFileHelper.js"></script>
 <script src="../../vmljs/Utils/jsonHelper.js"></script>
 <script src="../../vmljs/Utils/csvHelper.js"></script>
+<script src="../../vmljs/Utils/octaveFileHelper.js"></script>
 <script src="dataGen.js"></script>
 <script src="../../Libs/base64-arraybuffer-0.1.5/lib/base64-arraybuffer.js"></script>
 
@@ -22,23 +25,26 @@
     <div class="groupBox">
       <div id="actions">
         <b>Actions:</b><br>
-	<button id="undoBtn" class="button">Undo</button>
+	    <button id="undoBtn" class="button">Undo</button>
         <button id="resetBtn" class="button">Reset</button><br>
-        <div id="exportBtn" class="dropdown dropDownBtn">Export</button>
+        <div id="exportBtn" class="dropdown dropDownBtn">Export
          <div class="dropdown-content">
            <button id="btnExportToJSON" class="button">JSON</button>
            <button id="btnExportToCSV" class="button">CSV</button>
            <button id="btnExportToMAT" class="button">MAT</button>
+           <button id="btnExportToOctave" class="button">Octave</button>
          </div>
         </div>
-        <div id="importBtn" class="dropdown dropDownBtn">Import</button>
+        <div id="importBtn" class="dropdown dropDownBtn">Import
          <div class="dropdown-content">
            <button id="btnImportFromJSON" class="button">JSON</button>
            <button id="btnImportFromCSV" class="button">CSV</button>
-	   <button id="btnImportFromMAT" class="button" onclick="document.getElementById('ctrlImportFromMAT').click();">MAT</button>
+           <button id="btnImportFromMAT" class="button" onclick="document.getElementById('ctrlImportFromMAT').click();">MAT</button>
+           <button id="btnImportFromOctave" class="button" onclick="document.getElementById('ctrlImportFromOctave').click();">Octave</button>
          </div>
         </div>
-        <input id="ctrlImportFromMAT" type="file" name="file" style="visibility:hidden" />
+        <input id="ctrlImportFromMAT" type="file" name="file" style="visibility:hidden;width:1em;"/>
+        <input id="ctrlImportFromOctave" type="file" name="file" style="visibility:hidden;width:1em;"/>
       </div> 
       <br>
       <div id="dataGenType">
@@ -64,12 +70,12 @@
 
   <dialog id="importDlg" class="dialog">
     <center><h3>Import</h3></center>
-    <form method="dialog">
-      <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
-      <button id="btnUpload" class="dialogBtn" onclick="document.getElementById('importUpload').click();">Upload</button>
-      <button id="importDataBtn" class="dialogBtn">Import</button>
-      <button id="importCloseBtn" class="dialogBtn">Close</button>
-    </form>
+      <form method="dialog">
+        <textarea id="importData" cols=50 rows=30 placeholder="Paste/Type your import here!"></textarea><br>
+        <button id="btnUpload" class="dialogBtn" onclick="document.getElementById('importUpload').click();">Upload</button>
+        <button id="importDataBtn" class="dialogBtn">Import</button>
+        <button id="importCloseBtn" class="dialogBtn">Close</button> 
+      </form>
   </dialog>
   <input id="importUpload" type="file" name="file" style="visibility:hidden;width:1em;height:1em;"/>
 </div>
