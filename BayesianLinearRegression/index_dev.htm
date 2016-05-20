@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+  <script src="../Libs/mathjs/math.js"></script>
+  <script src="../vmljs/Utils/math.js"></script>
+  <script src="../vmljs/Utils/utils.js"></script>
+  <script src="../vmljs/Utils/modelEvaluation.js"></script>
+  <script src="../vmljs/Utils/gaussDist.js"></script>
+  <script src="../vmljs/bayesLinearRegression.js"></script>
+  <script src="../Libs/d3js/d3-3.5.16/d3.js"></script>
+  <script src="../vmljs/Utils/plotHelper.js"></script>
+  <script src="bayesLinearRegressionUI.js"></script>
+
+  <link rel="import" href="../Components/Footer/footer.htm">
+  <link rel="import" href="../Components/Evaluation/evaluation.htm">
+  <link rel="import" href="../Components/DataGen/dataGen.htm">
+
+  <title>VML - Bayesian Linear Regression</title>
+</head>
+<body>
+  <center><h1>Bayesian Linear Regression</h1></center>
+
+  <div id="dataGenPlaceholder"></div>
+
+  <div id="model" class="groupBox">
+    <b>Model:</b><br>
+    <div class="tooltip">Degree of polynomial:<span class="tooltiptext">Complexity of the model</span></div><br>
+    <input type="number" id="polynomDegree" value="1"/><br>
+    <div class="tooltip">Weight precisions:<span class="tooltiptext">Precision of weights</span></div><br>
+    <input type="number" step="any" id="alpha" value="0.1"/><br>
+    <div class="tooltip">Noise precision:<span class="tooltiptext">Precision of noise</span></div><br>
+    <input type="number" step="any" id="beta" value="0.1"/><br>
+    <div class="tooltip">Show curve: <input type="checkbox" id="showCurve" checked/>
+    <span class="tooltiptext">Show MAP curve</span></div><br>
+    <div class="tooltip">Show dist: <input type="checkbox" id="showPredDist"/>
+    <span class="tooltiptext">Show predictive distribution</span></div><br>
+    <br>
+    <button id="fitBtn" class="button">Fit</button>
+    <button id="evalBtn" class="button">Evaluate</button>
+  </div>
+
+  <div id="evaluationDlgsPlaceholder"></div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script type="text/javascript">
+    // Import
+    importDataGen();
+    importEvaluation();
+    importFooter();
+ 
+    // Init
+    var oLogic = new vml_BayesianLinearRegressionUI();
+    oLogic.Init();
+  </script>
+</body>
+</html>

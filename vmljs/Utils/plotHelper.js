@@ -21,21 +21,23 @@
 //  SOFTWARE.
 
 /**
-* @classdesc Implementation of plotting methods.
-* @class vml_PlotHelper
-* @constructor
-*/
+ * @classdesc Implementation of plotting methods.
+ * @class vml_PlotHelper
+ * @constructor
+ */
 function vml_PlotHelper() {
+    this.oCanvas = undefined;
+
     /**
-    * Create a combination of heatmap and scatter (optional) plot.
-    * @method CreateHeatmapScatterPlot
-    * @memberof vml_PlotHelper
-    * @instance
-    * @param {Matrix} lHeatData - List of 3d (third dimension: color) data points.
-    * @param {Array} lScatter - List of data for scatter plot (each entry is an object of the following form: {lData, strName, strColor, fSize}).
-    * @param {String} strDiv - Id of cotnainer of plot.
-    * @param {Float} fStepSize - Distance between two values in the heatmap (heatmap is a simple grid hence fStepSize corresponds to the cell size).
-    */
+     * Create a combination of heatmap and scatter (optional) plot.
+     * @method CreateHeatmapScatterPlot
+     * @memberof vml_PlotHelper
+     * @instance
+     * @param {Matrix} lHeatData - List of 3d (third dimension: color) data points.
+     * @param {Array} lScatter - List of data for scatter plot (each entry is an object of the following form: {lData, strName, strColor, fSize}).
+     * @param {String} strDiv - Id of cotnainer of plot.
+     * @param {Float} fStepSize - Distance between two values in the heatmap (heatmap is a simple grid hence fStepSize corresponds to the cell size).
+     */
     this.CreateHeatmapScatterPlot = function( lHeatData, lScatter, strDiv, fStepSize ) {
         // Remove current plot
         document.getElementById( strDiv ).innerHTML = "";
@@ -43,11 +45,11 @@ function vml_PlotHelper() {
         // Mapping to new coordinate system
         var x = d3.scale.linear( )
             .domain( [-5, 5] )
-            .rangeRound( [0, 800] );
+            .range( [0, 800] );
 
         var y = d3.scale.linear( )
             .domain( [ -5, 5 ] )
-            .rangeRound( [ 0, 600 ] );
+            .range( [ 0, 600 ] );
 
         var z = d3.scale.linear()
             .domain( [ 0.0, 0.5, 1.0 ] )
@@ -58,8 +60,8 @@ function vml_PlotHelper() {
 
         // Draw heatmap (using canvas for better performance)
         document.getElementById( strDiv ).innerHTML = '<canvas id="HeatmapScatterPlot" width="800" height="600"></canvas>';
-        var oCanvas = document.getElementById( "HeatmapScatterPlot" );
-        var ctx = oCanvas.getContext( '2d' );
+        this.oCanvas = document.getElementById( "HeatmapScatterPlot" );
+        var ctx = this.oCanvas.getContext( '2d' );
 
         for( var i=0; i != lHeatData.length; i++ ) {
             var vecX = x( lHeatData[ i ][ 0 ] );
@@ -97,6 +99,20 @@ function vml_PlotHelper() {
                     ctx.stroke();
                     ctx.moveTo( vecX, vecY );
                     ctx.lineTo( vecX, vecY - 10 );
+                    ctx.stroke();
+                }
+                else if( lScatter[ i ].symbol == "line" ) {
+                    if( j == 0 ) {
+                        continue;
+                    }
+
+                    var vecX_Old = x( lScatter[ i ].lData[ j-1 ][ 0 ] );
+                    var vecY_Old = y( -1.0 * lScatter[ i ].lData[ j-1 ][ 1 ] );
+
+                    ctx.beginPath();
+                    ctx.lineWidth = lScatter[ i ].size;
+                    ctx.moveTo( vecX_Old, vecY_Old );
+                    ctx.lineTo( vecX, vecY );
                     ctx.stroke();
                 }
                 else {

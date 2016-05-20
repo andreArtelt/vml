@@ -16,7 +16,8 @@ The aim is to help students **getting a better understanding** about the behavio
  - Perceptron
  - SVM
  - Polynomial regression
- - Naive Bayes
+ - Bayesian Linear Regression
+ - Naive Bayes classification
  - Logistic regression
  - Decision tree
  - K-Means clustering
