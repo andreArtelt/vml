@@ -42,7 +42,7 @@ function vml_DataGen() {
     this.strPlotDiv = "plotArea";   // Container for plot
 
     this.calcX = d3.scale.linear().domain( [ 0, 800 ] ).range( [ -5, 5 ] );
-    this.calcY = d3.scale.linear().domain( [ 0, 600 ] ).range( [ 5, -5 ] );
+    this.calcY = d3.scale.linear().domain( [ 0, 600 ] ).range( [ -5, 5 ] );
 
     // Plot settings
     this.lData = [ { label: this.oClassA.Label, color: this.oClassA.Color, data: this.oClassA.Data, points: { show: true, symbol: this.oClassA.Symbol } },
@@ -125,6 +125,15 @@ function vml_DataGen() {
         }
 
         this.oPlot = $.plot( "#"+this.strPlotDiv, this.lData, this.oPlotSettings);
+    };
+
+    this.RecoverCtrlByClick = function( oEvent ) {
+        // Refresh plot
+        this.Plot();
+
+        // Passing (simulated) mouse click event to plot
+        var vecPos = { x: this.calcX( oEvent.clientX ), y: -1.0 * this.calcY( oEvent.clientY ) };
+        this.PlotClickEvent( undefined, vecPos, undefined );
     };
 
     this.PlotClickEvent = function( oEvent, vecPos, oItem ) {
