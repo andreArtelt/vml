@@ -68,6 +68,10 @@ function vml_GaussMixtureUI() {
 
     this.Train = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                this.Reset();
+            }
+
             // Training/Fitting
             var iNumTrainItr = this.GetNumberOfTrainItr();
             for( var i=0; i != iNumTrainItr; i++ ) {

@@ -75,6 +75,10 @@ function vml_LVQUI() {
 
     this.Train = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                this.Reset();
+            }
+
             var fLambda = this.GetLearningRate();
 
             // Run training iterations

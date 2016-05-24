@@ -83,6 +83,8 @@ function vml_SvmUI() {
             var lLabels = this.lLabels.map( function( x ){ return x == -1 ? 1 : 0; } );
             var oEvaluation = new vml_ClassifierEvaluation( this.lData, lLabels, this.oModel, 2 ).AllMetrics();
 
+            console.log(this.oModel.lAlphas);  // TEMP ONLY!
+
             // Show evaluation
             var oEvalDlg = new vml_EvaluationDlg();
             oEvalDlg.Init( false, oEvaluation );
@@ -264,6 +266,10 @@ function vml_SvmUI() {
 
     this.Train = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                this.Reset();
+            }
+
             var fLambda = this.GetLearningRate();
 
             if( this.iTime == 0 ) {

@@ -107,6 +107,10 @@ function vml_PolynomialRegressionUI() {
 
     this.Train = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                this.Reset();
+            }
+
             // Run training iterations
             for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
                 this.oModel.UpdateWeights( this.GetLearningRate(), this.GetRegularizationRate(), this.UseGradientClipping(), this.GetGradientClippingThreshold() );

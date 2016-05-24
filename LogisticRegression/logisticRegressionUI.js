@@ -109,6 +109,10 @@ function vml_LogisticRegressionUI() {
 
     this.Train = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                this.Reset();
+            }
+
             // Training/Fitting
             for(var i=0; i != this.GetNumTrainItr(); i++) {
                 this.oModel.TrainStep( this.GetLearningRate(), this.GetL2Regularization(), this.UseGradientClipping(), this.GetGradientClippingThreshold() );

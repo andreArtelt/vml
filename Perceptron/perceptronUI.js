@@ -139,6 +139,10 @@ function vml_PerceptronUI() {
 
     this.Train = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                this.Reset();
+            }
+
             // Run training iterations
             for( var i=0; i != this.GetNumberOfIterations(); i++ ) {
                 this.oModel.FitStep( this.GetLearningRate() );
