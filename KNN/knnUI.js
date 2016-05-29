@@ -61,6 +61,10 @@ function vml_KnnUI() {
 
     this.Evaluate = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                return;
+            }
+
             if( ( this.oDataGen.oClassA.Data.length > 0 && this.oDataGen.oClassB.Data.length == 0 ) || ( this.oDataGen.oClassA.Data.length == 0 && this.oDataGen.oClassB.Data.length > 0 ) ) {
                 this.EvaluateRegression();
             }

@@ -143,6 +143,10 @@ function vml_BayesianLinearRegressionUI() {
 
     this.Evaluate = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                return;
+            }
+
             var oEvaluation = new vml_RegressionEvaluation( this.lData, this.lLabels, this.oModel ).AllMetrics();
             var oEvalDlg = new vml_EvaluationDlg();
             oEvalDlg.Init( true, oEvaluation );

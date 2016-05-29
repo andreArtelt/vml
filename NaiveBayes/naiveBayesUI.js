@@ -63,6 +63,10 @@ function vml_NaiveBayesUI() {
 
     this.Evaluate = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                return;
+            }
+
             // Evaluate model
             var lData = this.oDataGen.oClassA.Data.concat( this.oDataGen.oClassB.Data );
             var lLabels = vml_Utils.FillList( this.oDataGen.oClassA.Data.length, 0 ).concat( vml_Utils.FillList( this.oDataGen.oClassB.Data.length, 1 ) );

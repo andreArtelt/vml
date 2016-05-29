@@ -79,6 +79,10 @@ function vml_SvmUI() {
 
     this.Evaluation = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                return;
+            }
+
             // Evaluate model
             var lLabels = this.lLabels.map( function( x ){ return x == -1 ? 1 : 0; } );
             var oEvaluation = new vml_ClassifierEvaluation( this.lData, lLabels, this.oModel, 2 ).AllMetrics();

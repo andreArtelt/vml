@@ -77,6 +77,10 @@ function vml_PolynomialRegressionUI() {
 
     this.Evaluation = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                return;
+            }
+
             var lData = [];
             var lLabels = [];
             for( var i=0; i != this.oDataGen.oClassA.Data.length; i++ ) {

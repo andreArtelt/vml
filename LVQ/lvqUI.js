@@ -103,6 +103,10 @@ function vml_LVQUI() {
 
     this.Evaluation = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                return;
+            }
+
             // Evaluate model
             var oEvaluation = new vml_ClassifierEvaluation( this.lData, this.lLabels, this.oModel, 2 ).AllMetrics();
 

@@ -56,6 +56,10 @@ function vml_PerceptronUI() {
 
     this.Evaluate = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                return;
+            }
+
             // Evaluate model
             var lLabels = this.oModel.lLabels.map( function( x ){ return x == -1 ? 1 : 0; } );
             var oEvaluation = new vml_ClassifierEvaluation( this.oModel.lData, lLabels, this.oModel, 2 ).AllMetrics();

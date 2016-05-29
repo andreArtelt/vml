@@ -31,6 +31,7 @@ function vml_DecisionTreeUI() {
         try {
             // Init
             this.oDataGen = oDataGen;
+            this.oModel = new vml_DecisionTree();
 
             this.InitGrid();
 
@@ -48,8 +49,7 @@ function vml_DecisionTreeUI() {
             // Get/Convert data
             this.ConvertData( this.oDataGen.oClassA.Data, this.oDataGen.oClassB.Data );
 
-            // Create/Fit model
-            this.oModel = new vml_DecisionTree();
+            // Fit model
             this.oModel.Fit( this.lData, this.lLabels, this.GetDepth(), 2, 2 );
 
             // Compute decision boundary and update plot
@@ -63,6 +63,10 @@ function vml_DecisionTreeUI() {
 
     this.Evaluate = function() {
         try {
+            if( this.oModel.IsReady() == false ) {
+                return;
+            }
+
             // Evaluate model
             var oEvaluation = new vml_ClassifierEvaluation( this.lData, this.lLabels, this.oModel, 2 ).AllMetrics();
 
