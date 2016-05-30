@@ -167,13 +167,11 @@ function vml_SvmUI() {
     this.GetSlackPenalty = function() {
         var iResult = document.getElementById( "slackPenalty" ).value;
         if( iResult == "" || iResult == undefined ) {
-            this.iC = 0;
+            return 0;
         }
         else {
-            this.iC = parseInt( iResult );
+            return parseFloat( iResult );
         }
-
-        return this.iC;
     };
 
     this.GetLearningRate = function() {
