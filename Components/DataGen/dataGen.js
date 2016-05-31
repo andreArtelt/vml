@@ -65,6 +65,7 @@ function vml_DataGen() {
         // Register eventhandler
 	    document.getElementById( "undoBtn" ).addEventListener( "click", this.Undo.bind( this ), false );
         document.getElementById( "resetBtn").addEventListener( "click", this.Reset.bind( this ), false );
+        document.getElementById( "scaleBtn" ).addEventListener( "click", this.Scale.bind( this ), false );
         document.getElementById( "btnExportToJSON" ).addEventListener( "click", this.ExportJSON.bind( this ), false );
         document.getElementById( "btnExportToCSV" ).addEventListener( "click", this.ExportCSV.bind( this ), false );
         document.getElementById( "btnExportToMAT" ).addEventListener( "click", this.ExportMAT.bind( this ), false );
@@ -450,6 +451,35 @@ function vml_DataGen() {
 
         // Close
         this.ImportClose();
+    };
+
+    /**
+    * Scale the data to full screen.
+    * @method Scale
+    * @memberof vml_DataGen
+    * @instance
+    */
+    this.Scale = function() {
+        // Compute range
+        var lData = this.oClassA.Data.concat( this.oClassB.Data );
+        if( lData.length == 0 ) {
+            return;
+        }
+
+        var vecCol = math.subset( lData, math.index( math.range( 0, math.size( lData )[0] ), 0 ) );
+        var fMaxX = math.max( vecCol );
+        var fMinX = math.min( vecCol );
+
+        vecCol = math.subset( lData, math.index( math.range( 0, math.size( lData )[0] ), 1 ) );
+        var fMaxY = math.max( vecCol );
+        var fMinY = math.min( vecCol );
+
+        // Scale
+        this.oClassA.Data = vml_Utils.ScaleDataEx( fMinX, fMaxX, fMinY, fMaxY, this.oClassA.Data );
+        this.oClassB.Data = vml_Utils.ScaleDataEx( fMinX, fMaxX, fMinY, fMaxY, this.oClassB.Data );
+
+        // Refresh plot
+        this.Plot();
     };
 
     /**

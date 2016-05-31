@@ -57,6 +57,33 @@ vml_Utils.ScaleData = function( minX, maxX, minY, maxY, data, xRange, yRange ) {
 };
 
 /**
+ * Scale a given 2d dataset to a given range.
+ * @method ScaleDataEx
+ * @memberof vml_Utils
+ * @param {Double} minX - Min. x value of given data.
+ * @param {Double} maxX - Max. x value of given data.
+ * @param {Double} minY - Min. y value of given data.
+ * @param {Double} maxY - Max. y value of given data.
+ * @param {Array} data - Array/List of 2d data points.
+ * @param {Array} xRange - Range (first entry: minimum, second entry: maximum) of x axis.
+ * @param {Array} yRange - Range (first entry: minimum, second entry: maximum) of y axis.
+ * @return {Array} Scaled data.
+ */
+vml_Utils.ScaleDataEx = function( minX, maxX, minY, maxY, data, xRange, yRange ) {
+    xRange = xRange == undefined ? [ -5, 5 ] : xRange;
+    yRange = yRange == undefined ? [ -5, 5 ] : yRange;
+
+    var scaleX = d3.scale.linear( )
+        .domain( [ minX, maxX ] )
+        .range( [ -5, 5 ] );
+    var scaleY = d3.scale.linear( )
+        .domain( [ minY, maxY ] )
+        .range( [ -5, 5 ] );
+
+    return data.map( function( item ) { return [ scaleX( item[0] ), scaleY( item[1] ) ]; } );
+};
+
+/**
 * Implementation of gradient clipping/scaling.
 * @method GradientClipping
 * @memberof vml_Utils
