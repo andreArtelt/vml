@@ -60,9 +60,12 @@ function vml_BayesianLinearRegression() {
     };
 
     /**
-    *
+    * Compute the predictive distribution around a given point.
     * @method PredDist
     * @memberof vml_BayesianLinearRegression
+    * @param {Vector} vecPoint - Center point of distribution.
+    * @param {Array} lRange - Range of distribution around center.
+    * @retrun {Array}
     * @instance
     */
     this.PredDist = function( vecPoint, lRange ) {
@@ -75,42 +78,36 @@ function vml_BayesianLinearRegression() {
     };
 
     /**
-    *
+    * Predict the output at a given point using MAP (maximum a posteriori).
     * @method PredMap
     * @memberof vml_BayesianLinearRegression
     * @instance
+    * @param {Vector} vecPoint - Point used for prediction.
+    * @return {Double} - Predicted output.
     */
     this.PredMap = function( vecPoint ) {
         return math.multiply( this.mapWeights_T, vecPoint );
     };
 
     /**
-    *
+    * Predict the output at a given point.
     * @method
     * @memberof vml_BayesianLinearRegression
     * @instance
-    * @param {} vecPoint
-    * @return
+    * @param {Vector} vecPoint - Point used for prediction.
+    * @return {Double} - Predicted output.
     */
     this.Predict = function( vecPoint ) {
         return this.PredMap( vecPoint );
     };
 
     /**
-    *
-    * @method LogPosteriorDist
-    * @memberof vml_BayesianLinearRegression
-    * @instance
-    */
-    this.LogPosteriorDist = function( vecWeights ) {
-        return this.LogLikelihood( vecWeights ) - ( (this.fAlpha / 2) * math.dot( math.transpose( vecWeights ), vecWeights ) );
-    };
-
-    /**
-    *
+    * Compute the log likelihood of the data for a given set of parameter.
     * @method LogLikelihood
     * @memberof vml_BayesianLinearRegression
     * @instance
+    * @param {Vector} vecWeights - Weights.
+    * @return {Double} - Log likelihood of the data for a given weight vector.
     */
     this.LogLikelihood = function( vecWeights ) {
         var fResult = 0.0;
@@ -125,12 +122,14 @@ function vml_BayesianLinearRegression() {
     };
  
     /**
-    *
+    * Fit the model to given set of parameters.
     * @method Fit
     * @memberof vml_BayesianLinearRegression
     * @instance
-    * @param {Matrix} lData Transformed data.
-    *
+    * @param {Matrix} lData - Transformed/Preprocessed data.
+    * @param {Vector} lLabels - Labels.
+    * @param {Double} fAlpha - Precision of the weights.
+    * @param {Double} fBeta - Precision of the noise in the data.
     */
     this.Fit = function( lData, lLabels, fAlpha, fBeta ) {
         this.lData = lData;
@@ -148,7 +147,7 @@ function vml_BayesianLinearRegression() {
     };
 
     /**
-    *
+    * Compute the parameters for the predicitive distribution.
     * @method FitPredictiveDist
     * @memberof vml_BayesianLinearRegression
     * @instance
@@ -159,10 +158,11 @@ function vml_BayesianLinearRegression() {
     };
 
     /**
-    *
+    * Compute the weights of the maximum a posteriori distribution.
     * @method MaxPosteriorDist
     * @memberof vml_BayesianLinearRegression
     * @instance
+    * @param {Double} fLambda - Regularization rate.
     */
     this.MaxPosteriorDist = function( fLambda ) {
         // Least Square:
