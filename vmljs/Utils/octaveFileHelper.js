@@ -21,18 +21,19 @@
 //  SOFTWARE.
 
 /**
-*
-*
+* @classdesc Implementation of methods for reading and writing octave files.
+* @class vml_OctaveFileHelper
+* @constructor
 */
 function vml_OctaveFileHelper() {
     /**
-     *
+     * Export a given set of data and labels.
      * @method Export
      * @memberof vml_OctaveFileHelper
      * @instance
-     * @param lData
-     * @param lLabels
-     * @returns {String}
+     * @param {Matrix} lData - Data points.
+     * @param {Vector} lLabels - Labels.
+     * @returns {String} Exported data.
      */
     this.Export = function( lData, lLabels ) {
         var strResult = "";
@@ -74,12 +75,12 @@ function vml_OctaveFileHelper() {
     };
 
     /**
-     * 
+     * Import data from a given string.
      * @method Import
      * @memberof vml_OctaveFileHelper
      * @instance
-     * @param {String} strData
-     * @returns {{Data: *, Labels: *}}
+     * @param {String} strData - Data to import.
+     * @returns {Object} Layout of result {{Data: *, Labels: *}}.
      */
     this.Import = function( strData ) {
         // Tokenize data string
