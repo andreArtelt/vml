@@ -14,15 +14,16 @@ The aim is to help students **getting a better understanding** about the behavio
 ## Features (Algorithms)
  - Generating toy datasets
  - Perceptron
- - SVM
+ - Support vector machine (SVM)
  - Polynomial regression
  - Bayesian Linear Regression
  - Naive Bayes classification
  - Logistic regression
  - Decision tree
+ - Learning vector quantization (LVQ)
  - K-Means clustering
  - Gaussian mixture
- - KNN (K nearest neighbors)
+ - K nearest neighbors (knn)
 
 ## Webdemo
 [Current release](https://andreartelt.github.io/vml)
